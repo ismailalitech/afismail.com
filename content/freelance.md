@@ -1,6 +1,6 @@
 +++
 title = "Freelance"
-description = "I take on freelance projects in embedded systems and security."
+description = "Freelance engineering support for embedded systems and security: firmware, FPGA design and security review, each with a clearly agreed scope."
 
 [params]
   # Shows the contact block under the text.
@@ -12,7 +12,7 @@ description = "I take on freelance projects in embedded systems and security."
 
 ## What I can help with
 
-- Firmware on Arm Cortex-M, bare-metal or with FreeRTOS or ThreadX
+- Firmware on Arm Cortex-M, bare-metal or RTOS-based
 - FPGA architecture, design and verification
 - Secure C and C++, and code reviews
 - Security reviews and security verification plans

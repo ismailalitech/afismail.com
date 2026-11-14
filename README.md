@@ -26,7 +26,7 @@ content/
 ```
 
 Every folder with an `_index.md` becomes a page that lists what is inside it. The
-home page shows the headline, a search box and your background, then one cell per
+home page shows the headline, the introduction and your background, then one cell per
 topic, with its sub-topics as links. A sub-topic with
 nothing in it yet says so on its page, shows "In preparation" in the lists, and is
 kept out of search results until its first piece is published.
@@ -131,12 +131,14 @@ Optional lines under `[params]` in a page's front matter change how it is laid o
 
 ## Search
 
-The search box on the home page and the magnifier in the header lead to the Search
-page (`content/search.md`). When the site is built, Hugo writes a list of every
-published page into that page (`layouts/_partials/tool-search.html`), and
-`assets/js/search.js` searches the list in the visitor's browser. Nothing is sent to
-a server and no outside service is used. New articles, labs and videos become
-searchable as soon as they are published; there is nothing to maintain.
+The magnifier in the header opens a search line on the current page; results appear
+under it as the visitor types. When the site is built, Hugo writes a list of every
+published page into the Search page (`content/search.md`,
+`layouts/_partials/tool-search.html`), and `assets/js/search.js` searches that list
+in the visitor's browser. Nothing is sent to a server and no outside service is
+used. New articles, labs and videos become searchable as soon as they are published;
+there is nothing to maintain. Without JavaScript, the magnifier leads to the Search
+page instead.
 
 ## Privacy and legal pages
 

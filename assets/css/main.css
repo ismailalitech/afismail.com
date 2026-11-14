@@ -600,7 +600,7 @@ main {
   font-weight: 400;
 }
 
-/* Search box, on the home page and on the Search page */
+/* Search box, under the header and on the Search page */
 .search-form {
   display: flex;
   gap: 0.5rem;
@@ -622,6 +622,40 @@ main {
 
 .search-form input::placeholder {
   color: var(--muted);
+}
+
+/* The search line that opens under the header */
+.search-panel {
+  border-top: 1px solid var(--rule);
+}
+
+.search-panel .wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-block: 0.9rem 1rem;
+}
+
+.search-panel .search-form {
+  max-width: none;
+}
+
+.search-panel .search-status {
+  font-size: 0.9375rem;
+}
+
+.search-panel .search-results {
+  max-height: min(60vh, 26rem);
+  overflow-y: auto;
+}
+
+.search-panel .search-result {
+  padding-block: 0.75rem;
+}
+
+.search-status a {
+  display: inline-block;
+  padding-block: 0.15rem;
 }
 
 /* Search page */
@@ -681,7 +715,6 @@ main {
 }
 
 .search-result mark {
-  padding: 0 0.1em;
   border-radius: 2px;
   background: color-mix(in srgb, var(--accent) 20%, transparent);
   color: var(--ink);

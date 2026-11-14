@@ -1,16 +1,20 @@
 /* Site search. The Search page contains a list of every page (title, description, text),
    written by Hugo when the site is built. This script searches that list in the
-   visitor's browser, so nothing is sent anywhere and no outside service is used. */
-(function () {
-  var data = document.querySelector('[data-search-index]');
-  var form = document.querySelector('[data-search-form]');
-  var status = document.querySelector('[data-search-status]');
-  var list = document.querySelector('[data-search-results]');
-  if (!data || !form || !status || !list) { return; }
+   visitor's browser, so nothing is sent anywhere and no outside service is used.
 
-  var input = form.querySelector('input');
+   It runs in two places:
+   - the search line that opens under the header when the magnifier is pressed
+     (the list is fetched from the Search page the first time it is needed);
+   - the Search page itself, which also works as the fallback without JavaScript. */
+(function () {
+  var opener = document.querySelector('[data-search-open]');
+  var panel = document.querySelector('[data-search-panel]');
+  var pageForm = document.querySelector('[data-search-form]');
+  if (!panel && !pageForm) { return; }
+
   var HINT = 'Type a word, for example TrustZone, fuzzing or HardFault.';
-  var MAX_RESULTS = 20;
+  var pages = null;
+  var pending = null;
 
   /* Lower case, without accents, so "Zéro" and "zero" match. */
   function plain(text) {
@@ -18,20 +22,46 @@
     return out.normalize ? out.normalize('NFD').replace(/[̀-ͯ]/g, '') : out;
   }
 
-  var pages;
-  try {
-    pages = JSON.parse(data.textContent);
-  } catch (e) {
-    status.textContent = 'Search is unavailable on this page.';
-    return;
+  function prepare(list) {
+    list.forEach(function (page) {
+      page.text = String(page.text || '').replace(/\s+/g, ' ').trim();
+      page.t = plain(page.title);
+      page.d = plain(page.description);
+      page.x = plain(page.text);
+      page.k = plain(page.kind + ' ' + page.where);
+    });
+    return list;
   }
-  pages.forEach(function (page) {
-    page.text = String(page.text || '').replace(/\s+/g, ' ').trim();
-    page.t = plain(page.title);
-    page.d = plain(page.description);
-    page.x = plain(page.text);
-    page.k = plain(page.kind + ' ' + page.where);
-  });
+
+  /* Gets the list of pages: from this page if it is the Search page, otherwise from
+     the Search page's address. Fetched once, then kept. */
+  function load() {
+    if (pages) { return Promise.resolve(pages); }
+    if (pending) { return pending; }
+    var here = document.querySelector('[data-search-index]');
+    if (here) {
+      try {
+        pages = prepare(JSON.parse(here.textContent));
+        return Promise.resolve(pages);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }
+    var address = opener ? opener.getAttribute('href') : '';
+    if (!address || address.charAt(0) === '#' || !window.fetch || !window.DOMParser) {
+      return Promise.reject(new Error('no search list'));
+    }
+    pending = fetch(address, { credentials: 'same-origin' }).then(function (response) {
+      if (!response.ok) { throw new Error('search page: ' + response.status); }
+      return response.text();
+    }).then(function (html) {
+      var node = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-search-index]');
+      pages = prepare(JSON.parse(node.textContent));
+      return pages;
+    });
+    pending.catch(function () { pending = null; });
+    return pending;
+  }
 
   function count(haystack, needle) {
     var n = 0;
@@ -101,83 +131,166 @@
     return (start > 0 ? '… ' : '') + page.text.slice(start, end) + (end < page.text.length ? ' …' : '');
   }
 
-  function render(query) {
-    list.textContent = '';
-    var phrase = plain(query).replace(/\s+/g, ' ').trim();
-    if (phrase.length < 2) {
-      status.textContent = HINT;
-      return;
+  function resultItem(page, words, phrase) {
+    var item = document.createElement('li');
+    item.className = 'search-result';
+
+    var kind = document.createElement('p');
+    kind.className = 'search-kind';
+    /* "Topic in Topics" says nothing more than "Topic". */
+    var where = page.where && plain(page.where) !== plain(page.kind) + 's' ? ' in ' + page.where : '';
+    kind.textContent = page.kind + where;
+    item.appendChild(kind);
+
+    var title = document.createElement('h3');
+    var link = document.createElement('a');
+    /* When the words are only in the page's text, ask the browser to scroll to them. */
+    var inText = page.t.indexOf(phrase) === -1 && page.x.indexOf(phrase) !== -1;
+    link.href = page.url + (inText && page.url.indexOf('#') === -1 ? '#:~:text=' + encodeURIComponent(phrase) : '');
+    mark(link, page.title, words);
+    title.appendChild(link);
+    item.appendChild(title);
+
+    if (page.description) {
+      var description = document.createElement('p');
+      mark(description, page.description, words);
+      item.appendChild(description);
     }
-    var words = phrase.split(' ').filter(function (word, i, all) { return word && all.indexOf(word) === i; });
-
-    var hits = [];
-    pages.forEach(function (page) {
-      var points = score(page, words, phrase);
-      if (points > 0) { hits.push({ page: page, points: points }); }
-    });
-    hits.sort(function (a, b) { return b.points - a.points || a.page.title.localeCompare(b.page.title); });
-
-    if (!hits.length) {
-      status.textContent = 'No result for "' + query.trim() + '". Try a shorter word, or browse the topics.';
-      return;
+    var piece = snippet(page, words);
+    if (piece && page.d.indexOf(phrase) === -1) {
+      var extract = document.createElement('p');
+      extract.className = 'search-snippet';
+      mark(extract, piece, words);
+      item.appendChild(extract);
     }
-    status.textContent = (hits.length === 1 ? '1 result' : hits.length + ' results') + ' for "' + query.trim() + '"' +
-      (hits.length > MAX_RESULTS ? ', showing the first ' + MAX_RESULTS : '');
-
-    hits.slice(0, MAX_RESULTS).forEach(function (hit) {
-      var page = hit.page;
-      var item = document.createElement('li');
-      item.className = 'search-result';
-
-      var kind = document.createElement('p');
-      kind.className = 'search-kind';
-      kind.textContent = page.kind + (page.where ? ' in ' + page.where : '');
-      item.appendChild(kind);
-
-      var title = document.createElement('h3');
-      var link = document.createElement('a');
-      /* When the words are only in the page's text, ask the browser to scroll to them. */
-      var inText = page.t.indexOf(phrase) === -1 && page.x.indexOf(phrase) !== -1;
-      link.href = page.url + (inText && page.url.indexOf('#') === -1 ? '#:~:text=' + encodeURIComponent(phrase) : '');
-      mark(link, page.title, words);
-      title.appendChild(link);
-      item.appendChild(title);
-
-      if (page.description) {
-        var description = document.createElement('p');
-        mark(description, page.description, words);
-        item.appendChild(description);
-      }
-      var piece = snippet(page, words);
-      if (piece && page.d.indexOf(phrase) === -1) {
-        var extract = document.createElement('p');
-        extract.className = 'search-snippet';
-        mark(extract, piece, words);
-        item.appendChild(extract);
-      }
-      list.appendChild(item);
-    });
+    return item;
   }
 
-  /* The words can arrive in the address (?q=...), from the search box on another page. */
-  function fromAddress() {
+  /* Connects one search box to its status line and its list of results.
+     "max" is how many results are listed; "more" gives the address of the full list. */
+  function connect(input, status, list, max, more) {
+    var turn = 0;
+    var timer = null;
+
+    function draw(query) {
+      var mine = ++turn;
+      list.textContent = '';
+      var phrase = plain(query).replace(/\s+/g, ' ').trim();
+      if (phrase.length < 2) {
+        status.textContent = HINT;
+        return;
+      }
+      var words = phrase.split(' ').filter(function (word, i, all) { return word && all.indexOf(word) === i; });
+
+      load().then(function (all) {
+        if (mine !== turn) { return; }
+        var hits = [];
+        all.forEach(function (page) {
+          var points = score(page, words, phrase);
+          if (points > 0) { hits.push({ page: page, points: points }); }
+        });
+        hits.sort(function (a, b) { return b.points - a.points || a.page.title.localeCompare(b.page.title); });
+
+        if (!hits.length) {
+          status.textContent = 'No result for "' + query.trim() + '". Try a shorter word, or browse the topics.';
+          return;
+        }
+        status.textContent = (hits.length === 1 ? '1 result' : hits.length + ' results') + ' for "' + query.trim() + '"' +
+          (hits.length > max ? ', showing the first ' + max + '. ' : '');
+        if (hits.length > max && more) {
+          var all_link = document.createElement('a');
+          all_link.href = more(query.trim());
+          all_link.textContent = 'See all results';
+          status.appendChild(all_link);
+        }
+        hits.slice(0, max).forEach(function (hit) {
+          list.appendChild(resultItem(hit.page, words, phrase));
+        });
+      }, function () {
+        if (mine !== turn) { return; }
+        status.textContent = 'Search could not be loaded. Check the connection and try again.';
+      });
+    }
+
+    input.addEventListener('input', function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { draw(input.value); }, 120);
+    });
+    return function () {
+      clearTimeout(timer);
+      draw(input.value);
+    };
+  }
+
+  /* The Search page */
+  var pageInput = pageForm ? pageForm.querySelector('input') : null;
+  if (pageForm) {
+    var section = pageForm.parentNode;
+    var runPage = connect(pageInput, section.querySelector('[data-search-status]'), section.querySelector('[data-search-results]'), 20, null);
+    pageForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      runPage();
+    });
+    /* The words can arrive in the address: /search/?q=words */
     var match = /[?&]q=([^&#]*)/.exec(window.location.search);
-    if (!match) { return ''; }
-    try { return decodeURIComponent(match[1].replace(/\+/g, ' ')); } catch (e) { return ''; }
+    if (match) {
+      try { pageInput.value = decodeURIComponent(match[1].replace(/\+/g, ' ')); } catch (e) { /* malformed address: start empty */ }
+    }
+    runPage();
   }
 
-  var timer = null;
-  input.addEventListener('input', function () {
-    clearTimeout(timer);
-    timer = setTimeout(function () { render(input.value); }, 120);
-  });
-  form.addEventListener('submit', function (event) {
-    event.preventDefault();
-    clearTimeout(timer);
-    render(input.value);
-  });
+  /* The search line under the header */
+  if (opener && panel) {
+    var quick = panel.querySelector('input');
+    var form = panel.querySelector('form');
+    var base = opener.getAttribute('href');
+    var runQuick = connect(quick, panel.querySelector('[data-search-status]'), panel.querySelector('[data-search-results]'), 6, function (query) {
+      return base.charAt(0) === '#' ? base : base + '?q=' + encodeURIComponent(query);
+    });
 
-  var initial = fromAddress();
-  if (initial) { input.value = initial; }
-  render(input.value);
+    var close = function (returnFocus) {
+      panel.hidden = true;
+      opener.setAttribute('aria-expanded', 'false');
+      if (returnFocus) { opener.focus(); }
+    };
+    var open = function () {
+      panel.hidden = false;
+      opener.setAttribute('aria-expanded', 'true');
+      quick.focus();
+      runQuick();
+    };
+    var toggle = function () {
+      /* On the Search page the box is already there: go to it. */
+      if (pageInput && pageInput.offsetParent !== null) {
+        pageInput.focus();
+        return;
+      }
+      if (panel.hidden) { open(); } else { close(true); }
+    };
+
+    opener.setAttribute('role', 'button');
+    opener.setAttribute('aria-expanded', 'false');
+    opener.addEventListener('click', function (event) {
+      event.preventDefault();
+      toggle();
+    });
+    opener.addEventListener('keydown', function (event) {
+      if (event.key === ' ' || event.key === 'Spacebar') {
+        event.preventDefault();
+        toggle();
+      }
+    });
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      runQuick();
+    });
+    panel.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') { close(true); }
+    });
+    panel.querySelector('[data-search-close]').addEventListener('click', function () { close(true); });
+    /* Following a result closes the line, also when the result is on the current page. */
+    panel.addEventListener('click', function (event) {
+      if (event.target.closest && event.target.closest('.search-result a, .search-status a')) { close(false); }
+    });
+  }
 })();

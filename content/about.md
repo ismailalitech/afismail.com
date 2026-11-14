@@ -27,8 +27,8 @@ digital hardware and system-on-chip.
 
 ## Background
 
-- Engineering degree in embedded security and verification, Grenoble INP – ESISAR (2023)
-- Engineering degree in electronics and telecommunications, Lebanese University (2019)
+- Engineering degree in embedded security and verification, Grenoble INP – ESISAR
+- Engineering degree in electronics and telecommunications, Lebanese University
 - Professional experience in FPGA design, SoC security and technical training
   (Arm, RTOS, embedded C/C++, HDL, hardware security)
 - Languages: English, French, Arabic, Italian

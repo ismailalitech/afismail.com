@@ -1,5 +1,5 @@
-{{/* Search box. Sends the words to the Search page, which shows the results.
-     Receives (dict "id" uniqueID "live" true|false); "live" is true on the Search page itself. */}}
+{{/* Search box of the Search page.
+     Receives (dict "id" uniqueID "live" true); "live" marks the box that search.js listens to. */}}
 {{ with site.GetPage "/search" }}
 <form class="search-form" action="{{ .RelPermalink }}" method="get" role="search"{{ if $.live }} data-search-form{{ end }}>
   <label class="visually-hidden" for="{{ $.id }}">Search the site</label>

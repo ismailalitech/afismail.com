@@ -1,5 +1,6 @@
 {{/* The Search page. Hugo writes a list of every page (title, description, text) into
-     this page, and assets/js/search.js searches that list in the visitor's browser.
+     this page, and assets/js/search.js (loaded on every page) searches that list in the
+     visitor's browser. The search line under the header reads the same list from here.
      Nothing is sent to a server. New articles, labs and videos are included automatically. */}}
 <section class="search" aria-labelledby="search-heading">
   <h2 id="search-heading" class="visually-hidden">Search</h2>
@@ -28,7 +29,3 @@
   {{ end }}
 {{ end }}
 <script type="application/json" data-search-index>{{ $index | jsonify | safeJS }}</script>
-{{ with resources.Get "js/search.js" }}
-  {{ $js := . | fingerprint }}
-  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
-{{ end }}

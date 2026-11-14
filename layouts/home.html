@@ -1,10 +1,9 @@
 {{ define "main" }}
-{{/* Headline, introduction and search on the left; background on the right. */}}
+{{/* Headline and introduction on the left; background on the right. */}}
 <section class="hero">
   <div class="hero-text">
     <h1>{{ .Title }}</h1>
     <div class="prose">{{ .Content }}</div>
-    {{ partial "search-form.html" (dict "id" "home-search" "live" false) }}
     <p class="actions">
       {{ with site.GetPage "/topics" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Explore the topics</a>{{ end }}
       {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}

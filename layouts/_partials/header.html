@@ -17,7 +17,8 @@
     </nav>
     <div class="bar-actions">
       {{ with site.GetPage "/search" }}
-      <a class="icon-button" href="{{ .RelPermalink }}"{{ if eq $current . }} aria-current="page"{{ end }}>
+      {{/* Opens the search line below. Without JavaScript it leads to the Search page. */}}
+      <a class="icon-button" href="{{ .RelPermalink }}" data-search-open aria-controls="search-panel"{{ if eq $current . }} aria-current="page"{{ end }}>
         <svg aria-hidden="true" viewBox="0 0 20 20" width="18" height="18"><circle cx="8.75" cy="8.75" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12.9 12.9L17 17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         <span class="visually-hidden">Search</span>
       </a>
@@ -28,4 +29,18 @@
       </button>
     </div>
   </div>
+  {{/* The search line. Hidden until the magnifier is pressed; assets/js/search.js fills in the results. */}}
+  {{ with site.GetPage "/search" }}
+  <div class="search-panel" id="search-panel" data-search-panel hidden>
+    <div class="wrap">
+      <form class="search-form" action="{{ .RelPermalink }}" method="get" role="search">
+        <label class="visually-hidden" for="quick-search">Search the site</label>
+        <input id="quick-search" name="q" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Search the site">
+        <button class="btn" type="button" data-search-close>Close</button>
+      </form>
+      <p class="search-status" data-search-status aria-live="polite"></p>
+      <ol class="search-results" data-search-results></ol>
+    </div>
+  </div>
+  {{ end }}
 </header>
