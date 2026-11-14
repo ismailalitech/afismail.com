@@ -8,7 +8,7 @@ This site is a personal website. It is built to collect as little as possible.
 ## What this site does not do
 
 - It sets no cookies.
-- It runs no analytics and no advertising.
+- It runs no advertising and does not follow visitors from one site to another.
 - It has no forms, accounts or comments.
 
 ## What happens when you visit
@@ -17,6 +17,11 @@ This site is a personal website. It is built to collect as little as possible.
   such as your IP address to operate and secure its service.
 - **Fonts.** The typefaces are loaded from Google Fonts, so your browser contacts
   Google's servers when a page loads.
+- **Visitor statistics.** The site uses Cloudflare Web Analytics to count visits:
+  which pages are opened, which site a visit came from, the country, the type of
+  browser and device, and how fast pages load. It uses no cookies and does not
+  identify individual visitors. Your browser contacts Cloudflare's servers when a
+  page loads.
 - **Videos.** Pages with a video load a player from YouTube when you open them.
 - **Theme.** If you use the light or dark switch, your choice is saved in your own
   browser and is not sent anywhere.

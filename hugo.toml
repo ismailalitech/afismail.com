@@ -18,6 +18,9 @@ disableKinds = ["taxonomy", "term"]
   googleFonts = true
   # Address of your email sign-up page (from a newsletter service). Leave empty to hide the sign-up block.
   subscribe_url = ""
+  # Visitor statistics with Cloudflare Web Analytics (no cookies). This is the site token from the
+  # Cloudflare dashboard; it is public, not a password. Leave empty to turn the statistics off.
+  cloudflareAnalyticsToken = "9b703e6566b64746a344ea4f0f59ab69"
 
   # Background shown beside the headline on the home page and on the About page.
   # Each group has a label and a list of items, shown one under the other.

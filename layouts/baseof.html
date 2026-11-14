@@ -18,5 +18,12 @@
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end }}
+  {{/* Visitor statistics (Cloudflare Web Analytics). Only on the published site, so previews
+       with "hugo server" on your own computer are not counted. The token is in hugo.toml. */}}
+  {{ if hugo.IsProduction }}
+    {{ with site.Params.cloudflareAnalyticsToken }}
+    <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "{{ . }}"}'></script>
+    {{ end }}
+  {{ end }}
 </body>
 </html>

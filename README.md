@@ -146,6 +146,14 @@ page instead.
 Keep them true: update the privacy page whenever you add analytics, a form or an
 email list. To take a page offline, set `draft = true` in it.
 
+## Visitor statistics
+
+The site counts visits with Cloudflare Web Analytics, which uses no cookies. The
+numbers are in the Cloudflare dashboard, under Analytics & Logs, Web Analytics.
+The site token is `cloudflareAnalyticsToken` in `hugo.toml`; empty it to turn the
+statistics off, and then remove the "Visitor statistics" line from the Privacy page.
+Previews with `hugo server` are not counted.
+
 ## Light and dark theme
 
 The site follows the visitor's system setting. The button in the header switches
