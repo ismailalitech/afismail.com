@@ -7,6 +7,8 @@ weight = 20
   # Shows a "Print or save as PDF" button under the title.
   print = true
   topics = ["Reference"]
+  # Shows the "On this page" list beside the text on wide screens.
+  toc = true
 +++
 
 ## Reading a fault in five steps

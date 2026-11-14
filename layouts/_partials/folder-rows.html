@@ -1,0 +1,12 @@
+{{/* One row per sub-folder: its title, its description, and what it holds.
+     Receives the folders. */}}
+<ul class="rows">
+  {{ range . }}
+  {{ $count := partial "counts.html" . }}
+  <li class="row">
+    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    <p>{{ .Description }}</p>
+    {{ if $count }}<p class="row-state has-content">{{ $count }}</p>{{ else }}<p class="row-state">In preparation</p>{{ end }}
+  </li>
+  {{ end }}
+</ul>

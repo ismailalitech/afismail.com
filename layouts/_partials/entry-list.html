@@ -1,8 +1,12 @@
-{{/* List of pages. Receives (dict "pages" pages "section" folderPage); "section" is optional. */}}
+{{/* List of articles, labs and videos. Receives (dict "pages" pages "section" folderPage);
+     "section" is optional. A folder can set these in its _index.md:
+       empty_text  the sentence shown while the folder is empty
+       upcoming    planned pieces, shown under "In preparation" */}}
 {{ $pages := .pages }}
+{{ $section := .section }}
 {{ $upcoming := slice }}
 {{ $empty := "The first piece here is in preparation." }}
-{{ with .section }}
+{{ with $section }}
   {{ with .Params.upcoming }}
     {{ $upcoming = . }}
   {{ end }}
@@ -15,15 +19,12 @@
 <ul class="entry-list">
   {{ range $pages }}
   <li class="entry">
-    {{ with .Params.lab }}<span class="entry-id">{{ printf "0x%02X" (int .) }}</span>{{ end }}
+    {{ partial "kind.html" . }}
     <div class="entry-body">
-      {{ if eq .Section "topics" }}
-        <p class="entry-kind">{{ if .Params.lab }}Lab{{ else if .Params.youtube }}Video{{ else }}Article{{ end }}</p>
-      {{ end }}
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{ with .Description }}<p>{{ . }}</p>{{ end }}
       {{ partial "lab-meta.html" .Params }}
-      {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
+      {{ if eq .Section "topics" }}{{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}{{ end }}
     </div>
   </li>
   {{ end }}
@@ -35,7 +36,7 @@
 <ul class="entry-list">
   {{ range $upcoming }}
   <li class="entry">
-    {{ with .lab }}<span class="entry-id">{{ printf "0x%02X" (int .) }}</span>{{ end }}
+    <p class="kind">{{ with .lab }}{{ partial "icon.html" "lab" }}<span>Lab <span class="kind-id">{{ printf "0x%02X" (int .) }}</span></span>{{ end }}</p>
     <div class="entry-body">
       <h3>{{ .title }} <span class="pill">Planned</span></h3>
       {{ with .description }}<p>{{ . }}</p>{{ end }}
@@ -47,5 +48,11 @@
 {{ end }}
 
 {{ if and (not $pages) (not $upcoming) }}
-<p class="empty">{{ $empty }}</p>
+<div class="empty-state">
+  <p class="empty-title">Nothing is published here yet</p>
+  <p>{{ $empty }}</p>
+  {{ with $section }}{{ if eq .Section "topics" }}
+  <p>{{ with site.GetPage "/resources" }}The <a href="{{ .RelPermalink }}">free resources</a> are ready to use now.{{ end }}{{ with site.Home.OutputFormats.Get "rss" }} New pieces appear in the <a href="{{ .RelPermalink }}">RSS feed</a>.{{ end }}</p>
+  {{ end }}{{ end }}
+</div>
 {{ end }}

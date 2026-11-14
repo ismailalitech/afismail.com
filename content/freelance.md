@@ -5,6 +5,9 @@ description = "I take on freelance projects in embedded systems and security."
 [params]
   # Shows the contact block under the text.
   contact = true
+  # Heading and first sentence of the contact block on this page.
+  contact_title = "Start a project"
+  contact_text = "Send a short description of the goal, the hardware and the timeline to"
 +++
 
 ## What I can help with

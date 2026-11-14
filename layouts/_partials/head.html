@@ -1,10 +1,20 @@
 {{ $desc := site.Params.description }}
 {{ with .Description }}{{ $desc = . }}{{ end }}
+{{ $title := printf "%s · %s" .Title site.Title }}
+{{ if .IsHome }}{{ $title = printf "%s · %s" site.Title site.Params.role }}{{ end }}
+{{ $isPiece := and .IsPage (eq .Section "topics") }}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+<title>{{ $title }}</title>
 <meta name="description" content="{{ $desc }}">
+<meta name="author" content="{{ site.Title }}">
 <link rel="canonical" href="{{ .Permalink }}">
+{{/* A folder with nothing in it yet is left out of search results until it has content. */}}
+{{ if or (eq .Kind "404") (and .IsSection (not .Sections) (not .RegularPages)) }}
+<meta name="robots" content="noindex, follow">
+{{ end }}
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#151922" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "images/apple-touch-icon.png" | relURL }}">
 {{/* Applies a saved light or dark choice before the page is drawn. */}}
@@ -13,20 +23,20 @@
 <meta property="og:site_name" content="{{ site.Title }}">
 <meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}: {{ .Title }}{{ else }}{{ .Title }}{{ end }}">
 <meta property="og:description" content="{{ $desc }}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{{ if $isPiece }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:locale" content="en">
 <meta property="og:image" content="{{ "images/og.png" | absURL }}">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ site.Title }}: {{ site.Home.Title }}">
 <meta name="twitter:card" content="summary_large_image">
-{{/* Tells search engines who the site belongs to. */}}
-{{ if .IsHome }}
-<script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "Person" "name" site.Title "url" .Permalink "jobTitle" site.Params.role "sameAs" (slice site.Params.linkedin site.Params.github) | jsonify | safeJS }}</script>
-{{ end }}
+{{ partial "schema.html" . }}
+{{/* Two font families: one for text, one for code. */}}
 {{ if site.Params.googleFonts }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 {{ end }}
 {{ with resources.Get "css/main.css" }}
   {{ $css := . | fingerprint }}

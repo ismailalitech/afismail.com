@@ -1,0 +1,11 @@
+{{/* A small line icon. Receives a name: article, lab, video, tool, reference or guide.
+     An unknown name draws nothing. */}}
+{{- $paths := dict
+  "article" "M4 2.5h5.5L12 5v8.5H4zM9.5 2.5V5H12M6 8h4M6 10.5h4"
+  "lab" "M6.5 2.5v4L3 12.5a.7.7 0 0 0 .6 1h8.8a.7.7 0 0 0 .6-1L9.5 6.5v-4M5.5 2.5h5M4.8 10h6.4"
+  "video" "M2.5 4h11v8h-11zM6.8 6.2v3.6L10 8z"
+  "tool" "M2.5 3.5h11v9h-11zM5 6.5L7 8 5 9.5M8.5 9.5H11"
+  "reference" "M2.5 3h11v10h-11zM2.5 6.5h11M2.5 9.75h11M6.5 3v10"
+  "guide" "M3 13V6a2.5 2.5 0 0 1 5 0v4a2.5 2.5 0 0 0 5 0V3"
+-}}
+{{- with index $paths . }}<svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="{{ . }}"/></svg>{{ end -}}

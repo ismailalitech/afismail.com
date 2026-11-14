@@ -55,6 +55,13 @@
   };
   var EXAMPLE = { cfsr: '0x00008200', hfsr: '0x40000000', sfsr: '' };
 
+  /* Drawing only: the fields named under each row of the register strip, as
+     [name, number of bits], from the high bit down. CFSR is three status registers
+     side by side. The meaning of every bit still comes from REGISTERS above. */
+  var FIELDS = {
+    cfsr: [[['UsageFault', 16]], [['BusFault', 8], ['MemManage', 8]]]
+  };
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) { node.className = className; }
@@ -78,6 +85,55 @@
     return Math.floor(value / Math.pow(2, bit)) % 2 === 1;
   }
 
+  /* Draws a 32-bit value as two rows of sixteen bits. Bits that are set and have no
+     meaning in this register are outlined. The list under the strip says the same
+     thing in words, so the strip is hidden from screen readers. */
+  function strip(key, value, known) {
+    var wrap = el('div', 'regstrip');
+    wrap.setAttribute('aria-hidden', 'true');
+    for (var row = 0; row < 2; row++) {
+      var line = el('div', 'regrow');
+      for (var bit = 31 - row * 16; bit >= 16 - row * 16; bit--) {
+        var set = isSet(value, bit);
+        var cell = el('i', 'bit-cell' + (set ? (isSet(known, bit) ? ' is-set' : ' is-reserved') : ''), String(bit));
+        cell.appendChild(el('b', '', set ? '1' : '0'));
+        line.appendChild(cell);
+      }
+      wrap.appendChild(line);
+      if (FIELDS[key]) {
+        var names = el('div', 'regfields');
+        FIELDS[key][row].forEach(function (f) {
+          var name = el('span', '', f[0]);
+          name.style.gridColumn = 'span ' + f[1];
+          names.appendChild(name);
+        });
+        wrap.appendChild(names);
+      }
+    }
+    return wrap;
+  }
+
+  /* The decoded result as plain text, for the Copy button. */
+  function summary() {
+    var lines = [];
+    Array.prototype.forEach.call(output.children, function (node) {
+      if (node.classList.contains('reg-result')) {
+        if (lines.length) { lines.push(''); }
+        lines.push(node.querySelector('h3').textContent);
+        Array.prototype.forEach.call(node.querySelectorAll('.bit'), function (item) {
+          lines.push('  ' + item.querySelector('.bit-name').textContent + ' (' + item.querySelector('.bit-meta').textContent + '): ' + item.querySelector('.bit-text').textContent);
+        });
+        Array.prototype.forEach.call(node.querySelectorAll('.bit-none, .bit-warning'), function (note) {
+          lines.push('  ' + note.textContent);
+        });
+      } else if (node.classList.contains('bit-warning')) {
+        lines.push('');
+        lines.push(node.textContent);
+      }
+    });
+    return lines.join('\n');
+  }
+
   function decode(key, value) {
     var reg = REGISTERS[key];
     var block = el('section', 'reg-result');
@@ -96,6 +152,8 @@
       item.appendChild(el('p', 'bit-text', b[3]));
       list.appendChild(item);
     });
+
+    block.appendChild(strip(key, value, known));
 
     if (list.children.length) {
       block.appendChild(list);
@@ -149,6 +207,20 @@
 
     if (values.hfsr !== undefined && isSet(values.hfsr, 30) && values.cfsr === undefined) {
       output.appendChild(el('p', 'bit-warning', 'FORCED is set in HFSR. Add the CFSR value to see the original fault.'));
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      var copy = el('button', 'btn btn-small tool-copy', 'Copy the result as text');
+      copy.type = 'button';
+      copy.addEventListener('click', function () {
+        navigator.clipboard.writeText(summary()).then(function () {
+          copy.textContent = 'Copied';
+          setTimeout(function () { copy.textContent = 'Copy the result as text'; }, 1500);
+        }, function () {
+          copy.textContent = 'Copy failed';
+        });
+      });
+      output.appendChild(copy);
     }
   }
 

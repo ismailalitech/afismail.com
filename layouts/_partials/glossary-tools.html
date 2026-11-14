@@ -1,0 +1,10 @@
+{{/* Filter box and group links for the glossary. Hidden until site.js fills it in,
+     so a visitor without JavaScript sees the plain list. */}}
+<div class="glossary-tools" data-glossary hidden>
+  <div class="glossary-search">
+    <label for="glossary-filter">Filter terms</label>
+    <input id="glossary-filter" type="search" autocomplete="off" spellcheck="false">
+    <p class="glossary-count" data-glossary-count aria-live="polite"></p>
+  </div>
+  <ul class="glossary-groups" data-glossary-groups aria-label="Groups"></ul>
+</div>

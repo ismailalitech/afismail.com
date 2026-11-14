@@ -1,0 +1,40 @@
+{{/* Structured data: tells search engines who the site belongs to, where a page sits,
+     and what an article is. Nothing here is visible on the page. */}}
+{{ $personID := printf "%s#person" site.Home.Permalink }}
+{{ $same := slice site.Params.linkedin site.Params.github }}
+{{ with site.Params.youtube }}{{ $same = $same | append . }}{{ end }}
+{{ $person := dict "@type" "Person" "@id" $personID "name" site.Title "url" site.Home.Permalink "jobTitle" site.Params.role "sameAs" $same }}
+
+{{ if .IsHome }}
+  {{ $website := dict "@type" "WebSite" "@id" (printf "%s#website" site.Home.Permalink) "name" site.Title "url" site.Home.Permalink "description" site.Params.description "inLanguage" "en" "publisher" (dict "@id" $personID) }}
+  <script type="application/ld+json">{{ dict "@context" "https://schema.org" "@graph" (slice $website $person) | jsonify | safeJS }}</script>
+{{ end }}
+
+{{ with site.GetPage "/about" }}
+  {{ if eq . $ }}
+  <script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "ProfilePage" "url" .Permalink "name" (printf "%s · %s" .Title site.Title) "mainEntity" $person | jsonify | safeJS }}</script>
+  {{ end }}
+{{ end }}
+
+{{/* The same path as the breadcrumb shown on the page, plus the page itself. */}}
+{{ $trail := slice }}
+{{ if ne .Kind "404" }}{{ $trail = .Ancestors.Reverse }}{{ end }}
+{{ if gt (len $trail) 1 }}
+  {{ $items := slice }}
+  {{ range $trail }}
+    {{ if not .IsHome }}
+      {{ $items = $items | append (dict "@type" "ListItem" "position" (add (len $items) 1) "name" .Title "item" .Permalink) }}
+    {{ end }}
+  {{ end }}
+  {{ $items = $items | append (dict "@type" "ListItem" "position" (add (len $items) 1) "name" .Title "item" .Permalink) }}
+  <script type="application/ld+json">{{ dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $items | jsonify | safeJS }}</script>
+{{ end }}
+
+{{/* Articles, labs and videos. The date is included only when the page has one. */}}
+{{ if and .IsPage (eq .Section "topics") }}
+  {{ $article := dict "@context" "https://schema.org" "@type" "TechArticle" "headline" .Title "description" .Description "url" .Permalink "inLanguage" "en" "author" (dict "@id" $personID "@type" "Person" "name" site.Title "url" site.Home.Permalink) }}
+  {{ if not .Date.IsZero }}
+    {{ $article = dict "@context" "https://schema.org" "@type" "TechArticle" "headline" .Title "description" .Description "url" .Permalink "inLanguage" "en" "datePublished" (.Date.Format "2006-01-02") "author" (dict "@id" $personID "@type" "Person" "name" site.Title "url" site.Home.Permalink) }}
+  {{ end }}
+  <script type="application/ld+json">{{ $article | jsonify | safeJS }}</script>
+{{ end }}

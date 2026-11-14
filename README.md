@@ -25,7 +25,9 @@ content/
 ```
 
 Every folder with an `_index.md` becomes a page that lists what is inside it. The
-home page shows one card per topic, with its sub-topics.
+home page shows one cell per topic, with its sub-topics as links. A sub-topic with
+nothing in it yet says so on its page, shows "In preparation" in the lists, and is
+kept out of search results until its first piece is published.
 
 ## Preview on your computer
 
@@ -57,9 +59,12 @@ Actions tab.
    - a page can be a lab with a video
 4. Write the text under the headings, set `draft = false`, then publish.
 
-Each page gets an "On this page" list from its `##` and `###` headings, a Copy
-button on every code block, and links to the other pages of the same sub-topic.
-The newest pieces also appear under "Latest" on the home page.
+Each page gets an "On this page" list from its `##` and `###` headings, a bar on
+every code block with its language and a Copy button, and links to the other pages
+of the same sub-topic. A lab shows its board, core, level and time in a table under
+the title. A video shows a play button; the YouTube player loads only when the
+visitor presses it. The newest pieces also appear under "Latest" on the home page,
+which stays hidden until there is one.
 
 `content/topics/security/trustzone/example-lab.md` is a placeholder that shows the
 layout. It is a draft, so it is never published. Delete it when you no longer need it.
@@ -86,10 +91,11 @@ weight = 50
 | Name, role, email, links, YouTube | `hugo.toml`                                 |
 | Credentials under the headline    | `params.highlights` in `hugo.toml`          |
 | Home page text                    | `content/_index.md`                         |
-| "How it works" steps              | `params.steps` in `content/_index.md`       |
+| The three steps on the Topics page | `params.steps` in `content/_index.md`      |
+| The decoded register on the home page | `layouts/_partials/register-demo.html`  |
 | A topic's or sub-topic's name and description | its `_index.md`                 |
 | The diagram on the security page  | `layouts/_partials/hero-visual.html`        |
-| Freelance page                    | `content/freelance.md`                      |
+| Freelance page                    | `content/freelance.md` (`contact_title` and `contact_text` set its contact block) |
 | About page and home page About    | `content/about.md` (`teaser` is the home text) |
 | Your photo                        | `photo` line in `content/about.md`          |
 | Resources (tool, cheat sheet, roadmap, glossary) | files in `content/resources/` |
@@ -108,7 +114,23 @@ The Resources tab lists every page in `content/resources/`, in the order of thei
   `assets/js/fault-decoder.js`. It runs in the visitor's browser only.
 - **Cheat sheet.** A normal page with tables. `print = true` in its front matter
   adds the "Print or save as PDF" button.
-- **Roadmap and glossary.** Plain text pages: edit them like any other.
+- **Roadmap and glossary.** Plain text pages: edit them like any other. In the
+  glossary, a `##` heading is a group and a `###` heading is a term; the filter box
+  and the group links are built from those headings.
+
+Optional lines under `[params]` in a page's front matter change how it is laid out:
+
+| Line                 | Effect                                                    |
+| -------------------- | --------------------------------------------------------- |
+| `toc = true`         | shows the "On this page" list (always shown inside Topics) |
+| `view = "glossary"`  | term and definition side by side, with a filter box       |
+| `view = "roadmap"`   | draws the stages along a line                             |
+| `view = "about"`     | shows the credentials from `hugo.toml` beside the text    |
+| `contact = true`     | shows the contact block (beside the text on wide screens) |
+
+The register drawn on the home page repeats the example that the decoder loads. If
+you change the example in `assets/js/fault-decoder.js`, change
+`layouts/_partials/register-demo.html` to match.
 
 ## Privacy and legal pages
 
@@ -123,5 +145,12 @@ between light and dark and remembers the choice in the visitor's browser.
 
 ## Fonts
 
-By default the site loads IBM Plex from Google Fonts. Set `googleFonts = false` in
-`hugo.toml` to use system fonts and make no third-party request.
+By default the site loads two IBM Plex families from Google Fonts: Plex Sans for
+text and Plex Mono for code. Set `googleFonts = false` in `hugo.toml` to use system
+fonts and make no third-party request.
+
+## Search engines
+
+`layouts/_partials/schema.html` describes the site to search engines (who it
+belongs to, where each page sits, what an article is), and `layouts/robots.txt`
+points them to the sitemap that Hugo writes.

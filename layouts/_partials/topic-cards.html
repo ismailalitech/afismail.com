@@ -1,12 +1,17 @@
-{{/* Cards for a list of folders (topics or sub-topics). Receives the folders. */}}
-<ul class="cards">
+{{/* One cell per topic, with its sub-topics as links. Receives the topic folders. */}}
+<ul class="cells">
   {{ range . }}
-  <li class="card">
+  <li class="cell{{ if not .Sections }} cell-link{{ end }}">
     <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
     {{ with .Description }}<p>{{ . }}</p>{{ end }}
-    {{ with .Sections }}<ul class="chips">{{ range . }}<li>{{ .Title }}</li>{{ end }}</ul>{{ end }}
-    {{ $count := len .RegularPagesRecursive }}
-    {{ if $count }}<p class="card-count">{{ $count }} {{ if eq $count 1 }}piece{{ else }}pieces{{ end }}</p>{{ end }}
+    {{ with .Sections }}
+    <ul class="sublist">
+      {{ range . }}
+      {{ $count := partial "counts.html" . }}
+      <li><a href="{{ .RelPermalink }}"><span class="sub-name">{{ .Title }}</span>{{ with $count }}<span class="sub-state">{{ . }}</span>{{ end }}</a></li>
+      {{ end }}
+    </ul>
+    {{ end }}
   </li>
   {{ end }}
 </ul>

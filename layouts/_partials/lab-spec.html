@@ -1,0 +1,9 @@
+{{/* Spec table at the top of a lab. Receives the page's .Params. */}}
+{{ if or .board .core .level .duration }}
+<dl class="spec">
+  {{ with .board }}<div><dt>Board</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .core }}<div><dt>Core</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .level }}<div><dt>Level</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .duration }}<div><dt>Time</dt><dd>{{ . }}</dd></div>{{ end }}
+</dl>
+{{ end }}

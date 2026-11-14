@@ -1,46 +1,52 @@
 {{ define "main" }}
-{{/* A page is a lab when it has a lab number, and shows a video when it has a youtube ID. */}}
+{{/* A page is a lab when it has a lab number, and shows a video when it has a youtube ID.
+     Optional front matter, under [params]:
+       toc = true          shows the "On this page" list (always shown inside Topics)
+       view = "glossary"   term and definition side by side, with a filter box
+       view = "roadmap"    stages drawn along a line
+       view = "about"      key facts (params.highlights in hugo.toml) beside the text
+     A page with contact = true shows the contact block beside its text on wide screens. */}}
 {{ $isLab := false }}
 {{ with .Params.lab }}{{ $isLab = true }}{{ end }}
 {{ $inTopics := eq .Section "topics" }}
-<article class="article">
+{{ $view := .Params.view }}
+{{ $hasToc := or $inTopics .Params.toc }}
+{{ $hasSide := and .Params.contact (not $hasToc) }}
+<article class="article{{ with $view }} view-{{ . }}{{ end }}">
   <header class="page-head">
     {{ partial "breadcrumbs.html" . }}
-    {{ if $isLab }}
-      <p class="eyebrow">Lab {{ printf "0x%02X" (int .Params.lab) }}</p>
-    {{ else }}
-      {{ with .Params.youtube }}<p class="eyebrow">Video</p>{{ end }}
-    {{ end }}
+    {{ partial "kind.html" . }}
     {{/* Optional portrait: set photo = "images/your-file.jpg" in the page's front matter. */}}
-    {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
+    {{ if not $hasSide }}{{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}{{ end }}
     <h1>{{ .Title }}</h1>
     {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
     {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
-    {{ if $isLab }}{{ partial "lab-meta.html" .Params }}{{ end }}
     {{ if $inTopics }}
       {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
+      {{ if or (not .Date.IsZero) .Params.repo }}
       <p class="byline">
         {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>{{ end }}
         {{ with .Params.repo }}<a href="{{ . }}">Source code</a>{{ end }}
       </p>
+      {{ end }}
     {{ end }}
     {{ if .Params.print }}
       <p class="actions"><button class="btn" type="button" data-print>Print or save as PDF</button></p>
     {{ end }}
   </header>
 
-  {{ with .Params.youtube }}
-  <div class="video">
-    <iframe src="https://www.youtube-nocookie.com/embed/{{ . }}" title="Video: {{ $.Title }}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-  </div>
-  {{ end }}
+  {{ if $isLab }}{{ partial "lab-spec.html" .Params }}{{ end }}
+
+  {{ with .Params.youtube }}{{ partial "video.html" (dict "id" . "title" $.Title) }}{{ end }}
 
   {{/* A page can load a tool with tool = "name" in its front matter. */}}
   {{ if .Params.tool }}
     {{ if eq .Params.tool "fault-decoder" }}{{ partial "tool-fault-decoder.html" . }}{{ end }}
   {{ end }}
 
-  {{ if $inTopics }}
+  {{ if eq $view "glossary" }}{{ partial "glossary-tools.html" . }}{{ end }}
+
+  {{ if $hasToc }}
   <div class="article-body">
     <aside class="toc" aria-label="On this page">
       <p class="toc-title">On this page</p>
@@ -48,16 +54,36 @@
     </aside>
     <div class="prose">{{ .Content }}</div>
   </div>
-  {{ if or .PrevInSection .NextInSection }}
+  {{ else if $hasSide }}
+  <div class="article-body has-side">
+    <div class="prose">{{ .Content }}</div>
+    <div class="side">
+      {{ if or .Params.photo (eq $view "about") }}
+      <aside class="glance" aria-label="At a glance">
+        {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
+        {{ if eq $view "about" }}
+          {{ with site.Params.highlights }}
+          <dl>
+            {{ range . }}<div><dt>{{ .label }}</dt><dd>{{ .value }}</dd></div>{{ end }}
+          </dl>
+          {{ end }}
+        {{ end }}
+      </aside>
+      {{ end }}
+      {{ partial "contact.html" . }}
+    </div>
+  </div>
+  {{ else }}
+  <div class="prose">{{ .Content }}</div>
+  {{ end }}
+
+  {{ if and $inTopics (or .PrevInSection .NextInSection) }}
   <nav class="pager" aria-label="More on this subject">
     {{ with .PrevInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
     {{ with .NextInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
   </nav>
   {{ end }}
-  {{ else }}
-  <div class="prose">{{ .Content }}</div>
-  {{ end }}
 
-  {{ if .Params.contact }}{{ partial "contact.html" . }}{{ end }}
+  {{ if and .Params.contact (not $hasSide) }}{{ partial "contact.html" . }}{{ end }}
 </article>
 {{ end }}

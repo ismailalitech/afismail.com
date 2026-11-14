@@ -1,0 +1,13 @@
+{{/* How many articles, labs and videos a folder holds, as text: "2 articles, 1 lab".
+     Writes nothing for an empty folder. Receives a folder page. */}}
+{{- $articles := 0 }}
+{{- $labs := 0 }}
+{{- $videos := 0 }}
+{{- range .RegularPagesRecursive }}
+  {{- if .Params.lab }}{{ $labs = add $labs 1 }}{{ else if .Params.youtube }}{{ $videos = add $videos 1 }}{{ else }}{{ $articles = add $articles 1 }}{{ end }}
+{{- end }}
+{{- $parts := slice }}
+{{- if $articles }}{{ $parts = $parts | append (printf "%d %s" $articles (cond (eq $articles 1) "article" "articles")) }}{{ end }}
+{{- if $labs }}{{ $parts = $parts | append (printf "%d %s" $labs (cond (eq $labs 1) "lab" "labs")) }}{{ end }}
+{{- if $videos }}{{ $parts = $parts | append (printf "%d %s" $videos (cond (eq $videos 1) "video" "videos")) }}{{ end }}
+{{- delimit $parts ", " -}}

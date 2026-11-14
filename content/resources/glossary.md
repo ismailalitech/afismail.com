@@ -5,6 +5,8 @@ weight = 40
 
 [params]
   topics = ["Reference"]
+  # Term and definition side by side, with a filter box above the list.
+  view = "glossary"
 +++
 
 ## Microcontrollers

@@ -1,6 +1,12 @@
 {{ define "main" }}
 <header class="page-head">
   <h1>Page not found</h1>
-  <p class="lead">This address doesn't exist. <a href="{{ site.Home.RelPermalink }}">Go to the home page</a>.</p>
+  <p class="lead">This address doesn't exist. The page may have moved, or the link may be mistyped.</p>
 </header>
+<nav aria-label="Where to go">
+  <ul class="link-list">
+    <li><a href="{{ site.Home.RelPermalink }}">Home page</a></li>
+    {{ range site.Menus.main }}<li><a href="{{ .URL }}">{{ .Name }}</a></li>{{ end }}
+  </ul>
+</nav>
 {{ end }}

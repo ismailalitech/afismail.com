@@ -5,6 +5,9 @@ weight = 30
 
 [params]
   topics = ["Guide"]
+  # Draws the stages along a line and shows the "On this page" list.
+  view = "roadmap"
+  toc = true
 +++
 
 Each stage lists what to learn and one or two public places to learn it. The

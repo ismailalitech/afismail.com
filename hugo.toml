@@ -24,6 +24,9 @@ disableKinds = ["taxonomy", "term"]
     label = "Engineering degree, embedded security and verification"
     value = "Grenoble INP – ESISAR"
   [[params.highlights]]
+    label = "Engineering degree, electronics and telecommunications"
+    value = "Lebanese University"
+  [[params.highlights]]
     label = "Works across"
     value = "Firmware, FPGA and SoC"
   [[params.highlights]]
