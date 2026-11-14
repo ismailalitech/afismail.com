@@ -269,28 +269,23 @@ h3 {
   padding-block: 1rem 0.5rem;
 }
 
-/* Headline with the diagram: stacked on a phone, side by side on a wide screen */
-.hero-wrap {
-  display: grid;
-  align-items: center;
-  gap: 2rem;
-}
-
-.hero-figure {
+/* A diagram with its caption, inside a topic page */
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 24rem;
   margin: 0;
 }
 
-@media (min-width: 58rem) {
-  .hero-wrap {
-    grid-template-columns: minmax(0, 1fr) 21rem;
-    gap: 3rem;
-  }
+.figure figcaption {
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .diagram {
   display: block;
   width: 100%;
-  max-width: 21rem;
   height: auto;
 }
 
@@ -480,30 +475,7 @@ h3 {
   overflow-wrap: anywhere;
 }
 
-/* "What I cover": the subjects of the site */
-.subjects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1.25rem 2rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.subject {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  padding-left: 0.9rem;
-  border-left: 2px solid var(--rule);
-}
-
-.subject p {
-  margin: 0;
-  color: var(--muted);
-}
-
-/* "How the labs work": numbered because the steps happen in this order */
+/* "How it works": numbered because the steps happen in this order */
 .steps {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
@@ -537,6 +509,64 @@ h3 {
 .teaser {
   max-width: var(--read);
   font-size: 1.1rem;
+}
+
+/* Breadcrumb: the path back up from a page inside folders */
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.crumbs li + li::before {
+  content: "/";
+  margin-right: 0.5rem;
+  color: var(--muted);
+}
+
+.crumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.crumbs a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* Number of pieces inside a topic card, and the kind of each piece in a list */
+.card-count,
+.entry-kind {
+  color: var(--copper);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card .chips {
+  position: relative;
+}
+
+/* A video at the top of a page, kept at 16:9 */
+.video {
+  max-width: 48rem;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000000;
+}
+
+.video iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 /* Topic labels on labs */
@@ -1193,6 +1223,7 @@ button.btn-primary {
   .actions,
   .contact,
   .copy,
+  .crumbs,
   .preview-note {
     display: none;
   }

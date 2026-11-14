@@ -5,12 +5,14 @@ draft = true
 description = ""
 
 [params]
+  # Leave both empty for an article. Set lab to make the page a lab,
+  # set youtube to show a video at the top. A page can have both.
   lab = 0          # lab number, shown as 0x01, 0x02, ...
-  board = ""       # e.g. the exact board name
-  core = ""        # e.g. Cortex-M33
+  youtube = ""     # the part after v= in the video address
+  board = ""       # labs: the exact board name
+  core = ""        # labs: e.g. Cortex-M33
   level = ""       # Beginner, Intermediate or Advanced
   duration = ""    # e.g. 2 h
-  topics = []      # e.g. ["TrustZone", "Secure boot"]
   repo = ""        # full URL of the source code
 +++
 

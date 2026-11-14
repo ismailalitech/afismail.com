@@ -17,6 +17,7 @@ This site is a personal website. It is built to collect as little as possible.
   such as your IP address to operate and secure its service.
 - **Fonts.** The typefaces are loaded from Google Fonts, so your browser contacts
   Google's servers when a page loads.
+- **Videos.** Pages with a video load a player from YouTube when you open them.
 - **Theme.** If you use the light or dark switch, your choice is saved in your own
   browser and is not sent anywhere.
 

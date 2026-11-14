@@ -7,8 +7,8 @@ weight = 30
   topics = ["Guide"]
 +++
 
-Each stage lists what to learn and one or two public places to learn it. Labs from
-this site will be linked under each stage as they are published.
+Each stage lists what to learn and one or two public places to learn it. The
+[topics](/topics/) on this site follow the same subjects.
 
 ## 1. Microcontroller basics
 

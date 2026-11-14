@@ -2,6 +2,7 @@
 title = "Example lab: replace this page with your first lab"
 date = '2026-11-13T09:00:00+01:00'
 # draft = true keeps this page off the live site. See it locally with: hugo server -D
+# A page becomes a lab when it has a lab number, and a video page when it has a youtube ID.
 draft = true
 description = "A placeholder that shows how a lab page is laid out. None of the content is real."
 
@@ -13,6 +14,7 @@ description = "A placeholder that shows how a lab page is laid out. None of the 
   duration = "1 h"
   topics = ["Topic one", "Topic two"]
   repo = "https://github.com/ismailalitech"
+  # youtube = "VIDEO_ID"   # the part after v= in the video address
 +++
 
 ## Goal

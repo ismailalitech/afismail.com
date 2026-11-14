@@ -1,0 +1,9 @@
+{{/* The path back up, for pages inside folders: Topics / FPGA / Architecture. */}}
+{{ $trail := .Ancestors.Reverse }}
+{{ if gt (len $trail) 1 }}
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {{ range $trail }}{{ if not .IsHome }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}{{ end }}
+  </ol>
+</nav>
+{{ end }}

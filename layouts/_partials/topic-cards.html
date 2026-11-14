@@ -1,0 +1,12 @@
+{{/* Cards for a list of folders (topics or sub-topics). Receives the folders. */}}
+<ul class="cards">
+  {{ range . }}
+  <li class="card">
+    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    {{ with .Sections }}<ul class="chips">{{ range . }}<li>{{ .Title }}</li>{{ end }}</ul>{{ end }}
+    {{ $count := len .RegularPagesRecursive }}
+    {{ if $count }}<p class="card-count">{{ $count }} {{ if eq $count 1 }}piece{{ else }}pieces{{ end }}</p>{{ end }}
+  </li>
+  {{ end }}
+</ul>

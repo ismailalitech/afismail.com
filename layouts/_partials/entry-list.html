@@ -1,7 +1,7 @@
-{{/* List of pages in a section. Receives (dict "pages" pages "section" sectionPage). */}}
+{{/* List of pages. Receives (dict "pages" pages "section" folderPage); "section" is optional. */}}
 {{ $pages := .pages }}
 {{ $upcoming := slice }}
-{{ $empty := "Nothing published yet." }}
+{{ $empty := "The first piece here is in preparation." }}
 {{ with .section }}
   {{ with .Params.upcoming }}
     {{ $upcoming = . }}
@@ -17,6 +17,9 @@
   <li class="entry">
     {{ with .Params.lab }}<span class="entry-id">{{ printf "0x%02X" (int .) }}</span>{{ end }}
     <div class="entry-body">
+      {{ if eq .Section "topics" }}
+        <p class="entry-kind">{{ if .Params.lab }}Lab{{ else if .Params.youtube }}Video{{ else }}Article{{ end }}</p>
+      {{ end }}
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{ with .Description }}<p>{{ . }}</p>{{ end }}
       {{ partial "lab-meta.html" .Params }}

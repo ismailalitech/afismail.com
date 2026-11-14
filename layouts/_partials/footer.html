@@ -16,6 +16,7 @@
         {{ with site.Params.email }}<li><a href="mailto:{{ . }}">Email</a></li>{{ end }}
         {{ with site.Params.github }}<li><a href="{{ . }}" rel="me">GitHub</a></li>{{ end }}
         {{ with site.Params.linkedin }}<li><a href="{{ . }}" rel="me">LinkedIn</a></li>{{ end }}
+        {{ with site.Params.youtube }}<li><a href="{{ . }}" rel="me">YouTube</a></li>{{ end }}
         {{ with site.Home.OutputFormats.Get "rss" }}<li><a href="{{ .RelPermalink }}">RSS</a></li>{{ end }}
       </ul>
     </div>

@@ -1,14 +1,34 @@
 {{ define "main" }}
 <header class="page-head">
+  {{ partial "breadcrumbs.html" . }}
   <h1>{{ .Title }}</h1>
   {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
   {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
 </header>
 
+{{/* A folder can show the secure and non-secure diagram with visual = true. */}}
+{{ if .Params.visual }}
+<figure class="figure">
+  {{ partial "hero-visual.html" . }}
+  <figcaption>On a Cortex-M with TrustZone, non-secure code reaches secure code only through a gateway.</figcaption>
+</figure>
+{{ end }}
+
+{{/* Sub-folders, as cards. */}}
+{{ with .Sections }}
+<section class="block" aria-labelledby="folders-heading">
+  <h2 id="folders-heading" class="visually-hidden">In {{ $.Title }}</h2>
+  {{ partial "topic-cards.html" . }}
+</section>
+{{ end }}
+
+{{/* Pages directly in this folder. Skipped for a folder that only holds sub-folders. */}}
+{{ if or .RegularPages (not .Sections) }}
 <section class="block" aria-labelledby="list-heading">
   <h2 id="list-heading" class="visually-hidden">All {{ .Title | lower }}</h2>
   {{ partial "entry-list.html" (dict "pages" .RegularPages "section" .) }}
 </section>
+{{ end }}
 
 {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
 {{ end }}

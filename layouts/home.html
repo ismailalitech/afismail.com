@@ -1,18 +1,14 @@
 {{ define "main" }}
-<div class="hero-wrap">
-  <section class="hero">
-    {{ with site.Params.role }}<p class="eyebrow">{{ . }}</p>{{ end }}
-    <h1>{{ .Title }}</h1>
-    <div class="prose">{{ .Content }}</div>
-    <p class="actions">
-      {{ with site.GetPage "/labs" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Browse the labs</a>{{ end }}
-      {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}
-    </p>
-  </section>
-  <figure class="hero-figure">
-    {{ partial "hero-visual.html" . }}
-  </figure>
-</div>
+<section class="hero">
+  {{ with site.Params.role }}<p class="eyebrow">{{ . }}</p>{{ end }}
+  <h1>{{ .Title }}</h1>
+  <div class="prose">{{ .Content }}</div>
+  <p class="actions">
+    {{ with site.GetPage "/topics" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Explore the topics</a>{{ end }}
+    {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}
+    {{ with site.Params.youtube }}<a class="btn" href="{{ . }}">YouTube channel</a>{{ end }}
+  </p>
+</section>
 
 {{/* Credentials under the hero. Edit them in hugo.toml under params.highlights. */}}
 {{ with site.Params.highlights }}
@@ -26,42 +22,32 @@
 </dl>
 {{ end }}
 
-{{/* The subjects come from content/_index.md (params.subjects). */}}
-{{ with .Params.subjects }}
-<section class="block" aria-labelledby="subjects-heading">
+{{/* One card per folder in content/topics, with its sub-folders listed. */}}
+{{ with site.GetPage "/topics" }}
+  {{ $topics := . }}
+  {{ with .Sections }}
+  <section class="block" aria-labelledby="topics-heading">
+    <div class="block-head">
+      <h2 id="topics-heading">Topics</h2>
+      <a href="{{ $topics.RelPermalink }}">All topics</a>
+    </div>
+    {{ partial "topic-cards.html" . }}
+  </section>
+  {{ end }}
+{{ end }}
+
+{{/* The newest articles, labs and videos from every topic. */}}
+{{ $latest := where site.RegularPages "Section" "topics" }}
+{{ if $latest }}
+<section class="block" aria-labelledby="latest-heading">
   <div class="block-head">
-    <h2 id="subjects-heading">What I cover</h2>
+    <h2 id="latest-heading">Latest</h2>
   </div>
-  <ul class="subjects">
-    {{ range . }}
-    <li class="subject">
-      <h3>{{ .title }}</h3>
-      <p>{{ .text }}</p>
-    </li>
-    {{ end }}
-  </ul>
+  {{ partial "entry-list.html" (dict "pages" (first 5 $latest)) }}
 </section>
 {{ end }}
 
-<section class="block" aria-labelledby="areas-heading">
-  <div class="block-head">
-    <h2 id="areas-heading">What's on this site</h2>
-  </div>
-  <ul class="cards">
-    {{/* One card per area. Title, description and status come from each page's front matter. */}}
-    {{ range slice "/labs" "/resources" "/courses" "/consulting" }}
-      {{ with site.GetPage . }}
-      <li class="card">
-        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-        {{ with .Description }}<p>{{ . }}</p>{{ end }}
-        {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
-      </li>
-      {{ end }}
-    {{ end }}
-  </ul>
-</section>
-
-{{/* The newest resources. */}}
+{{/* The free tools and references. */}}
 {{ with site.GetPage "/resources" }}
   {{ $resources := . }}
   {{ with .RegularPages }}
@@ -79,7 +65,7 @@
 {{ with .Params.steps }}
 <section class="block" aria-labelledby="steps-heading">
   <div class="block-head">
-    <h2 id="steps-heading">How the labs work</h2>
+    <h2 id="steps-heading">How it works</h2>
   </div>
   <ol class="steps">
     {{ range . }}
@@ -89,17 +75,6 @@
     </li>
     {{ end }}
   </ol>
-</section>
-{{ end }}
-
-{{ $labs := where site.RegularPages "Section" "labs" }}
-{{ if $labs }}
-<section class="block" aria-labelledby="labs-heading">
-  <div class="block-head">
-    <h2 id="labs-heading">Latest labs</h2>
-    {{ with site.GetPage "/labs" }}<a href="{{ .RelPermalink }}">All labs</a>{{ end }}
-  </div>
-  {{ partial "entry-list.html" (dict "pages" (first 3 $labs) "section" (site.GetPage "/labs")) }}
 </section>
 {{ end }}
 
@@ -115,6 +90,14 @@
     <p class="teaser">{{ . }}</p>
   </section>
   {{ end }}
+{{ end }}
+
+{{/* The text comes from content/freelance.md (description). */}}
+{{ with site.GetPage "/freelance" }}
+<section class="contact" aria-labelledby="freelance-heading">
+  <h2 id="freelance-heading">Have a project?</h2>
+  <p>{{ .Description }} <a href="{{ .RelPermalink }}">See how it works</a>.</p>
+</section>
 {{ end }}
 
 {{ partial "subscribe.html" . }}

@@ -1,38 +1,19 @@
 +++
 title = "Hands-on embedded systems and security"
 
-# The subjects shown under "What I cover" on the home page. Add, remove or reorder freely.
-[[params.subjects]]
-  title = "Microcontrollers"
-  text = "Arm Cortex-M from reset: startup code, peripherals, interrupts and debugging."
-[[params.subjects]]
-  title = "Real-time operating systems"
-  text = "FreeRTOS and ThreadX: tasks, scheduling, synchronisation and memory protection."
-[[params.subjects]]
-  title = "FPGA"
-  text = "FPGA architecture, HDL design and timing."
-[[params.subjects]]
-  title = "Secure C and C++"
-  text = "Writing embedded code that holds up against misuse and attack."
-[[params.subjects]]
-  title = "Verification"
-  text = "Verification plans and testbenches, including security verification."
-[[params.subjects]]
-  title = "Embedded security"
-  text = "TrustZone, secure boot, fault injection and side channels."
-
-# The steps shown under "How the labs work" on the home page.
+# The steps shown under "How it works" on the home page.
 [[params.steps]]
-  title = "Pick a lab"
-  text = "Each lab lists the board, the tools and the time it takes before you start."
+  title = "Read the idea"
+  text = "Each subject starts with a short explanation of the concept and why it matters."
 [[params.steps]]
-  title = "Follow the steps"
-  text = "Commands and code are written out in full, with the reason for each step."
+  title = "Watch the explanation"
+  text = "Where a video helps, it sits at the top of the page."
 [[params.steps]]
-  title = "Check the result"
-  text = "Every lab ends with the output you should see, so you know it worked."
+  title = "Run the lab"
+  text = "Labs list the board and tools, give every step, and end with the result to expect."
 +++
 
-I'm Ali Ismail, an embedded systems and security engineer. Here you'll find labs to
-reproduce on your own bench, from microcontrollers and real-time operating systems
-to FPGA design, secure C and C++, verification and hardware security.
+I'm Ali Ismail, an embedded systems and security engineer. This site collects what
+I work on, organised by topic: embedded security, software security, FPGA, and
+microcontrollers with real-time operating systems. Each topic holds ideas, labs
+and videos.

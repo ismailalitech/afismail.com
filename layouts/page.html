@@ -1,16 +1,23 @@
 {{ define "main" }}
+{{/* A page is a lab when it has a lab number, and shows a video when it has a youtube ID. */}}
+{{ $isLab := false }}
+{{ with .Params.lab }}{{ $isLab = true }}{{ end }}
+{{ $inTopics := eq .Section "topics" }}
 <article class="article">
   <header class="page-head">
-    {{ if eq .Section "labs" }}
-      <p class="eyebrow">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</p>
+    {{ partial "breadcrumbs.html" . }}
+    {{ if $isLab }}
+      <p class="eyebrow">Lab {{ printf "0x%02X" (int .Params.lab) }}</p>
+    {{ else }}
+      {{ with .Params.youtube }}<p class="eyebrow">Video</p>{{ end }}
     {{ end }}
     {{/* Optional portrait: set photo = "images/your-file.jpg" in the page's front matter. */}}
     {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
     <h1>{{ .Title }}</h1>
     {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
     {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
-    {{ if eq .Section "labs" }}
-      {{ partial "lab-meta.html" .Params }}
+    {{ if $isLab }}{{ partial "lab-meta.html" .Params }}{{ end }}
+    {{ if $inTopics }}
       {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
       <p class="byline">
         {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>{{ end }}
@@ -22,12 +29,18 @@
     {{ end }}
   </header>
 
+  {{ with .Params.youtube }}
+  <div class="video">
+    <iframe src="https://www.youtube-nocookie.com/embed/{{ . }}" title="Video: {{ $.Title }}" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </div>
+  {{ end }}
+
   {{/* A page can load a tool with tool = "name" in its front matter. */}}
   {{ if .Params.tool }}
     {{ if eq .Params.tool "fault-decoder" }}{{ partial "tool-fault-decoder.html" . }}{{ end }}
   {{ end }}
 
-  {{ if eq .Section "labs" }}
+  {{ if $inTopics }}
   <div class="article-body">
     <aside class="toc" aria-label="On this page">
       <p class="toc-title">On this page</p>
@@ -36,9 +49,9 @@
     <div class="prose">{{ .Content }}</div>
   </div>
   {{ if or .PrevInSection .NextInSection }}
-  <nav class="pager" aria-label="More labs">
-    {{ with .PrevInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</span>{{ .Title }}</a>{{ end }}
-    {{ with .NextInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</span>{{ .Title }}</a>{{ end }}
+  <nav class="pager" aria-label="More on this subject">
+    {{ with .PrevInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
+    {{ with .NextInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
   </nav>
   {{ end }}
   {{ else }}

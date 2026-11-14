@@ -5,7 +5,7 @@ title = "About"
   # Shows the contact block under the text.
   contact = true
   # Short text used in the About section of the home page.
-  teaser = "I'm an embedded systems and security engineer working across microcontrollers, real-time operating systems, FPGA and SoC. I studied embedded security and verification at Grenoble INP – ESISAR, and I write labs that other engineers can reproduce."
+  teaser = "I'm an embedded systems and security engineer working across microcontrollers, real-time operating systems, FPGA and SoC. I studied embedded security and verification at Grenoble INP – ESISAR. This site is where I share what I learn, with labs that other engineers can reproduce."
   # To add your photo: put the file in static/images/ and remove the "# " below.
   # photo = "images/ali-ismail.jpg"
 +++
