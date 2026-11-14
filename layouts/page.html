@@ -17,7 +17,15 @@
         {{ with .Params.repo }}<a href="{{ . }}">Source code</a>{{ end }}
       </p>
     {{ end }}
+    {{ if .Params.print }}
+      <p class="actions"><button class="btn" type="button" data-print>Print or save as PDF</button></p>
+    {{ end }}
   </header>
+
+  {{/* A page can load a tool with tool = "name" in its front matter. */}}
+  {{ if .Params.tool }}
+    {{ if eq .Params.tool "fault-decoder" }}{{ partial "tool-fault-decoder.html" . }}{{ end }}
+  {{ end }}
 
   {{ if eq .Section "labs" }}
   <div class="article-body">

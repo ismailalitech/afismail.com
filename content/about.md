@@ -5,20 +5,23 @@ title = "About"
   # Shows the contact block under the text.
   contact = true
   # Short text used in the About section of the home page.
-  teaser = "I'm an embedded security engineer working across firmware, FPGA and SoC. I studied embedded security and verification at Grenoble INP – ESISAR, and I write labs that other engineers can reproduce."
+  teaser = "I'm an embedded systems and security engineer working across microcontrollers, real-time operating systems, FPGA and SoC. I studied embedded security and verification at Grenoble INP – ESISAR, and I write labs that other engineers can reproduce."
   # To add your photo: put the file in static/images/ and remove the "# " below.
   # photo = "images/ali-ismail.jpg"
 +++
 
-I work on embedded systems security across three layers: firmware, digital
-hardware and system-on-chip.
+I work on embedded systems and their security, from microcontroller firmware to
+digital hardware and system-on-chip.
 
 ## What I work on
 
-- **Firmware and RTOS.** Embedded C and C++ on Arm Cortex-M, real-time operating
-  systems, and the security features around them.
-- **FPGA and digital design.** HDL design and verification.
-- **SoC security.** Evaluating how a system-on-chip holds up against attack.
+- **Microcontrollers and RTOS.** Embedded C and C++ on Arm Cortex-M, with
+  real-time operating systems such as FreeRTOS and ThreadX.
+- **FPGA.** FPGA architecture and HDL design.
+- **Secure C and C++.** Writing embedded code that holds up against misuse and attack.
+- **Verification.** Verification plans and testbenches, including security verification.
+- **Embedded security.** Platform security features, and evaluating how a
+  system-on-chip holds up against attack.
 
 ## Background
 

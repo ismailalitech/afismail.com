@@ -1,6 +1,6 @@
 +++
 title = "Courses"
-description = "Structured courses on embedded security, from firmware to hardware."
+description = "Structured courses on embedded systems and security, from microcontrollers to FPGA."
 
 [params]
   # Shown as a small label next to the title. Delete the line when courses open.

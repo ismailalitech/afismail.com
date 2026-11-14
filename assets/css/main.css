@@ -10,6 +10,7 @@
   --accent: #2447b3;
   --on-accent: #ffffff;
   --copper: #96561b;
+  --alert: #b3261e;
   --font-display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
   --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -27,6 +28,7 @@
     --accent: #93adff;
     --on-accent: #0f1320;
     --copper: #e0a468;
+    --alert: #ff8a80;
     color-scheme: dark;
   }
 }
@@ -40,6 +42,7 @@
   --accent: #93adff;
   --on-accent: #0f1320;
   --copper: #e0a468;
+  --alert: #ff8a80;
   color-scheme: dark;
 }
 
@@ -161,7 +164,7 @@ a:hover {
 
 .tabs ul {
   display: flex;
-  gap: 1.5rem;
+  gap: 1.1rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -172,7 +175,7 @@ a:hover {
   padding-block: 0.7rem;
   border-bottom: 2px solid transparent;
   color: var(--muted);
-  font-size: 0.975rem;
+  font-size: 0.9rem;
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -207,8 +210,13 @@ a:hover {
     order: 3;
   }
 
+  .tabs ul {
+    gap: 1.5rem;
+  }
+
   .tabs a {
     padding-block: 1.1rem;
+    font-size: 0.975rem;
   }
 }
 
@@ -259,6 +267,83 @@ h3 {
 
 .hero {
   padding-block: 1rem 0.5rem;
+}
+
+/* Headline with the diagram: stacked on a phone, side by side on a wide screen */
+.hero-wrap {
+  display: grid;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-figure {
+  margin: 0;
+}
+
+@media (min-width: 58rem) {
+  .hero-wrap {
+    grid-template-columns: minmax(0, 1fr) 21rem;
+    gap: 3rem;
+  }
+}
+
+.diagram {
+  display: block;
+  width: 100%;
+  max-width: 21rem;
+  height: auto;
+}
+
+.dg-panel {
+  fill: var(--surface);
+  stroke: var(--rule);
+}
+
+.dg-secure {
+  stroke: var(--accent);
+}
+
+.dg-box {
+  fill: var(--bg);
+  stroke: var(--rule);
+}
+
+.dg-hw {
+  fill: var(--surface);
+  stroke: var(--ink);
+}
+
+.dg-text {
+  fill: var(--ink);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.dg-label,
+.dg-gate {
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.dg-label {
+  fill: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.dg-label-secure {
+  fill: var(--accent);
+}
+
+.dg-gate,
+.dg-head {
+  fill: var(--copper);
+}
+
+.dg-arrow {
+  fill: none;
+  stroke: var(--copper);
+  stroke-width: 1.5;
 }
 
 .article {
@@ -393,6 +478,29 @@ h3 {
 .contact p {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+/* "What I cover": the subjects of the site */
+.subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1.25rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subject {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--rule);
+}
+
+.subject p {
+  margin: 0;
+  color: var(--muted);
 }
 
 /* "How the labs work": numbered because the steps happen in this order */
@@ -921,4 +1029,211 @@ h3 {
 
 .legal a {
   color: var(--muted);
+}
+
+/* In-browser tools (the fault decoder) */
+.tool {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 48rem;
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.field input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--muted);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+.field input[aria-invalid="true"] {
+  border-color: var(--alert);
+}
+
+.field-error {
+  min-height: 1.2em;
+  margin: 0;
+  color: var(--alert);
+  font-size: 0.85rem;
+}
+
+.tool .actions {
+  padding-top: 0;
+}
+
+button.btn {
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+}
+
+button.btn-primary {
+  background: var(--accent);
+}
+
+.tool-output {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.reg-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.reg-result h3 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.bit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bit {
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--copper);
+}
+
+.bit p,
+.bit-none,
+.bit-warning,
+.tool-note {
+  margin: 0;
+}
+
+.bit-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+}
+
+.bit-name {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.bit-meta,
+.bit-none,
+.tool-note {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.bit-warning {
+  color: var(--alert);
+  font-size: 0.9rem;
+}
+
+/* Printing: used by the cheat sheet. Plain black on white, no navigation. */
+@media print {
+  :root,
+  :root[data-theme="dark"],
+  :root:not([data-theme="light"]) {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --ink: #000000;
+    --muted: #333333;
+    --rule: #bbbbbb;
+    --accent: #1a3a99;
+    --copper: #7a4410;
+    color-scheme: light;
+  }
+
+  .site-header,
+  .site-footer,
+  .skip,
+  .actions,
+  .contact,
+  .copy,
+  .preview-note {
+    display: none;
+  }
+
+  body {
+    font-size: 9pt;
+    line-height: 1.4;
+  }
+
+  .prose th,
+  .prose td {
+    padding: 0.2rem 0.6rem;
+  }
+
+  main {
+    gap: 1.5rem;
+    padding-block: 0;
+  }
+
+  .wrap {
+    width: auto;
+  }
+
+  .prose,
+  .page-head {
+    max-width: none;
+  }
+
+  .prose table {
+    display: table;
+    width: 100%;
+    break-inside: avoid;
+  }
+
+  .prose > h2 {
+    margin-top: 1.2em;
+    break-after: avoid;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }

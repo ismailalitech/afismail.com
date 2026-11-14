@@ -1,6 +1,6 @@
 +++
 title = "Consulting"
-description = "Security reviews and technical guidance for teams building embedded devices."
+description = "Design reviews, security reviews and technical guidance for teams building embedded devices."
 
 [params]
   # Shown as a small label next to the title. Delete the line when consulting opens.
@@ -9,8 +9,10 @@ description = "Security reviews and technical guidance for teams building embedd
 
 ## Areas
 
-- Firmware security on Arm Cortex-M and RTOS
-- Digital design on FPGA
+- Microcontroller firmware and real-time operating systems (FreeRTOS, ThreadX)
+- FPGA architecture and design
+- Secure C and C++ for embedded targets
+- Verification, including security verification plans
 - Security evaluation at SoC level
 
 ## Availability

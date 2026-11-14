@@ -1,4 +1,5 @@
-/* Small behaviours for the site: the light/dark switch and Copy buttons on code blocks.
+/* Small behaviours for the site: the light/dark switch, the print button and Copy
+   buttons on code blocks.
    The site works without this file. */
 (function () {
   var root = document.documentElement;
@@ -21,6 +22,11 @@
       try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable: the choice lasts for this page only */ }
       sync();
     });
+  }
+
+  var printButton = document.querySelector('[data-print]');
+  if (printButton) {
+    printButton.addEventListener('click', function () { window.print(); });
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {

@@ -1,13 +1,18 @@
 {{ define "main" }}
-<section class="hero">
-  {{ with site.Params.role }}<p class="eyebrow">{{ . }}</p>{{ end }}
-  <h1>{{ .Title }}</h1>
-  <div class="prose">{{ .Content }}</div>
-  <p class="actions">
-    {{ with site.GetPage "/labs" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Browse the labs</a>{{ end }}
-    {{ with site.GetPage "/about" }}<a class="btn" href="{{ .RelPermalink }}">About me</a>{{ end }}
-  </p>
-</section>
+<div class="hero-wrap">
+  <section class="hero">
+    {{ with site.Params.role }}<p class="eyebrow">{{ . }}</p>{{ end }}
+    <h1>{{ .Title }}</h1>
+    <div class="prose">{{ .Content }}</div>
+    <p class="actions">
+      {{ with site.GetPage "/labs" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Browse the labs</a>{{ end }}
+      {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}
+    </p>
+  </section>
+  <figure class="hero-figure">
+    {{ partial "hero-visual.html" . }}
+  </figure>
+</div>
 
 {{/* Credentials under the hero. Edit them in hugo.toml under params.highlights. */}}
 {{ with site.Params.highlights }}
@@ -21,13 +26,30 @@
 </dl>
 {{ end }}
 
+{{/* The subjects come from content/_index.md (params.subjects). */}}
+{{ with .Params.subjects }}
+<section class="block" aria-labelledby="subjects-heading">
+  <div class="block-head">
+    <h2 id="subjects-heading">What I cover</h2>
+  </div>
+  <ul class="subjects">
+    {{ range . }}
+    <li class="subject">
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
+
 <section class="block" aria-labelledby="areas-heading">
   <div class="block-head">
     <h2 id="areas-heading">What's on this site</h2>
   </div>
   <ul class="cards">
     {{/* One card per area. Title, description and status come from each page's front matter. */}}
-    {{ range slice "/labs" "/courses" "/consulting" }}
+    {{ range slice "/labs" "/resources" "/courses" "/consulting" }}
       {{ with site.GetPage . }}
       <li class="card">
         <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
@@ -38,6 +60,20 @@
     {{ end }}
   </ul>
 </section>
+
+{{/* The newest resources. */}}
+{{ with site.GetPage "/resources" }}
+  {{ $resources := . }}
+  {{ with .RegularPages }}
+  <section class="block" aria-labelledby="resources-heading">
+    <div class="block-head">
+      <h2 id="resources-heading">Start with these</h2>
+      <a href="{{ $resources.RelPermalink }}">All resources</a>
+    </div>
+    {{ partial "entry-list.html" (dict "pages" (first 3 .) "section" $resources) }}
+  </section>
+  {{ end }}
+{{ end }}
 
 {{/* The steps come from content/_index.md (params.steps). */}}
 {{ with .Params.steps }}
@@ -81,5 +117,6 @@
   {{ end }}
 {{ end }}
 
+{{ partial "subscribe.html" . }}
 {{ partial "contact.html" . }}
 {{ end }}

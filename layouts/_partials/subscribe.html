@@ -1,0 +1,7 @@
+{{/* Email sign-up. Appears once subscribe_url is set in hugo.toml. */}}
+{{ with site.Params.subscribe_url }}
+<section class="contact" aria-labelledby="subscribe-heading">
+  <h2 id="subscribe-heading">New labs by email</h2>
+  <p>Get a short message when a new lab is published. <a href="{{ . }}">Subscribe</a>.</p>
+</section>
+{{ end }}

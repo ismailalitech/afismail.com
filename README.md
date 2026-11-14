@@ -37,6 +37,9 @@ Actions tab.
 | About page and home page About    | `content/about.md` (`teaser` is the home text) |
 | Your photo                        | `photo` line in `content/about.md`          |
 | Labs page                         | `content/labs/_index.md`                    |
+| Resources (tool, cheat sheet, roadmap, glossary) | files in `content/resources/` |
+| Diagram on the home page          | `layouts/_partials/hero-visual.html`        |
+| Email sign-up block               | `subscribe_url` in `hugo.toml`              |
 | Courses page                      | `content/courses/_index.md`                 |
 | Consulting page                   | `content/consulting.md`                     |
 | "In preparation" labels           | `status` line in those two files            |
@@ -60,6 +63,19 @@ draft, so it is never published. Delete it when you no longer need it.
 
 To announce a lab before it is written, use the commented example in
 `content/labs/_index.md`.
+
+## Resources
+
+The Resources tab lists every page in `content/resources/`, in the order of their
+`weight`. To add one, create a new `.md` file there with a title, a description
+and a weight.
+
+- **Fault decoder.** The page is `content/resources/fault-decoder.md`; the tool
+  itself is `layouts/_partials/tool-fault-decoder.html` and
+  `assets/js/fault-decoder.js`. It runs in the visitor's browser only.
+- **Cheat sheet.** A normal page with tables. `print = true` in its front matter
+  adds the "Print or save as PDF" button.
+- **Roadmap and glossary.** Plain text pages: edit them like any other.
 
 ## Add a course
 
