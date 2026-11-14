@@ -1,0 +1,25 @@
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-col">
+      <p class="footer-name">{{ site.Title }}</p>
+      {{ with site.Params.role }}<p>{{ . }}</p>{{ end }}
+    </div>
+    <nav class="footer-col" aria-label="Footer">
+      <p class="footer-title">Site</p>
+      <ul>
+        {{ range site.Menus.main }}<li><a href="{{ .URL }}">{{ .Name }}</a></li>{{ end }}
+      </ul>
+    </nav>
+    <div class="footer-col">
+      <p class="footer-title">Elsewhere</p>
+      <ul>
+        {{ with site.Params.github }}<li><a href="{{ . }}" rel="me">GitHub</a></li>{{ end }}
+        {{ with site.Params.linkedin }}<li><a href="{{ . }}" rel="me">LinkedIn</a></li>{{ end }}
+        {{ with site.Home.OutputFormats.Get "rss" }}<li><a href="{{ .RelPermalink }}">RSS</a></li>{{ end }}
+      </ul>
+    </div>
+  </div>
+  <div class="wrap">
+    <p class="legal">© {{ now.Year }} {{ site.Title }}. Opinions are my own.</p>
+  </div>
+</footer>

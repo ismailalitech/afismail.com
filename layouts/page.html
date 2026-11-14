@@ -1,0 +1,20 @@
+{{ define "main" }}
+<article class="article">
+  <header class="page-head">
+    {{ if eq .Section "labs" }}
+      <p class="eyebrow">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</p>
+    {{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
+    {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+    {{ if eq .Section "labs" }}
+      {{ partial "lab-meta.html" .Params }}
+      <p class="byline">
+        {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>{{ end }}
+        {{ with .Params.repo }}<a href="{{ . }}">Source code</a>{{ end }}
+      </p>
+    {{ end }}
+  </header>
+  <div class="prose">{{ .Content }}</div>
+</article>
+{{ end }}

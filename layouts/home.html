@@ -1,0 +1,40 @@
+{{ define "main" }}
+<section class="hero">
+  {{ with site.Params.role }}<p class="eyebrow">{{ . }}</p>{{ end }}
+  <h1>{{ .Title }}</h1>
+  <div class="prose">{{ .Content }}</div>
+  <p class="actions">
+    {{ with site.GetPage "/labs" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Browse the labs</a>{{ end }}
+    {{ with site.GetPage "/about" }}<a class="btn" href="{{ .RelPermalink }}">About me</a>{{ end }}
+  </p>
+</section>
+
+<section class="block" aria-labelledby="areas-heading">
+  <div class="block-head">
+    <h2 id="areas-heading">What's on this site</h2>
+  </div>
+  <ul class="cards">
+    {{/* One card per area. Title, description and status come from each page's front matter. */}}
+    {{ range slice "/labs" "/courses" "/consulting" }}
+      {{ with site.GetPage . }}
+      <li class="card">
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
+      </li>
+      {{ end }}
+    {{ end }}
+  </ul>
+</section>
+
+{{ $labs := where site.RegularPages "Section" "labs" }}
+{{ if $labs }}
+<section class="block" aria-labelledby="labs-heading">
+  <div class="block-head">
+    <h2 id="labs-heading">Latest labs</h2>
+    {{ with site.GetPage "/labs" }}<a href="{{ .RelPermalink }}">All labs</a>{{ end }}
+  </div>
+  {{ partial "entry-list.html" (dict "pages" (first 3 $labs) "section" (site.GetPage "/labs")) }}
+</section>
+{{ end }}
+{{ end }}

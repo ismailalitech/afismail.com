@@ -1,0 +1,47 @@
+{{/* List of pages in a section. Receives (dict "pages" pages "section" sectionPage). */}}
+{{ $pages := .pages }}
+{{ $upcoming := slice }}
+{{ $empty := "Nothing published yet." }}
+{{ with .section }}
+  {{ with .Params.upcoming }}
+    {{ $upcoming = . }}
+  {{ end }}
+  {{ with .Params.empty_text }}
+    {{ $empty = . }}
+  {{ end }}
+{{ end }}
+
+{{ if $pages }}
+<ul class="entry-list">
+  {{ range $pages }}
+  <li class="entry">
+    {{ with .Params.lab }}<span class="entry-id">{{ printf "0x%02X" (int .) }}</span>{{ end }}
+    <div class="entry-body">
+      <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+      {{ partial "lab-meta.html" .Params }}
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
+
+{{ if $upcoming }}
+<p class="sub">In preparation</p>
+<ul class="entry-list">
+  {{ range $upcoming }}
+  <li class="entry">
+    {{ with .lab }}<span class="entry-id">{{ printf "0x%02X" (int .) }}</span>{{ end }}
+    <div class="entry-body">
+      <h3>{{ .title }} <span class="pill">Planned</span></h3>
+      {{ with .description }}<p>{{ . }}</p>{{ end }}
+      {{ partial "lab-meta.html" . }}
+    </div>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}
+
+{{ if and (not $pages) (not $upcoming) }}
+<p class="empty">{{ $empty }}</p>
+{{ end }}

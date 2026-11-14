@@ -1,0 +1,37 @@
+# Site configuration.
+baseURL = "https://afismail.com/"
+title = "Ali Ismail"
+enableRobotsTXT = true
+disableKinds = ["taxonomy", "term"]
+
+[params]
+  role = "Embedded security engineer"
+  description = "Hands-on embedded security: labs, courses and consulting on firmware, FPGA and SoC security."
+  # Full profile URLs. Leave empty to hide the link in the footer.
+  github = ""
+  linkedin = ""
+  # true loads IBM Plex from Google Fonts. false uses system fonts and makes no third-party request.
+  googleFonts = true
+
+# The tabs in the header, in order. Add or remove entries here.
+[menus]
+  [[menus.main]]
+    name = "Labs"
+    pageRef = "/labs"
+    weight = 10
+  [[menus.main]]
+    name = "Courses"
+    pageRef = "/courses"
+    weight = 20
+  [[menus.main]]
+    name = "Consulting"
+    pageRef = "/consulting"
+    weight = 30
+  [[menus.main]]
+    name = "About"
+    pageRef = "/about"
+    weight = 40
+
+[markup.highlight]
+  noClasses = true
+  style = "github-dark"
