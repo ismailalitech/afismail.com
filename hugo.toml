@@ -8,8 +8,8 @@ disableKinds = ["taxonomy", "term"]
   role = "Embedded security engineer"
   description = "Hands-on embedded security: labs, courses and consulting on firmware, FPGA and SoC security."
   # Full profile URLs. Leave empty to hide the link in the footer.
-  github = ""
-  linkedin = ""
+  github = "https://github.com/ismailalitech"
+  linkedin = "https://www.linkedin.com/in/ali-ismail-4132a7230/"
   # true loads IBM Plex from Google Fonts. false uses system fonts and makes no third-party request.
   googleFonts = true
 
