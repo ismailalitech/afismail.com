@@ -4,7 +4,7 @@
        toc = true          shows the "On this page" list (always shown inside Topics)
        view = "glossary"   term and definition side by side, with a filter box
        view = "roadmap"    stages drawn along a line
-       view = "about"      key facts (params.highlights in hugo.toml) beside the text
+       view = "about"      background (params.highlights in hugo.toml) beside the text
      A page with contact = true shows the contact block beside its text on wide screens. */}}
 {{ $isLab := false }}
 {{ with .Params.lab }}{{ $isLab = true }}{{ end }}
@@ -42,6 +42,7 @@
   {{/* A page can load a tool with tool = "name" in its front matter. */}}
   {{ if .Params.tool }}
     {{ if eq .Params.tool "fault-decoder" }}{{ partial "tool-fault-decoder.html" . }}{{ end }}
+    {{ if eq .Params.tool "search" }}{{ partial "tool-search.html" . }}{{ end }}
   {{ end }}
 
   {{ if eq $view "glossary" }}{{ partial "glossary-tools.html" . }}{{ end }}
@@ -61,13 +62,7 @@
       {{ if or .Params.photo (eq $view "about") }}
       <aside class="glance" aria-label="At a glance">
         {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
-        {{ if eq $view "about" }}
-          {{ with site.Params.highlights }}
-          <dl>
-            {{ range . }}<div><dt>{{ .label }}</dt><dd>{{ .value }}</dd></div>{{ end }}
-          </dl>
-          {{ end }}
-        {{ end }}
+        {{ if eq $view "about" }}{{ partial "background.html" . }}{{ end }}
       </aside>
       {{ end }}
       {{ partial "contact.html" . }}

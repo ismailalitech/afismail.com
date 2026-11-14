@@ -1,29 +1,23 @@
 {{ define "main" }}
-{{/* Headline and introduction on the left, a decoded register on the right. */}}
+{{/* Headline, introduction and search on the left; background on the right. */}}
 <section class="hero">
   <div class="hero-text">
     <h1>{{ .Title }}</h1>
     <div class="prose">{{ .Content }}</div>
+    {{ partial "search-form.html" (dict "id" "home-search" "live" false) }}
     <p class="actions">
       {{ with site.GetPage "/topics" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Explore the topics</a>{{ end }}
       {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}
       {{ with site.Params.youtube }}<a class="btn" href="{{ . }}">YouTube channel</a>{{ end }}
     </p>
   </div>
-  {{ partial "register-demo.html" . }}
-</section>
-
-{{/* Credentials under the hero. Edit them in hugo.toml under params.highlights. */}}
-{{ with site.Params.highlights }}
-<dl class="facts">
-  {{ range . }}
-  <div class="fact">
-    <dt>{{ .label }}</dt>
-    <dd>{{ .value }}</dd>
-  </div>
+  {{/* Academic background, fields of work and languages. Edit them in hugo.toml under params.highlights. */}}
+  {{ if site.Params.highlights }}
+  <aside class="hero-side" aria-label="Background">
+    {{ partial "background.html" . }}
+  </aside>
   {{ end }}
-</dl>
-{{ end }}
+</section>
 
 {{/* One cell per folder in content/topics, with its sub-folders as links. */}}
 {{ with site.GetPage "/topics" }}
@@ -83,7 +77,8 @@
     </div>
     {{ end }}
     {{ with site.Params.email }}
-    <div class="closing-part">
+    {{/* The introduction at the top of the page links here. */}}
+    <div class="closing-part" id="contact">
       <h2>Contact</h2>
       <p>For questions or to get in touch, write to <a href="mailto:{{ . }}">{{ . }}</a>.</p>
     </div>

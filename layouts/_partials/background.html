@@ -1,0 +1,16 @@
+{{/* Academic background, fields of work and languages, each as a short list.
+     The data is in hugo.toml under params.highlights. */}}
+{{ with site.Params.highlights }}
+<dl class="background">
+  {{ range . }}
+  <div class="background-group">
+    <dt>{{ .label }}</dt>
+    {{ range .items }}
+    <dd>{{ .value }}{{ with .note }}<span class="background-note">{{ . }}</span>{{ end }}</dd>
+    {{ end }}
+    {{/* Older form: a single value instead of a list. */}}
+    {{ with .value }}<dd>{{ . }}</dd>{{ end }}
+  </div>
+  {{ end }}
+</dl>
+{{ end }}

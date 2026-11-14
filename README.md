@@ -21,11 +21,13 @@ content/
   resources/             the Resources tab: decoder, cheat sheet, roadmap, glossary
   freelance.md           the Freelance tab
   about.md               the About tab
+  search.md              the Search page (magnifier in the header)
   privacy.md, legal.md   linked in the footer
 ```
 
 Every folder with an `_index.md` becomes a page that lists what is inside it. The
-home page shows one cell per topic, with its sub-topics as links. A sub-topic with
+home page shows the headline, a search box and your background, then one cell per
+topic, with its sub-topics as links. A sub-topic with
 nothing in it yet says so on its page, shows "In preparation" in the lists, and is
 kept out of search results until its first piece is published.
 
@@ -89,10 +91,9 @@ weight = 50
 | To change                         | Edit                                        |
 | --------------------------------- | ------------------------------------------- |
 | Name, role, email, links, YouTube | `hugo.toml`                                 |
-| Credentials under the headline    | `params.highlights` in `hugo.toml`          |
+| Academic background, fields of work, languages (home page and About) | `params.highlights` in `hugo.toml` |
 | Home page text                    | `content/_index.md`                         |
 | The three steps on the Topics page | `params.steps` in `content/_index.md`      |
-| The decoded register on the home page | `layouts/_partials/register-demo.html`  |
 | A topic's or sub-topic's name and description | its `_index.md`                 |
 | The diagram on the security page  | `layouts/_partials/hero-visual.html`        |
 | Freelance page                    | `content/freelance.md` (`contact_title` and `contact_text` set its contact block) |
@@ -125,12 +126,17 @@ Optional lines under `[params]` in a page's front matter change how it is laid o
 | `toc = true`         | shows the "On this page" list (always shown inside Topics) |
 | `view = "glossary"`  | term and definition side by side, with a filter box       |
 | `view = "roadmap"`   | draws the stages along a line                             |
-| `view = "about"`     | shows the credentials from `hugo.toml` beside the text    |
+| `view = "about"`     | shows the background from `hugo.toml` beside the text     |
 | `contact = true`     | shows the contact block (beside the text on wide screens) |
 
-The register drawn on the home page repeats the example that the decoder loads. If
-you change the example in `assets/js/fault-decoder.js`, change
-`layouts/_partials/register-demo.html` to match.
+## Search
+
+The search box on the home page and the magnifier in the header lead to the Search
+page (`content/search.md`). When the site is built, Hugo writes a list of every
+published page into that page (`layouts/_partials/tool-search.html`), and
+`assets/js/search.js` searches the list in the visitor's browser. Nothing is sent to
+a server and no outside service is used. New articles, labs and videos become
+searchable as soon as they are published; there is nothing to maintain.
 
 ## Privacy and legal pages
 

@@ -19,19 +19,30 @@ disableKinds = ["taxonomy", "term"]
   # Address of your email sign-up page (from a newsletter service). Leave empty to hide the sign-up block.
   subscribe_url = ""
 
-  # Credentials shown under the headline on the home page. Add, remove or reorder freely.
+  # Background shown beside the headline on the home page and on the About page.
+  # Each group has a label and a list of items, shown one under the other.
+  # An item can have a second, smaller line: note = "...".
   [[params.highlights]]
-    label = "Engineering degree, embedded security and verification"
-    value = "Grenoble INP – ESISAR"
-  [[params.highlights]]
-    label = "Engineering degree, electronics and telecommunications"
-    value = "Lebanese University"
+    label = "Academic background"
+    items = [
+      { value = "Engineering degree in embedded security and verification", note = "Grenoble INP – ESISAR" },
+      { value = "Engineering degree in electronics and telecommunications", note = "Lebanese University" },
+    ]
   [[params.highlights]]
     label = "Works across"
-    value = "Firmware, FPGA and SoC"
+    items = [
+      { value = "Firmware" },
+      { value = "FPGA" },
+      { value = "SoC" },
+    ]
   [[params.highlights]]
     label = "Working languages"
-    value = "English, French, Arabic"
+    items = [
+      { value = "English" },
+      { value = "French" },
+      { value = "Arabic" },
+      { value = "Italian" },
+    ]
 
 # The tabs in the header, in order. Add or remove entries here.
 [menus]

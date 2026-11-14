@@ -31,6 +31,6 @@ digital hardware and system-on-chip.
 - Engineering degree in electronics and telecommunications, Lebanese University (2019)
 - Professional experience in FPGA design, SoC security and technical training
   (Arm, RTOS, embedded C/C++, HDL, hardware security)
-- Languages: English, French, Arabic
+- Languages: English, French, Arabic, Italian
 
 Everything on this site is based on public documentation and personal projects.

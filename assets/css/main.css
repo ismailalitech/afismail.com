@@ -1,8 +1,8 @@
 /* Design idea: a reference manual turned into a site. Cool paper, near-black ink, one
    blue for links and actions, copper for identifiers such as lab numbers. Hairline
    rules divide content the way they do in a datasheet. Monospace is kept for things
-   that are code: register names, addresses, hex values. The one drawn element is the
-   register strip (two rows of sixteen bits), used on the home page and in the decoder. */
+   that are code: register names, addresses, hex values. The fault decoder draws each
+   value as a register strip (two rows of sixteen bits), as a reference manual would. */
 
 /* 1. Tokens */
 :root {
@@ -190,7 +190,7 @@ strong {
   stroke-linejoin: round;
 }
 
-/* 3. Header. Phone: name and theme switch on the first row, tabs on the second.
+/* 3. Header. Phone: name, search and theme switch on the first row, tabs on the second.
    Wide screens: name, tabs and theme switch on one row, kept in view while scrolling. */
 .site-header {
   border-bottom: 1px solid var(--rule);
@@ -263,8 +263,13 @@ strong {
   color: var(--ink);
 }
 
-.theme-toggle {
+.bar-actions {
   order: 2;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -278,9 +283,14 @@ strong {
   cursor: pointer;
 }
 
-.theme-toggle:hover {
+.icon-button:hover {
   border-color: var(--rule-strong);
   color: var(--ink);
+}
+
+.icon-button[aria-current="page"] {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @media (min-width: 44rem) {
@@ -307,7 +317,7 @@ strong {
     padding-block: 1.15rem;
   }
 
-  .theme-toggle {
+  .bar-actions {
     order: 3;
   }
 }
@@ -496,9 +506,10 @@ main {
   font-size: 0.875rem;
 }
 
-/* 6. Home page: headline on the left, a decoded register on the right */
+/* 6. Home page: headline, introduction and search on the left, background on the right */
 .hero {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2.5rem;
   padding-top: 1rem;
 }
@@ -523,197 +534,157 @@ main {
   }
 }
 
-@media (min-width: 62rem) {
-  .hero {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 27rem);
-    align-items: center;
-    gap: 3.5rem;
-    padding-top: 2rem;
-  }
-}
-
-/* The register strip: a 32-bit value drawn as two rows of sixteen bits, as reference
-   manuals draw it. Also built by the fault decoder for each value it decodes. */
-.reg-demo {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 34rem;
-  padding: 1.25rem;
+.hero-side {
+  padding: 1.4rem;
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   background: var(--surface);
 }
 
-.reg-intro {
-  color: var(--muted);
-  font-size: 0.9375rem;
+@media (min-width: 62rem) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    align-items: center;
+    gap: 4rem;
+    padding-top: 2rem;
+  }
 }
 
-.reg-value {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 0.6rem;
-  font-family: var(--font-mono);
-  font-size: 1.3125rem;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.reg-value small {
-  color: var(--muted);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-.regstrip {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.regrow {
-  display: flex;
-  gap: 2px;
-}
-
-.regrow + .regrow {
-  margin-top: 0.5rem;
-}
-
-.bit-cell {
-  display: flex;
-  flex: 1 1 0;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  min-width: 0;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  font-style: normal;
-  line-height: 1.2;
-}
-
-.bit-cell:nth-child(4n + 1):not(:first-child) {
-  margin-left: 4px;
-}
-
-.bit-cell b {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 1.625rem;
-  border-radius: 3px;
-  background: var(--sunken);
-  color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 400;
-}
-
-.bit-cell.is-set b {
-  background: var(--accent);
-  color: var(--on-accent);
-  font-weight: 500;
-}
-
-/* A bit that is set but has no meaning in this register */
-.bit-cell.is-reserved b {
-  background: transparent;
-  box-shadow: inset 0 0 0 2px var(--alert);
-  color: var(--alert);
-}
-
-.regfields {
+/* Background: academic background, fields of work and languages. Each group is a
+   short list, one item per line. The first group takes the full width; the others
+   sit two to a row. */
+.background {
   display: grid;
-  grid-template-columns: repeat(16, minmax(0, 1fr));
-  gap: 2px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.3;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
 }
 
-.regfields span {
-  padding-top: 0.2rem;
-  border-top: 1px solid var(--rule-strong);
-  overflow: hidden;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.regfields span + span {
-  margin-left: 2px;
-}
-
-.reg-bits {
+.background-group {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
-  padding: 0;
-  list-style: none;
-  font-size: 0.9375rem;
+  gap: 0.4rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
 }
 
-.reg-bits li {
-  padding-left: 0.8rem;
-  border-left: 3px solid var(--accent);
+.background-group:first-child {
+  grid-column: 1 / -1;
+  padding-top: 0;
+  border-top: 0;
 }
 
-.reg-bits code {
-  font-family: var(--font-mono);
-  font-weight: 500;
-}
-
-.reg-bits span {
+.background dt {
   color: var(--muted);
   font-size: 0.875rem;
-}
-
-.reg-more {
-  font-size: 0.9375rem;
   font-weight: 500;
-}
-
-.reg-more a {
-  display: inline-block;
-  padding-block: 0.15rem;
-}
-
-/* Credentials under the hero, set like the key parameters on a datasheet's first page */
-.facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
-  gap: 1.1rem 1.5rem;
-  padding-block: 1.4rem;
-  border-block: 1px solid var(--rule);
-}
-
-.fact {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.fact dt {
-  color: var(--muted);
-  font-size: 0.875rem;
   line-height: 1.4;
 }
 
-.fact dd {
-  font-size: 1.0625rem;
-  font-weight: 600;
+.background dd {
+  font-weight: 500;
   line-height: 1.35;
 }
 
-@media (min-width: 62rem) {
-  .facts {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
+.background-group:first-child dd {
+  font-weight: 600;
+}
+
+.background-group:first-child dd + dd {
+  margin-top: 0.5rem;
+}
+
+.background-note {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-weight: 400;
+}
+
+/* Search box, on the home page and on the Search page */
+.search-form {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+
+.search-form input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.search-form input::placeholder {
+  color: var(--muted);
+}
+
+/* Search page */
+.search {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 50rem;
+}
+
+.search-status {
+  color: var(--muted);
+}
+
+.search-results {
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+
+.search-results:empty {
+  display: none;
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-block: 1.1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.search-kind {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.search-result h3 a {
+  display: inline-block;
+  padding-block: 0.15rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.search-result h3 a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.search-result p {
+  color: var(--muted);
+}
+
+.search-snippet {
+  font-size: 0.9375rem;
+}
+
+.search-result mark {
+  padding: 0 0.1em;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--ink);
 }
 
 /* Titles that are links: tall enough to tap comfortably */
@@ -1348,7 +1319,7 @@ main {
   }
 }
 
-/* Text with the contact block (and, on About, the key facts) beside it */
+/* Text with the contact block (and, on About, the background) beside it */
 .side {
   display: flex;
   flex-direction: column;
@@ -1359,31 +1330,6 @@ main {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-}
-
-.glance dl {
-  display: flex;
-  flex-direction: column;
-  border-top: 1px solid var(--ink);
-}
-
-.glance dl div {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  padding-block: 0.7rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.glance dt {
-  color: var(--muted);
-  font-size: 0.875rem;
-  line-height: 1.4;
-}
-
-.glance dd {
-  font-weight: 600;
-  line-height: 1.35;
 }
 
 .contact .actions {
@@ -1743,6 +1689,88 @@ main {
   border-top: 1px solid var(--rule);
 }
 
+/* The register strip: a 32-bit value drawn as two rows of sixteen bits */
+.regstrip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.regrow {
+  display: flex;
+  gap: 2px;
+}
+
+.regrow + .regrow {
+  margin-top: 0.5rem;
+}
+
+.bit-cell {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-style: normal;
+  line-height: 1.2;
+}
+
+.bit-cell:nth-child(4n + 1):not(:first-child) {
+  margin-left: 4px;
+}
+
+.bit-cell b {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 1.625rem;
+  border-radius: 3px;
+  background: var(--sunken);
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.bit-cell.is-set b {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 500;
+}
+
+/* A bit that is set but has no meaning in this register */
+.bit-cell.is-reserved b {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--alert);
+  color: var(--alert);
+}
+
+.regfields {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.3;
+}
+
+.regfields span {
+  padding-top: 0.2rem;
+  border-top: 1px solid var(--rule-strong);
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.regfields span + span {
+  margin-left: 2px;
+}
+
 .reg-result {
   display: flex;
   flex-direction: column;
@@ -2044,7 +2072,7 @@ main {
   .cell,
   .row,
   .siblings a,
-  .theme-toggle {
+  .icon-button {
     transition: background-color 0.12s, border-color 0.12s, color 0.12s;
   }
 }
@@ -2077,6 +2105,7 @@ main {
   .siblings,
   .pager,
   .glossary-tools,
+  .search-form,
   .preview-note {
     display: none;
   }

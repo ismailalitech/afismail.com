@@ -10,7 +10,7 @@
 <meta name="author" content="{{ site.Title }}">
 <link rel="canonical" href="{{ .Permalink }}">
 {{/* A folder with nothing in it yet is left out of search results until it has content. */}}
-{{ if or (eq .Kind "404") (and .IsSection (not .Sections) (not .RegularPages)) }}
+{{ if or (eq .Kind "404") (eq .Params.tool "search") (and .IsSection (not .Sections) (not .RegularPages)) }}
 <meta name="robots" content="noindex, follow">
 {{ end }}
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">

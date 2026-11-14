@@ -1,7 +1,7 @@
 +++
 title = "Hands-on embedded systems and security"
 
-# The steps shown under "How it works" on the home page.
+# The three steps shown at the top of the Topics page.
 [[params.steps]]
   title = "Read the idea"
   text = "Each subject starts with a short explanation of the concept and why it matters."
@@ -13,7 +13,9 @@ title = "Hands-on embedded systems and security"
   text = "Labs list the board and tools, give every step, and end with the result to expect."
 +++
 
-I'm Ali Ismail, an embedded systems and security engineer. This site collects what
-I work on, organised by topic: embedded security, software security, FPGA, and
-microcontrollers with real-time operating systems. Each topic holds ideas, labs
-and videos.
+Welcome. Embedded systems and security are best learned by practice. Here you'll
+find them explained step by step, from microcontrollers and real-time operating
+systems to FPGA and hardware security, with ideas, labs and videos.
+
+If something here interests you, feel free to [get in touch](#contact): for a
+freelance project, for training on one of these subjects, or simply with a question.
