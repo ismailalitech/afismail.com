@@ -7,7 +7,7 @@ title = "About"
   # Shows the key facts from hugo.toml (params.highlights) beside the text.
   view = "about"
   # Short text used in the About section of the home page.
-  teaser = "I'm an embedded systems and security engineer working across microcontrollers, real-time operating systems, FPGA and SoC. I hold engineering degrees from Lebanese University, in electronics and telecommunications, and from Grenoble INP – ESISAR, in embedded security and verification. This site is where I share what I learn, with labs that other engineers can reproduce."
+  teaser = "My work spans microcontrollers, real-time operating systems, FPGA and SoC, with security as the common thread. This site is where what I learn along the way gets written up, as clearly as I can."
   # To add your photo: put the file in static/images/ and remove the "# " below.
   # photo = "images/ali-ismail.jpg"
 +++

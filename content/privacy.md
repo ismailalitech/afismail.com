@@ -22,7 +22,8 @@ This site is a personal website. It is built to collect as little as possible.
   browser and device, and how fast pages load. It uses no cookies and does not
   identify individual visitors. Your browser contacts Cloudflare's servers when a
   page loads.
-- **Videos.** Pages with a video load a player from YouTube when you open them.
+- **Videos.** A page with a video shows a play button. The player is loaded from
+  YouTube only when you press it.
 - **Theme.** If you use the light or dark switch, your choice is saved in your own
   browser and is not sent anywhere.
 
