@@ -111,15 +111,18 @@ a:hover {
   border-bottom: 1px solid var(--rule);
 }
 
+/* Phone: name and theme switch on the first row, tabs on the second.
+   Wide screens: name, tabs and theme switch on one row. */
 .bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0 2rem;
+  gap: 0 1.5rem;
 }
 
 .brand {
+  order: 1;
+  margin-right: auto;
   padding-block: 0.9rem 0.35rem;
   color: var(--ink);
   font-family: var(--font-display);
@@ -130,8 +133,30 @@ a:hover {
 }
 
 .tabs {
+  order: 3;
+  flex-basis: 100%;
   max-width: 100%;
   overflow-x: auto;
+}
+
+.theme-toggle {
+  order: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--muted);
+  color: var(--ink);
 }
 
 .tabs ul {
@@ -171,6 +196,15 @@ a:hover {
 
   .brand {
     padding-block: 0.9rem;
+  }
+
+  .tabs {
+    order: 2;
+    flex-basis: auto;
+  }
+
+  .theme-toggle {
+    order: 3;
   }
 
   .tabs a {
@@ -310,6 +344,252 @@ h3 {
 
 .btn-primary:hover {
   background: color-mix(in srgb, var(--accent) 85%, var(--ink));
+}
+
+/* Credentials under the hero, set like the key figures on a datasheet's first page */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1.25rem 2rem;
+  margin: 0;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--rule);
+}
+
+.fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fact dt {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.fact dd {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Contact block */
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: var(--read);
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.contact p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* "How the labs work": numbered because the steps happen in this order */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem 2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  counter-increment: step;
+}
+
+.step::before {
+  content: counter(step, decimal-leading-zero);
+  color: var(--copper);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.step p,
+.teaser {
+  margin: 0;
+  color: var(--muted);
+}
+
+.teaser {
+  max-width: var(--read);
+  font-size: 1.1rem;
+}
+
+/* Topic labels on labs */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+/* Lab page: text with an "On this page" list. The list sits above the text on a
+   phone and beside it on a wide screen. */
+.article-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.toc {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: var(--read);
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.toc:has(nav:empty) {
+  display: none;
+}
+
+.toc-title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.toc ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc ul ul {
+  padding: 0.35rem 0 0 0.9rem;
+}
+
+.toc a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.toc a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+@media (min-width: 64rem) {
+  .article-body {
+    display: grid;
+    grid-template-columns: minmax(0, var(--read)) 15rem;
+    align-items: start;
+    gap: 3.5rem;
+  }
+
+  .article-body .prose {
+    order: 1;
+  }
+
+  .toc {
+    position: sticky;
+    top: 5rem;
+    order: 2;
+    padding: 0 0 0 1.25rem;
+    border: 0;
+    border-left: 1px solid var(--rule);
+    border-radius: 0;
+  }
+}
+
+/* Links to the neighbouring labs */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  max-width: 48rem;
+}
+
+.pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.pager-link:hover {
+  border-color: var(--accent);
+}
+
+.pager-label {
+  color: var(--copper);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+/* Copy button on code blocks (added by site.js) */
+.codeblock {
+  position: relative;
+}
+
+.copy {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  border-radius: 4px;
+  background: rgb(255 255 255 / 0.08);
+  color: #e6edf3;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.copy:hover {
+  background: rgb(255 255 255 / 0.18);
+}
+
+/* Portrait on the About page */
+.portrait {
+  width: 9rem;
+  height: 9rem;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* Section heading with a full-strength rule, as on a datasheet */
@@ -623,6 +903,22 @@ h3 {
 }
 
 .legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--rule);
+}
+
+.legal ul {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legal a {
+  color: var(--muted);
 }

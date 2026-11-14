@@ -9,6 +9,18 @@
   </p>
 </section>
 
+{{/* Credentials under the hero. Edit them in hugo.toml under params.highlights. */}}
+{{ with site.Params.highlights }}
+<dl class="facts">
+  {{ range . }}
+  <div class="fact">
+    <dt>{{ .label }}</dt>
+    <dd>{{ .value }}</dd>
+  </div>
+  {{ end }}
+</dl>
+{{ end }}
+
 <section class="block" aria-labelledby="areas-heading">
   <div class="block-head">
     <h2 id="areas-heading">What's on this site</h2>
@@ -27,6 +39,23 @@
   </ul>
 </section>
 
+{{/* The steps come from content/_index.md (params.steps). */}}
+{{ with .Params.steps }}
+<section class="block" aria-labelledby="steps-heading">
+  <div class="block-head">
+    <h2 id="steps-heading">How the labs work</h2>
+  </div>
+  <ol class="steps">
+    {{ range . }}
+    <li class="step">
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+    </li>
+    {{ end }}
+  </ol>
+</section>
+{{ end }}
+
 {{ $labs := where site.RegularPages "Section" "labs" }}
 {{ if $labs }}
 <section class="block" aria-labelledby="labs-heading">
@@ -37,4 +66,20 @@
   {{ partial "entry-list.html" (dict "pages" (first 3 $labs) "section" (site.GetPage "/labs")) }}
 </section>
 {{ end }}
+
+{{/* The text comes from content/about.md (params.teaser). */}}
+{{ with site.GetPage "/about" }}
+  {{ $about := . }}
+  {{ with .Params.teaser }}
+  <section class="block" aria-labelledby="about-heading">
+    <div class="block-head">
+      <h2 id="about-heading">About</h2>
+      <a href="{{ $about.RelPermalink }}">More about me</a>
+    </div>
+    <p class="teaser">{{ . }}</p>
+  </section>
+  {{ end }}
+{{ end }}
+
+{{ partial "contact.html" . }}
 {{ end }}

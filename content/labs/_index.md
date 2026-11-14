@@ -17,5 +17,11 @@ description = "Step-by-step labs you can reproduce on your own hardware."
 #   level = "Beginner, Intermediate or Advanced"
 +++
 
-Each lab states the board, the tools and the time it takes, then walks through the
-steps to a result you can check on your own hardware.
+## What every lab contains
+
+- **Goal.** What you will have working at the end.
+- **What you need.** The board, the tools and the software versions.
+- **Steps.** Each command and code change, with the reason for it.
+- **Expected result.** The output to compare with your own.
+- **Pitfalls.** The mistakes that cost time, and how to spot them.
+- **References.** The documents the lab is based on.

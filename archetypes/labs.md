@@ -10,6 +10,7 @@ description = ""
   core = ""        # e.g. Cortex-M33
   level = ""       # Beginner, Intermediate or Advanced
   duration = ""    # e.g. 2 h
+  topics = []      # e.g. ["TrustZone", "Secure boot"]
   repo = ""        # full URL of the source code
 +++
 

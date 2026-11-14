@@ -7,11 +7,24 @@ disableKinds = ["taxonomy", "term"]
 [params]
   role = "Embedded security engineer"
   description = "Hands-on embedded security: labs, courses and consulting on firmware, FPGA and SoC security."
+  # Contact address shown on the home page, the About page and the footer. Leave empty to hide it.
+  email = "ismail.ali.tech@gmail.com"
   # Full profile URLs. Leave empty to hide the link in the footer.
   github = "https://github.com/ismailalitech"
   linkedin = "https://www.linkedin.com/in/ali-ismail-4132a7230/"
   # true loads IBM Plex from Google Fonts. false uses system fonts and makes no third-party request.
   googleFonts = true
+
+  # Credentials shown under the headline on the home page. Add, remove or reorder freely.
+  [[params.highlights]]
+    label = "Engineering degree, embedded security"
+    value = "Grenoble INP – ESISAR"
+  [[params.highlights]]
+    label = "Works across"
+    value = "Firmware, FPGA and SoC"
+  [[params.highlights]]
+    label = "Working languages"
+    value = "English, French, Arabic"
 
 # The tabs in the header, in order. Add or remove entries here.
 [menus]
@@ -35,3 +48,8 @@ disableKinds = ["taxonomy", "term"]
 [markup.highlight]
   noClasses = true
   style = "github-dark"
+
+# The "On this page" list on lab pages uses the ## and ### headings.
+[markup.tableOfContents]
+  startLevel = 2
+  endLevel = 3

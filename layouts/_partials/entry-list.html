@@ -20,6 +20,7 @@
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{ with .Description }}<p>{{ . }}</p>{{ end }}
       {{ partial "lab-meta.html" .Params }}
+      {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
     </div>
   </li>
   {{ end }}

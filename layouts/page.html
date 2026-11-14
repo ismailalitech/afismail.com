@@ -4,17 +4,39 @@
     {{ if eq .Section "labs" }}
       <p class="eyebrow">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</p>
     {{ end }}
+    {{/* Optional portrait: set photo = "images/your-file.jpg" in the page's front matter. */}}
+    {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
     <h1>{{ .Title }}</h1>
     {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
     {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
     {{ if eq .Section "labs" }}
       {{ partial "lab-meta.html" .Params }}
+      {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
       <p class="byline">
         {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>{{ end }}
         {{ with .Params.repo }}<a href="{{ . }}">Source code</a>{{ end }}
       </p>
     {{ end }}
   </header>
+
+  {{ if eq .Section "labs" }}
+  <div class="article-body">
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      {{ .TableOfContents }}
+    </aside>
+    <div class="prose">{{ .Content }}</div>
+  </div>
+  {{ if or .PrevInSection .NextInSection }}
+  <nav class="pager" aria-label="More labs">
+    {{ with .PrevInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</span>{{ .Title }}</a>{{ end }}
+    {{ with .NextInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">Lab{{ with .Params.lab }} {{ printf "0x%02X" (int .) }}{{ end }}</span>{{ .Title }}</a>{{ end }}
+  </nav>
+  {{ end }}
+  {{ else }}
   <div class="prose">{{ .Content }}</div>
+  {{ end }}
+
+  {{ if .Params.contact }}{{ partial "contact.html" . }}{{ end }}
 </article>
 {{ end }}
