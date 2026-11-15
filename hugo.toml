@@ -48,6 +48,15 @@ disableKinds = ["taxonomy", "term"]
     ]
 
 # The tabs in the header, in order. Add or remove entries here.
+  # Smooth scrolling with the Lenis library (MIT licence). When the site is built, Hugo downloads
+  # the file below once, checks it against the fingerprint, and serves it from your own site.
+  # Set enabled = false to turn smooth scrolling off. To move to a newer version, change the
+  # version in the address and replace the fingerprint with the one for that file.
+  [params.smoothScroll]
+    enabled = true
+    url = "https://unpkg.com/lenis@1.3.27/dist/lenis.min.js"
+    integrity = "sha256-gPU+d/HBPjefwkbSteKZGI4gvLKy/n67E+jox1Y6bac="
+
 [menus]
   [[menus.main]]
     name = "Topics"

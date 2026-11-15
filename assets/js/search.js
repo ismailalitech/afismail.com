@@ -251,7 +251,8 @@
     var close = function (returnFocus) {
       panel.hidden = true;
       opener.setAttribute('aria-expanded', 'false');
-      if (returnFocus) { opener.focus(); }
+      /* Give the focus back without making the page jump. */
+      if (returnFocus) { opener.focus({ preventScroll: true }); }
     };
     var open = function () {
       panel.hidden = false;

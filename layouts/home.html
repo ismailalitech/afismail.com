@@ -2,7 +2,8 @@
 {{/* Headline and introduction on the left; background on the right. */}}
 <section class="hero">
   <div class="hero-text">
-    <h1>{{ .Title }}</h1>
+    {{/* The headline appears word by word (CSS only). Screen readers get it as one sentence. */}}
+    <h1 class="reveal" aria-label="{{ .Title }}">{{ range $i, $word := split .Title " " }}{{ if $i }} {{ end }}<span class="reveal-word" style="--i: {{ $i }}" aria-hidden="true">{{ $word }}</span>{{ end }}</h1>
     <div class="prose">{{ .Content }}</div>
     <p class="actions">
       {{ with site.GetPage "/topics" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Explore the topics</a>{{ end }}

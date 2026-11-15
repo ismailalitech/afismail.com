@@ -729,6 +729,56 @@ main {
   padding-block: 0.15rem;
 }
 
+/* Home page effects. Both stay on the home page: the article, lab and reference pages
+   have no animation, so they stay easy to read.
+
+   1. The headline appears word by word, once, when the page opens. It is plain CSS, so
+      it needs no script and the headline is always in the page. No animation in print
+      or for visitors who ask their system for reduced motion. */
+@media screen and (prefers-reduced-motion: no-preference) {
+  .reveal-word {
+    display: inline-block;
+    animation: reveal-word 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 70ms + 60ms);
+  }
+}
+
+/* Only the starting state is described. Each word ends as ordinary text, with nothing
+   left applied to it, so the finished headline is as sharp as any other. */
+@keyframes reveal-word {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(0.25em);
+  }
+}
+
+/* 2. A soft highlight follows the pointer over the topic cards. assets/js/home.js sets
+      --spot-x and --spot-y; without it the cards simply look as they always do. */
+[data-spotlight] .cell {
+  isolation: isolate;
+}
+
+[data-spotlight] .cell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(20rem circle at var(--spot-x, 50%) var(--spot-y, 0%), color-mix(in srgb, var(--accent) 11%, transparent), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-spotlight] .cell::before {
+    transition: opacity 0.25s;
+  }
+
+  [data-spotlight] .cell:hover::before {
+    opacity: 1;
+  }
+}
+
 /* 7. Cells: a ruled grid, used for the topics and the resources */
 .cells {
   display: grid;
@@ -2093,6 +2143,27 @@ main {
   gap: 1.25rem;
   padding: 0;
   list-style: none;
+}
+
+/* Smooth scrolling (Lenis, started by assets/js/smooth-scroll.js). While it runs it adds
+   the class "lenis" to the page; it then does the smoothing itself, so the browser's own
+   smooth scrolling is switched off to stop the two from fighting. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis {
+  scroll-behavior: auto;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+/* A video player must not swallow the wheel while the page is moving */
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* 18. Motion: only what answers an action, and none when the visitor asks for none */

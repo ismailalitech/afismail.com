@@ -146,6 +146,24 @@ page instead.
 Keep them true: update the privacy page whenever you add analytics, a form or an
 email list. To take a page offline, set `draft = true` in it.
 
+## Smooth scrolling and home page effects
+
+- **Smooth scrolling (every page).** The mouse wheel is smoothed by the Lenis library
+  (MIT licence). Hugo downloads the file once when it builds the site, checks it
+  against the fingerprint in `hugo.toml` (`params.smoothScroll`), and serves it from
+  the site itself, so visitors contact no other server. `assets/js/smooth-scroll.js`
+  starts it. It is not started for visitors who ask their system for reduced motion,
+  and touch, keyboard and scrollbar scrolling are left as they are. Links to a place
+  on the same page keep working. Set `enabled = false` to turn it off. If the download
+  fails during a build, Hugo prints a warning and the site is built without it.
+- **Headline reveal (home page only).** The headline appears word by word when the
+  page opens. It is CSS only, in `assets/css/main.css` under "Home page effects".
+- **Card highlight (home page only).** A soft highlight follows the pointer over the
+  topic cards (`assets/js/home.js`). It is skipped on touch screens.
+
+Both home page effects are switched off for visitors who ask for reduced motion, and
+neither is loaded on the article, lab and reference pages.
+
 ## Visitor statistics
 
 The site counts visits with Cloudflare Web Analytics, which uses no cookies. The
