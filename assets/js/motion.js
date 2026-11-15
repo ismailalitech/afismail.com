@@ -32,12 +32,12 @@
   });
   if (!later.length) { return; }
 
-  gsap.set(later, { autoAlpha: 0, y: 28 });
+  gsap.set(later, { autoAlpha: 0, y: 12 });
   trigger.batch(later, {
     start: 'top 92%',
     once: true,
     onEnter: function (batch) {
-      gsap.to(batch, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power2.out', stagger: 0.09, overwrite: true });
+      gsap.to(batch, { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power2.out', stagger: 0.06, overwrite: true });
     }
   });
 })();
