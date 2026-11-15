@@ -118,8 +118,74 @@ Two details matter. UIO maps whole pages, so the window at `0x40000F00` is reach
 
 The kernel recipe (module B03) copies the file into the kernel source tree and appends one line to the tree's device-tree Makefile. The machine configuration then selects the result, and U-Boot loads it from the `fitImage` on the card together with the kernel.
 
+## Run it
+
+Nothing here is built by hand. These are read-only checks on the running board, as root.
+
+1. Which regions did Linux reserve?
+
+   ```sh
+   grep -i -E 'reserved|91c00000|91d' /proc/iomem
+   dmesg | grep -i reserved
+   ```
+
+2. Which UIO devices exist, and which is which?
+
+   ```sh
+   grep -H . /sys/class/uio/uio*/name
+   ```
+
+3. How many CPUs does Linux have?
+
+   ```sh
+   cat /sys/devices/system/cpu/online
+   ```
+
+## What you should see
+
+Recorded on the board (`device-tree-checks`):
+
+```text
+91c00000-91d50fff : Reserved
+  91d50000-91d50fff : remote-context rsc-table@91d50000
+91d51000-91ffffff : System RAM
+```
+
+The reserved block runs from `0x91C00000` to `0x91D50FFF`: the firmware region, both rings, the buffer pool and the resource table. Regular memory resumes at `0x91D51000`. The kernel's own messages name the same regions:
+
+```text
+OF: reserved mem: 0x0000000091c00000..0x0000000091cfffff (1024 KiB) nomap non-reusable contextb_reserved@91c00000
+OF: reserved mem: 0x0000000091d00000..0x0000000091d07fff (32 KiB) nomap non-reusable vdev0vring0@91d00000
+OF: reserved mem: 0x0000000091d08000..0x0000000091d0ffff (32 KiB) nomap non-reusable vdev0vring1@91d08000
+OF: reserved mem: 0x0000000091d10000..0x0000000091d4ffff (256 KiB) nomap non-reusable vdev0buff@91d10000
+OF: reserved mem: 0x0000000091d50000..0x0000000091d50fff (4 KiB) nomap non-reusable rsc-table@91d50000
+```
+
+The UIO devices, in the order Linux found them:
+
+```text
+/sys/class/uio/uio0/name:fpga_lsram
+/sys/class/uio/uio1/name:pfdaq_stream_src
+/sys/class/uio/uio2/name:dma-controller@60010000
+```
+
+And the CPUs: `0-2`. Three harts belong to Linux; the fourth is the one node `cpu4` marks as disabled.
+
+From the recorded console of a cold boot (`boot-uboot-linux`):
+
+```text
+Machine model: Microchip PolarFire-SoC Discovery Kit (AMP)
+Kernel command line: earlycon root=/dev/mmcblk0p3 rootwait uio_pdrv_genirq.of_id=generic-uio clk_ignore_unused
+remoteproc remoteproc0: remote-context is available
+remoteproc remoteproc0: attaching to remote-context
+virtio_rpmsg_bus virtio0: creating channel pfdaq-supervisor addr 0x0
+```
+
+The model string is the device tree's; the command-line word is the one that makes the UIO node work; the remoteproc lines show the node of section 3 being used.
+
 ## Evidence
 
+- **Board, running system (`device-tree-checks`):** one run of the three checks above on the proven image, a minute after a warm reboot.
 - **Board, cold boot:** the lines above (`boot-uboot-linux`), and the supervisor's side of the same handshake (`supervisor-console`).
 - **Board, memory:** the suite's shared-memory test has Linux write a pattern into a reserved region, the supervisor verify it and write the inverse, and Linux verify that: no mismatch in 50 passes of 65,536 words, in the non-cached region (`udmabuf-ddr-nc0`) and the cached one (`udmabuf-ddr-c0`) (`suite-freertos`, rows T7-noncached and T7-cached). It shows that both sides see the same memory at the reserved addresses.
 - **Board, UIO and DMA buffers:** every burst test of the suite reads the fabric's data through these devices.
@@ -152,6 +218,6 @@ Except for the `mmap` row, these are reasoned from what each node does; none was
 | **Read first** | [F02 The memory map and the three faces of DDR](/topics/fpga/polarfire-soc-fundamentals/f02-memory-map-ddr/) |
 | **In the system** | [U54 hart 4](/pfdaq/explorer/#u54-4) · [Hart 4 image](/pfdaq/explorer/#ddr-u54-4-image) · [RPMsg shared memory](/pfdaq/explorer/#ddr-rpmsg) · [Non-cached window](/pfdaq/explorer/#ddr-noncached) · [Cached shared region](/pfdaq/explorer/#ddr-cached-shared) · [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [Mi-V inter-hart communication](/pfdaq/explorer/#ihc) · [Linux 6.18.17](/pfdaq/explorer/#linux-kernel) · [UIO devices](/pfdaq/explorer/#uio) · [u-dma-buf](/pfdaq/explorer/#udmabuf) · [remoteproc and RPMsg](/pfdaq/explorer/#remoteproc-rpmsg) |
 | **Source files** | [`yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts): `contextb_reserved`, `vdev0vring0`, `vdev0buffer`, `rsctable`, `rproc_contextb`, `pfdaq_src`, `cpu4`; [`yocto/meta-pfdaq/recipes-kernel/linux/linux-mchp_6.%.bbappend`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-kernel/linux/linux-mchp_6.%.bbappend): `do_configure`; [`yocto/meta-pfdaq/recipes-bsp/u-boot/files/envs/mpfs-disco-kit-amp.txt`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-bsp/u-boot/files/envs/mpfs-disco-kit-amp.txt): `mpfs_set_bootargs` |
-| **Evidence** | [Key lines of the U-Boot and Linux console from OpenSBI to login, including remoteproc attaching to hart 4](/pfdaq/evidence/v0.5.1/board/boot-uboot-linux.txt) (board, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Supervisor console during the fresh-card suite, with the alarm and recovery messages](/pfdaq/evidence/v0.5.1/board/supervisor-console.txt) (board, fabric v0.5.1) |
+| **Evidence** | [Key lines of the U-Boot and Linux console from OpenSBI to login, including remoteproc attaching to hart 4](/pfdaq/evidence/v0.5.1/board/boot-uboot-linux.txt) (board, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Supervisor console during the fresh-card suite, with the alarm and recovery messages](/pfdaq/evidence/v0.5.1/board/supervisor-console.txt) (board, fabric v0.5.1); [Reserved memory, UIO devices, online CPUs and PLIC sources on the running board](/pfdaq/evidence/v0.5.1/board/device-tree-checks.txt) (board, fabric v0.5.1) |
 | **Related** | [B01 From power-on to login, stage by stage](/topics/embedded-linux/boot-and-images/b01-power-on-to-login/); [B02 The HSS payload: starting two operating systems](/topics/embedded-linux/boot-and-images/b02-hss-payload/); [B03 A Yocto layer for a board the vendor does not support in AMP](/topics/embedded-linux/boot-and-images/b03-yocto-layer/); [I01 Reaching fabric registers from Linux](/topics/embedded-linux/linux-fpga-interfaces/i01-fabric-registers-from-linux/); [I05 Buffers the DMA can write: non-cached windows and u-dma-buf](/topics/embedded-linux/linux-fpga-interfaces/i05-dma-buffers/); [M01 Asymmetric multiprocessing on one chip](/topics/microcontrollers/linux-and-rtos/m01-asymmetric-multiprocessing/); [M05 Shared memory between Linux and a bare-metal hart](/topics/microcontrollers/linux-and-rtos/m05-shared-memory-linux-bare-metal/) |
 | **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |
