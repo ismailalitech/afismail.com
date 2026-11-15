@@ -244,7 +244,7 @@ Simulation shows the unit counts and records correctly with software modelled as
 | **Level** | Intermediate |
 | **How to run** | Simulation only: Icarus Verilog and Python, no board |
 | **Status** | validated |
-| **Read first** | [H01 An APB register block that software can trust](/topics/fpga/registers-clocks-timing/h01-apb-register-block/), [F03 Interrupts from fabric to hart: F2M lines, the PLIC and contexts](/topics/fpga/soc-integration/f03-fabric-interrupts/) |
+| **Read first** | [H01 An APB register block that software can trust](/topics/fpga/registers-clocks-timing/h01-apb-register-block/); [F03 Interrupts from fabric to hart: F2M lines, the PLIC and contexts](/topics/fpga/soc-integration/f03-fabric-interrupts/) |
 | **In the system** | [Latency unit (two channels)](/pfdaq/explorer/#pfdaq-latency) · [Platform-level interrupt controller](/pfdaq/explorer/#plic) |
 | **Source files** | [`hw/rtl/pfdaq_latency.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_latency.v): `pfdaq_latency_ch`, `lat_now`, `interval`, `lfsr`, `overrun`, `limit_hit`; [`hw/rtl/pfdaq_core.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_core.v): `pfdaq_core`; [`hw/tb/tb_pfdaq_latency.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/tb_pfdaq_latency.v): `serve`, `wait_clear`; [`hw/tb/check_latency.py`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/check_latency.py): `check` |
 | **Evidence** | [Latency unit simulation, four phases checked by the Python model](/pfdaq/evidence/v0.5.1/sim/latency.txt) (sim, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1) |

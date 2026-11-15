@@ -196,7 +196,7 @@ The C model was written to mirror the RTL, by the same author, from the same des
 ## Trade-offs and going further
 
 - **Verify everything or sample?** Checking every word costs 30 MB/s of throughput. A tool that only checks headers and a CRC would run faster and still catch most faults; the project chose full checking because the goal was to catch faults, not to measure speed.
-- **One core for everything.** The per-stage rates above are for one thread. Splitting copy and verify across the three Linux cores is the subject of P08, planned; it has not been tried.
+- **One core for everything.** The per-stage rates above are for one thread. Splitting copy and verify across the three Linux cores has not been tried.
 - **Exercise:** from the table, compute the burst size at which a 1 ms DMA time would equal the copy-plus-verify time for the counter payload.
 - **Exercise:** in the fault table the payload row has `bad_crc` equal to `bad_payload`. What would `bad_crc` read for that row if the fabric computed the CRC over the data as sent instead of the intended data?
 
@@ -207,7 +207,7 @@ The C model was written to mirror the RTL, by the same author, from the same des
 | **Level** | Intermediate |
 | **How to run** | Runs on the shared baseline: fabric v0.5.1 and the pfdaq image |
 | **Status** | validated |
-| **Read first** | [I04 DMA stream descriptors: the rules this core really follows](/topics/fpga/soc-integration/i04-dma-stream-descriptors/), [I05 Buffers the DMA can write: non-cached windows and u-dma-buf](/topics/embedded-linux/linux-fpga-interfaces/i05-dma-buffers/) |
+| **Read first** | [I04 DMA stream descriptors: the rules this core really follows](/topics/fpga/soc-integration/i04-dma-stream-descriptors/); [I05 Buffers the DMA can write: non-cached windows and u-dma-buf](/topics/embedded-linux/linux-fpga-interfaces/i05-dma-buffers/) |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [FIR payload source](/pfdaq/explorer/#pfdaq-fir-src) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [Non-cached window](/pfdaq/explorer/#ddr-noncached) · [pfdaq_cap](/pfdaq/explorer/#pfdaq-cap) |
 | **Source files** | [`yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c): `verify`, `payload_bad`, `crc32_words`, `xs32`, `tri16`, `model_restart`, `struct stats`, `main` |
 | **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1); [Stream source simulation, 20 scenarios checked by the Python model](/pfdaq/evidence/v0.5.1/sim/stream.txt) (sim, fabric v0.5.1) |

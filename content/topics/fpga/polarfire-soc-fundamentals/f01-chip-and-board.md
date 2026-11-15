@@ -63,7 +63,7 @@ The same console prints the cache setup of the cores:
 
 The shared L2 is split between ordinary cache, a scratchpad and a loosely integrated memory (LIM). Only the cache part matters for this project; module F02 shows why.
 
-### Five fabric interfaces
+### Fabric interfaces
 
 | Interface | Kind | Direction that matters here | Used in this project for |
 |---|---|---|---|
@@ -71,7 +71,6 @@ The shared L2 is split between ordinary cache, a scratchpad and a loosely integr
 | **FIC1** | clocked at 125 MHz by the fabric design | not used | nothing |
 | **FIC2** | clocked at 125 MHz by the fabric design | not used | nothing |
 | **FIC3** | APB, 50 MHz | MSS to fabric registers | the stream source and latency unit at 0x4000_0F00, the inter-hart mailbox at 0x5000_0000, and the reference design's own peripherals |
-| **FIC4** | AHB-Lite | reserved for the on-chip crypto processor | nothing; see module S01 |
 
 The clock figures are what the fabric design supplies; module F04 shows where they come from. FIC1 and FIC2 are clocked but nothing in this project connects to them, and this page does not describe them further.
 
@@ -141,6 +140,6 @@ These records show the software view of the chip. They do not measure anything a
 | **Level** | Beginner |
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
-| **In the system** | [PolarFire SoC Discovery Kit](/pfdaq/explorer/#board) · [MPFS095T system-on-chip](/pfdaq/explorer/#soc) · [Microprocessor subsystem (MSS)](/pfdaq/explorer/#mss) · [FPGA fabric](/pfdaq/explorer/#fabric) · [E51 (hart 0)](/pfdaq/explorer/#e51) · [U54 harts 1 to 3](/pfdaq/explorer/#u54-linux) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [FIC0 (AXI4, 125 MHz)](/pfdaq/explorer/#fic0) · [FIC3 (APB, 50 MHz)](/pfdaq/explorer/#fic3) · [FIC4 (AHB-Lite, crypto)](/pfdaq/explorer/#fic4) · [Platform-level interrupt controller](/pfdaq/explorer/#plic) · [DDR4 memory, 1 GB](/pfdaq/explorer/#ddr) · [Hart Software Services](/pfdaq/explorer/#hss) |
+| **In the system** | [PolarFire SoC Discovery Kit](/pfdaq/explorer/#board) · [MPFS095T system-on-chip](/pfdaq/explorer/#soc) · [Microprocessor subsystem (MSS)](/pfdaq/explorer/#mss) · [FPGA fabric](/pfdaq/explorer/#fabric) · [E51 (hart 0)](/pfdaq/explorer/#e51) · [U54 harts 1 to 3](/pfdaq/explorer/#u54-linux) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [FIC0 (AXI4, 125 MHz)](/pfdaq/explorer/#fic0) · [FIC3 (APB, 50 MHz)](/pfdaq/explorer/#fic3) · [Platform-level interrupt controller](/pfdaq/explorer/#plic) · [DDR4 memory, 1 GB](/pfdaq/explorer/#ddr) · [Hart Software Services](/pfdaq/explorer/#hss) |
 | **Evidence** | [Boot monitor console from power-up to all four application cores running](/pfdaq/evidence/v0.5.1/board/boot-hss.txt) (board, fabric v0.5.1); [Key lines of the U-Boot and Linux console from OpenSBI to login, including remoteproc attaching to hart 4](/pfdaq/evidence/v0.5.1/board/boot-uboot-linux.txt) (board, fabric v0.5.1) |
-| **Related** | [F02 The memory map and the three faces of DDR](/topics/fpga/polarfire-soc-fundamentals/f02-memory-map-ddr/); [F03 Interrupts from fabric to hart: F2M lines, the PLIC and contexts](/topics/fpga/soc-integration/f03-fabric-interrupts/); [F04 Clocks and resets: one PLL, two bus clocks](/topics/fpga/polarfire-soc-fundamentals/f04-clocks-and-resets/); [S01 FIC4 and the user crypto processor](/topics/fpga/soc-integration/s01-fic4-crypto-processor/); [X01 pfdaq in one page](/work/pfdaq-polarfire-soc/) |
+| **Related** | [F02 The memory map and the three faces of DDR](/topics/fpga/polarfire-soc-fundamentals/f02-memory-map-ddr/); [F03 Interrupts from fabric to hart: F2M lines, the PLIC and contexts](/topics/fpga/soc-integration/f03-fabric-interrupts/); [F04 Clocks and resets: one PLL, two bus clocks](/topics/fpga/polarfire-soc-fundamentals/f04-clocks-and-resets/); [X01 pfdaq in one page](/work/pfdaq-polarfire-soc/) |
