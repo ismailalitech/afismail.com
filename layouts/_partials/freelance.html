@@ -4,7 +4,6 @@
      3. the ways to work together
      4. how a project runs, step by step
      5. what a client can count on
-     6. team training
      The contact block follows (layouts/_partials/contact.html). */}}
 {{ with .Params.disciplines }}
 <section class="block" aria-labelledby="cover-heading">
@@ -83,21 +82,4 @@
 </section>
 {{ end }}
 
-{{ with .Params.training_text }}
-<section class="block" aria-labelledby="training-heading">
-  <div class="block-head">
-    <h2 id="training-heading">Team training on request</h2>
-  </div>
-  <div class="training">
-    <p>{{ . }}</p>
-    {{ with $.Params.training_subjects }}
-    <div>
-      <p class="training-label">Example subjects</p>
-      <ul class="subjects">
-        {{ range . }}<li>{{ . }}</li>{{ end }}
-      </ul>
-    </div>
-    {{ end }}
-  </div>
-</section>
-{{ end }}
+
