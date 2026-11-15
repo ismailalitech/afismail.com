@@ -79,7 +79,7 @@
 <section class="block" aria-labelledby="list-heading">
   <h2 id="list-heading" class="visually-hidden">All {{ .Title | lower }}</h2>
   {{ if and .RegularPages (eq .Section "work") }}
-    {{ partial "work-list.html" .RegularPages }}
+    {{ partial "work-list.html" (dict "pages" .RegularPages "figures" true) }}
   {{ else if and .RegularPages (ne .Section "topics") }}
     {{ partial "resource-list.html" .RegularPages }}
   {{ else }}

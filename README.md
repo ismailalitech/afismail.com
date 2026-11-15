@@ -56,11 +56,12 @@ unpublished measurements, nothing from a private repository.
 
 ## The picture on the home page
 
-Until you add one, the home page shows a drawing of an SPI transfer. To use a photo
-or a capture, put the file in `static/images/` and fill in the four `hero_image`
-lines in `content/_index.md` (remove the `# ` in front of them). Save photos as JPEG
-or WebP, about 1600 pixels wide and under 300 KB, and give the real width and height
-of the file so the page does not jump while the picture loads.
+The right of the home page shows a moving drawing: a chip with its traces fanning out
+and signals travelling along them. It has no caption. To show a photo or a capture
+instead, put the file in `static/images/` and fill in the `hero_image` lines in
+`content/_index.md` (remove the `# ` in front of them). Save photos as JPEG or WebP,
+about 1600 pixels wide and under 300 KB, and give the real width and height of the
+file so the page does not jump while the picture loads.
 
 ## Preview on your computer
 
@@ -183,21 +184,32 @@ email list. To take a page offline, set `draft = true` in it.
 
 ## Motion and smooth scrolling
 
-The site moves very little, on purpose.
-
-- **Home page picture.** The drawing is traced once, left to right, when the page
-  opens (a photo fades in once). It is CSS only, in `assets/css/main.css`.
+- **Moving background, on every page.** Circuit-board traces are drawn in the empty
+  page margins, with signals travelling along them, and the home page has the chip
+  drawing. They are never behind text: the margin traces are only as wide as the
+  margin (so they appear on screens about 1220 pixels wide or more), and the chip sits
+  beside the text, or under the buttons on a phone. Everything is in
+  `assets/js/traces.js`, with the colours and sizes in `assets/css/main.css`
+  (`.traces`, `.hero-field`). Each page gets its own routing. To remove the margin
+  traces, delete the two `<canvas class="traces ...">` lines in `layouts/baseof.html`.
+- **Signal under the header, on every page.** A short signal runs along the line under
+  the header every few seconds (`.site-header::after` in the stylesheet).
+- **Roadmap route.** On the roadmap page the stages are joined by a route that lights
+  up to the reading position (`assets/js/roadmap.js`, loaded on that page only). Any
+  page with `view = "roadmap"` gets it; start each stage heading with its number.
 - **Smooth scrolling, on the home page on a desktop only.** The mouse wheel is
   smoothed by the Lenis library (MIT licence). Hugo downloads the file once when it
   builds the site, checks it against the fingerprint in `hugo.toml`
   (`params.smoothScroll`), and serves it from the site itself, so visitors contact no
   other server. `assets/js/smooth-scroll.js` fetches and starts it only on a wide
   screen with a mouse or trackpad. Phones, tablets and every other page (case studies,
-  notes, labs, resources) scroll natively and never download the library. Set `enabled = false` to
-  turn it off everywhere. If the download fails during a build, Hugo prints a warning
-  and the site is built without it.
+  notes, labs, resources) scroll natively and never download the library. Set
+  `enabled = false` to turn it off everywhere. If the download fails during a build,
+  Hugo prints a warning and the site is built without it.
 
-Both are switched off for visitors who ask their system for reduced motion.
+Visitors who ask their system for reduced motion get the traces without the signals,
+no header signal and no smooth scrolling. Without JavaScript the pages are complete;
+only the decoration is missing.
 
 ## Visitor statistics
 

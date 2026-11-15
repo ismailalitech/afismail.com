@@ -5,13 +5,14 @@ weight = 30
 
 [params]
   topics = ["Guide"]
-  # Draws the stages along a line and shows the "On this page" list.
+  # Joins the stages with a route that lights up while reading, and shows the
+  # "On this page" list. Start each stage heading with its number, as below.
   view = "roadmap"
   toc = true
 +++
 
 Each stage lists what to learn and one or two public places to learn it. The
-[topics](/topics/) on this site follow the same subjects.
+notes and labs under [Expertise](/topics/) follow the same subjects.
 
 ## 1. Microcontroller basics
 

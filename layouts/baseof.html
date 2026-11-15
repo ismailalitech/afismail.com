@@ -10,6 +10,10 @@
     {{ block "main" . }}{{ end }}
   </main>
   {{ partial "footer.html" . }}
+  {{/* The moving background, in the page margins on wide screens: circuit traces with
+       signals travelling along them. Drawn by assets/js/traces.js, on every page. */}}
+  <canvas class="traces traces-left" data-traces="left" aria-hidden="true"></canvas>
+  <canvas class="traces traces-right" data-traces="right" aria-hidden="true"></canvas>
   {{ with resources.Get "js/site.js" }}
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
@@ -17,6 +21,17 @@
   {{ with resources.Get "js/search.js" }}
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  {{ end }}
+  {{ with resources.Get "js/traces.js" }}
+    {{ $js := . | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  {{ end }}
+  {{/* The roadmap page only: the route that lights up while reading. */}}
+  {{ if eq .Params.view "roadmap" }}
+    {{ with resources.Get "js/roadmap.js" }}
+      {{ $js := . | fingerprint }}
+      <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+    {{ end }}
   {{ end }}
   {{/* Smooth scrolling with the Lenis library. Hugo downloads the file when the site is built,
        checks it against the fingerprint in hugo.toml, and serves it from this site, so visitors

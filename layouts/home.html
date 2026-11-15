@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{/* 1. Name, role, one sentence and two actions on the left; a picture on the right.
+{{/* 1. Name, role, one sentence and two actions on the left; the moving chip drawing on the right.
      The texts are in content/_index.md. */}}
 <section class="hero">
   <div class="hero-text">
@@ -43,7 +43,7 @@
       <h2 id="work-heading">Selected work</h2>
       <a href="{{ $work.RelPermalink }}">All work</a>
     </div>
-    {{ partial "work-list.html" (first 1 .) }}
+    {{ partial "work-list.html" (dict "pages" (first 1 .) "figures" false) }}
   </section>
   {{ end }}
 {{ end }}

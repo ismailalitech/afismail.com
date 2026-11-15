@@ -6,10 +6,10 @@ title = "Embedded systems & security engineer"
   # The sentence under the role.
   intro = "I develop and debug firmware, integrate FPGA/SoC systems, and help teams verify embedded security."
 
-  # Picture on the right of the home page. Until you add one, a drawing of an SPI
-  # transfer is shown. To use your own photo or capture: put the file in static/images/,
-  # remove the "# " from the four lines below and fill them in. Width and height are the
-  # size of the file in pixels; they keep the page from jumping while the picture loads.
+  # The right of the home page shows a moving drawing of a chip and its traces. To show
+  # a photo or a capture instead: put the file in static/images/, remove the "# " from
+  # the four lines below and fill them in (the caption is optional). Width and height are
+  # the size of the file in pixels; they keep the page from jumping while it loads.
   # hero_image = "images/polarfire-board.jpg"
   # hero_image_alt = "PolarFire SoC Discovery Kit on the bench, with a logic analyser attached"
   # hero_image_caption = "PolarFire SoC Discovery Kit, with the MSS UART on a logic analyser."
