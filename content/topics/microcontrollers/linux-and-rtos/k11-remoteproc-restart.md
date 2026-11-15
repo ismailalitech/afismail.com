@@ -93,8 +93,8 @@ Two habits carry over from this case. First, a driver reporting success is not p
 | **Level** | Advanced |
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
-| **Read first** | M01 (planned) |
+| **Read first** | [M01 Asymmetric multiprocessing on one chip](/topics/microcontrollers/linux-and-rtos/m01-asymmetric-multiprocessing/) |
 | **In the system** | [E51 (hart 0)](/pfdaq/explorer/#e51) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [Hart Software Services](/pfdaq/explorer/#hss) · [remoteproc and RPMsg](/pfdaq/explorer/#remoteproc-rpmsg) |
 | **Source files** | [`tests/board/pfdaq_final_suite.sh`](https://github.com/ismailalitech/pfdaq/blob/main/tests/board/pfdaq_final_suite.sh) |
 | **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1) |
-| **Related** | M06 (planned); M01 (planned); B02 (planned) |
+| **Related** | [M06 remoteproc: attach, stop, and why restart fails here](/topics/microcontrollers/linux-and-rtos/m06-remoteproc-attach-stop/); [M01 Asymmetric multiprocessing on one chip](/topics/microcontrollers/linux-and-rtos/m01-asymmetric-multiprocessing/); [B02 The HSS payload: starting two operating systems](/topics/embedded-linux/boot-and-images/b02-hss-payload/) |

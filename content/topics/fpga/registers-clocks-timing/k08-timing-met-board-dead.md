@@ -26,7 +26,7 @@ On a good boot it carries on from there to set up its message queues. The projec
 
 1. **Only the fabric had changed.** The SD card and the boot flash were the ones the previous fabric had booted from.
 2. **Where it stopped is consistent with a dead fabric.** The Mi-V inter-hart communication core is a fabric block (module F03 shows its lines), so the first fabric access of the boot monitor is a plausible place to stop. This is an inference from the position of the message, not a measurement.
-3. **Reprogramming the previous job over JTAG recovered the board** (module B06 explains why that is always possible). So the card and the board were healthy and the new bitstream was the problem.
+3. **Reprogramming the previous job over JTAG recovered the board** (module B06 explains why this should be possible: the boot flash is untouched, so the board can be reprogrammed. It was done once, here, and that is the only recovery on record). So the card and the board were healthy and the new bitstream was the problem.
 4. **The build script was read for what place and route had been given.** It had been given two files: the derived timing constraints and the new clock-crossing file. The I/O and floorplan constraint files that the reference design supplies were not in the list.
 
 Step 4 is a reading of the script, not a measurement. How the unconstrained design behaved electrically was not investigated.
@@ -122,4 +122,4 @@ Since this case the build aborts unless all 64 I/Os are placed.
 | **In the system** | [Fabric clocks and resets](/pfdaq/explorer/#fabric-clocks) · [pfdaq_core](/pfdaq/explorer/#pfdaq-core) · [Mi-V inter-hart communication](/pfdaq/explorer/#ihc) |
 | **Source files** | [`hw/libero/overlay/reference-design-v2026.04.patch`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/reference-design-v2026.04.patch): `organize_tool_files`; [`hw/libero/build.sh`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/build.sh) |
 | **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1) |
-| **Related** | H10 (planned); [K07 Three builds lost to brackets in a constraint file](/topics/fpga/registers-clocks-timing/k07-brackets-in-constraints/); B06 (planned) |
+| **Related** | [H10 Timing closure, and the build that lost its pins](/topics/fpga/registers-clocks-timing/h10-timing-closure/); [K07 Three builds lost to brackets in a constraint file](/topics/fpga/registers-clocks-timing/k07-brackets-in-constraints/); [B06 Programming safely: components, digests and what never to touch](/topics/embedded-linux/boot-and-images/b06-programming-safely/) |

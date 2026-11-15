@@ -57,7 +57,7 @@ Constraints that shaped the design:
 The pieces are written up as separate notes and labs: [streaming datapaths](/topics/fpga/streaming-datapaths/),
 [registers, clocks and timing](/topics/fpga/registers-clocks-timing/),
 [verification and instruments](/topics/fpga/verification-and-instruments/),
-[SoC integration](/topics/fpga/soc-integration/) and [Linux and an RTOS on one chip](/topics/microcontrollers/linux-and-rtos/).
+[SoC integration](/topics/fpga/soc-integration/), [Linux and an RTOS on one chip](/topics/microcontrollers/linux-and-rtos/), [boot and images](/topics/embedded-linux/boot-and-images/), [Linux and the FPGA](/topics/embedded-linux/linux-fpga-interfaces/) and [performance and reliability](/topics/fpga/performance-and-reliability/).
 
 ## Architecture
 
