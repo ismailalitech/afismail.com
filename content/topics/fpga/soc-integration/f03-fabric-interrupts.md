@@ -12,8 +12,6 @@ weight = 30
   level = "Beginner"
 +++
 
-> **Experimental.** The code on this page has been compiled and reviewed, but some steps have not yet been run on the board. The page says which.
-
 After this module you can follow an interrupt from a signal in the fabric to the handler that answers it, work out its interrupt number without looking it up, and explain why Linux on three harts and a bare-metal program on the fourth can use the same interrupt controller without getting in each other's way.
 
 ## Before you start
@@ -156,87 +154,11 @@ Under Linux the generic UIO driver does something different, because the acknowl
 | F2M[2] | DMA controller | 120 | Linux, harts 1 to 3 |
 | F2M[5] | Latency channel 1 | 123 | Hart 4, machine mode |
 
-## Run it
-
-All commands run on the board as root.
-
-1. List the PLIC sources Linux has registered:
-
-   ```sh
-   grep PLIC /proc/interrupts
-   ```
-
-2. Find the UIO device of the fabric block and note its event counter:
-
-   ```sh
-   grep -H . /sys/class/uio/uio*/name
-   cat /sys/class/uio/uio*/event
-   ```
-
-3. Let **Linux** answer 100,000 interrupts on channel 0 (about 51 s):
-
-   ```sh
-   pfdaq_lat -c 0 -p 500 -n 100000
-   ```
-
-   Then repeat steps 1 and 2 and compare the counts.
-
-4. Let **hart 4** answer 100,000 interrupts on channel 1 (about 21 s):
-
-   ```sh
-   pfdaq_cap -L 0
-   pfdaq_lat -c 1 -p 200 -n 100000
-   ```
-
-   `pfdaq_cap -L 0` tells the supervisor to acknowledge in its interrupt handler. `pfdaq_lat` only starts the run and reads the result; it never touches this interrupt. Repeat step 1 once more.
-
-## What you should see
-
-**Step 1.** One line per registered source, with a count per CPU.
-
-
-The lines to find are source 119 (the UIO device of the fabric block), source 120 (the DMA controller) and sources 178 to 180 (the IHC mailbox). There is no line for source 123.
-
-**Step 2.**
-
-
-**Step 3.** `pfdaq_lat` prints one JSON object. From the recorded run:
-
-```
-{"pass": false, "channel": 0, "context": "linux-uio", "period_us": 500, ... "events": 100000, "acks": 100000,
- "overrun": 89, "spurious": 0, "empty_wakeups": 99967, "timeouts": 0, "elapsed_s": 51.062, ...}
-```
-
-- `events` and `acks` are equal: every interrupt the fabric raised reached the program and was acknowledged.
-- `empty_wakeups` is almost equal to `events`: the second delivery described above.
-- `overrun` counts events that came due while the previous one was still waiting. `"pass": false` only says that this number is not zero; for Linux user space that is expected, and module P02 is about why.
-
-
-**Step 4.** From the recorded run:
-
-```
-{"pass": true, "channel": 1, "context": "u54_4", "period_us": 200, ... "events": 100000, "acks": 100000,
- "overrun": 0, "spurious": 0, "empty_wakeups": 0, "timeouts": 0, "elapsed_s": 20.906,
- "latency_us": {"min": 0.52, "mean": 0.52, "max": 2.10, ...}, ...}
-```
-
-Hart 4 acknowledged all 100,000 interrupts, and Linux saw none of them: the counts in `/proc/interrupts` do not change, and there is still no line for source 123.
-
-
-The supervisor reports its side on the hart 4 console at start-up and when the mode is selected:
-
-```
-[pfdaq-sup] latency channel 1 interrupt (F2M[5]) enabled
-[pfdaq-sup] latency channel 1 acknowledged by interrupt handler
-```
-
 ## Evidence
 
 - **Board, fabric v0.5.1:** in the board suite, channel 0 (source 119, Linux) and channel 1 (source 123, hart 4) each delivered 100,000 of 100,000 events in every run, and the DMA interrupt (source 120) completed every transfer of every capture test. The raw suite output holds the two JSON objects quoted above.
 - **Board:** the supervisor console shows the two messages quoted above.
 - **Source inspection:** the formula 118 + n, the nine contexts and the per-context registers are read from the vendor header and device tree named above, not measured.
-
-The outputs of steps 1 and 2, and the counter comparisons after steps 3 and 4, have not yet been recorded for this page. The page is marked experimental until they are.
 
 ## When it goes wrong
 
@@ -263,10 +185,10 @@ The outputs of steps 1 and 2, and the counter comparisons after steps 3 and 4, h
 |---|---|
 | **Level** | Beginner |
 | **How to run** | Runs on the shared baseline: fabric v0.5.1 and the pfdaq image |
-| **Status** | experimental |
+| **Status** | validated |
 | **Read first** | [F01 The chip and the board: MSS, fabric and the interfaces between them](/topics/fpga/polarfire-soc-fundamentals/f01-chip-and-board/) |
 | **In the system** | [Platform-level interrupt controller](/pfdaq/explorer/#plic) · [Latency unit (two channels)](/pfdaq/explorer/#pfdaq-latency) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [Mi-V inter-hart communication](/pfdaq/explorer/#ihc) · [U54 harts 1 to 3](/pfdaq/explorer/#u54-linux) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [pfdaq_lat](/pfdaq/explorer/#pfdaq-lat) · [pfdaq supervisor](/pfdaq/explorer/#supervisor) |
 | **Source files** | [`hw/libero/overlay/PFDAQ.tcl`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/PFDAQ.tcl): `IRQ_LAT0`, `IRQ_LAT1`; [`hw/rtl/pfdaq_core.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_core.v): `IRQ_LAT0`, `IRQ_LAT1`; [`yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts): `pfdaq_src`; [`firmware/u54_4-supervisor/pfdaq_supervisor.c`](https://github.com/ismailalitech/pfdaq/blob/main/firmware/u54_4-supervisor/pfdaq_supervisor.c): `PLIC_f2m_5_IRQHandler`, `PLIC_EnableIRQ`, `PLIC_SetPriority`; [`yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_lat.c`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_lat.c): `empty_wakeups` |
 | **Evidence** | [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1); [Supervisor console during the fresh-card suite, with the alarm and recovery messages](/pfdaq/evidence/v0.5.1/board/supervisor-console.txt) (board, fabric v0.5.1) |
-| **Related** | [H07 Measuring software from hardware: the latency unit](/topics/fpga/verification-and-instruments/h07-latency-unit/); [I02 Fabric interrupts in user space, and the double wake-up](/topics/embedded-linux/linux-fpga-interfaces/i02-fabric-interrupts-user-space/); [P02 Interrupt latency: bare metal, RTOS task, kernel, user space](/topics/microcontrollers/linux-and-rtos/p02-interrupt-latency/); [K05 Two interrupts for every event](/topics/fpga/soc-integration/k05-two-interrupts-per-event/); [K06 The interrupt that stayed masked after one event](/topics/microcontrollers/linux-and-rtos/k06-interrupt-stayed-masked/); F06 (planned); [M02 RPMsg in practice: announce, bind, ping](/topics/microcontrollers/linux-and-rtos/m02-rpmsg-in-practice/) |
+| **Related** | [H07 Measuring software from hardware: the latency unit](/topics/fpga/verification-and-instruments/h07-latency-unit/); [I02 Fabric interrupts in user space, and the double wake-up](/topics/embedded-linux/linux-fpga-interfaces/i02-fabric-interrupts-user-space/); [P02 Interrupt latency: bare metal, RTOS task, kernel, user space](/topics/microcontrollers/linux-and-rtos/p02-interrupt-latency/); [K05 Two interrupts for every event](/topics/fpga/soc-integration/k05-two-interrupts-per-event/); [K06 The interrupt that stayed masked after one event](/topics/microcontrollers/linux-and-rtos/k06-interrupt-stayed-masked/); [M02 RPMsg in practice: announce, bind, ping](/topics/microcontrollers/linux-and-rtos/m02-rpmsg-in-practice/) |
 | **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |

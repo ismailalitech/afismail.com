@@ -184,7 +184,7 @@ The tool prints `delivered_mb_per_s` as verified bytes divided by `elapsed_s`, w
 | **Level** | Advanced |
 | **How to run** | Runs on the shared baseline: fabric v0.5.1 and the pfdaq image |
 | **Status** | validated |
-| **Read first** | [I06 Capturing and verifying a stream](/topics/embedded-linux/linux-fpga-interfaces/i06-capture-and-verify/), [H06 Real-time sources: slots, credits and honest drops](/topics/fpga/streaming-datapaths/h06-real-time-source/) |
+| **Read first** | [I06 Capturing and verifying a stream](/topics/embedded-linux/linux-fpga-interfaces/i06-capture-and-verify/); [H06 Real-time sources: slots, credits and honest drops](/topics/fpga/streaming-datapaths/h06-real-time-source/) |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [Non-cached window](/pfdaq/explorer/#ddr-noncached) · [pfdaq_cap](/pfdaq/explorer/#pfdaq-cap) · [UIO devices](/pfdaq/explorer/#uio) |
 | **Source files** | [`yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c): `run_realtime`, `arm_rt`, `uio_events`, `fence_io`, `RT_DESC_STRIDE`, `SRC_CREDIT`, `DMA_STREAM0` |
 | **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1) |
