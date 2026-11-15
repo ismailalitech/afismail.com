@@ -95,6 +95,6 @@ Two habits carry over from this case. First, a driver reporting success is not p
 | **Status** | validated |
 | **Read first** | M01 (planned) |
 | **In the system** | [E51 (hart 0)](/pfdaq/explorer/#e51) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [Hart Software Services](/pfdaq/explorer/#hss) · [remoteproc and RPMsg](/pfdaq/explorer/#remoteproc-rpmsg) |
-| **Source files** | `tests/board/pfdaq_final_suite.sh` |
+| **Source files** | [`tests/board/pfdaq_final_suite.sh`](https://github.com/ismailalitech/pfdaq/blob/main/tests/board/pfdaq_final_suite.sh) |
 | **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1) |
 | **Related** | M06 (planned); M01 (planned); B02 (planned) |
