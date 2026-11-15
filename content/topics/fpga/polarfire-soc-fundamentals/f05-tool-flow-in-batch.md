@@ -83,6 +83,18 @@ Info:  I/O Bank and Globals Assigner identified 64 fixed I/O macros, 0 unfixed I
 Info: Timing constraints have been met.
 ```
 
+### The same flow in the Libero GUI
+
+The scripts drive the steps the GUI lists. The left panel of the GUI is the design flow: create the design, constrain it, synthesise, place and route, verify timing, generate the programming data, program, export. The batch build in `hw/libero/build.sh` walks the same list.
+
+[![The Design Flow panel of Libero SoC 2026.1 with the project open](/pfdaq/evidence/v0.5.1/build/libero-design-flow.png)](/pfdaq/evidence/v0.5.1/build/libero-design-flow.png)
+
+The panel is a screenshot of the project's own build, opened read-only. The yellow triangles are Libero's status markers on steps that finished with warnings; this page does not interpret them one by one.
+
+The design hierarchy of the same project shows what the build assembled: the reference design's four blocks, and under `FIC_0_PERIPHERALS` the one block this project adds, `pfdaq_core`, which is plain Verilog (`pfdaq_core.v`) and so has a different icon from the IP cores around it.
+
+[![The Design Hierarchy panel: MPFS_DISCOVERY_KIT with FIC_0_PERIPHERALS and FIC_3_PERIPHERALS expanded](/pfdaq/evidence/v0.5.1/build/libero-hierarchy.png)](/pfdaq/evidence/v0.5.1/build/libero-hierarchy.png)
+
 ## Run it
 
 This is a reading module. What the project ran, in order, from the repository root:
@@ -139,5 +151,5 @@ and the programming prints a checksum, a design version and the component digest
 | **Status** | validated |
 | **In the system** | [Development PC](/pfdaq/explorer/#host) · [FlashPro5 on USB-C](/pfdaq/explorer/#debug-usb) · [FPGA fabric](/pfdaq/explorer/#fabric) |
 | **Source files** | [`hw/libero/build.sh`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/build.sh): `LM_LICENSE_FILE`, `PFDAQ_REFDESIGN`, `DESIGN_VERSION`; [`hw/libero/program.sh`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/program.sh): `FPEXPRESS`; [`hw/libero/export_job.tcl`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/export_job.tcl): `GENERATEPROGRAMMINGDATA`; [`hw/libero/sta_without_cdc.tcl`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/sta_without_cdc.tcl): `VERIFYTIMING`; [`hw/libero/overlay/reference-design-v2026.04.patch`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/reference-design-v2026.04.patch): `organize_tool_files` |
-| **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1); [Programming, verify and device read-back of the v0.5.1 fabric](/pfdaq/evidence/v0.5.1/build/programming.txt) (board, fabric v0.5.1) |
+| **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1); [Programming, verify and device read-back of the v0.5.1 fabric](/pfdaq/evidence/v0.5.1/build/programming.txt) (board, fabric v0.5.1); [The Libero design flow as listed for the project](/pfdaq/evidence/v0.5.1/build/libero-design-flow.png) (build, fabric v0.5.1); [The design hierarchy: reference design blocks and the added pfdaq_core](/pfdaq/evidence/v0.5.1/build/libero-hierarchy.png) (build, fabric v0.5.1) |
 | **Related** | [B06 Programming safely: components, digests and what never to touch](/topics/embedded-linux/boot-and-images/b06-programming-safely/); [H09 Integrating custom RTL into a vendor design by script](/topics/fpga/soc-integration/h09-rtl-into-vendor-design/); [H10 Timing closure, and the build that lost its pins](/topics/fpga/registers-clocks-timing/h10-timing-closure/); [K07 Three builds lost to brackets in a constraint file](/topics/fpga/registers-clocks-timing/k07-brackets-in-constraints/); [K08 Timing met, board dead: the missing pin constraints](/topics/fpga/registers-clocks-timing/k08-timing-met-board-dead/) |
