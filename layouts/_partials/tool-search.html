@@ -36,8 +36,6 @@
       {{ range index $page.Params $key }}{{ $text = printf "%s %s. %s" $text .title .text }}{{ end }}
     {{ end }}
     {{ range .Params.requests }}{{ $text = printf "%s %s" $text . }}{{ end }}
-    {{ with .Params.training_text }}{{ $text = printf "%s %s" $text . }}{{ end }}
-    {{ range .Params.training_subjects }}{{ $text = printf "%s %s." $text . }}{{ end }}
     {{ $index = $index | append (dict "title" .Title "url" .RelPermalink "description" .Description "kind" $kind "where" $where "text" $text) }}
   {{ end }}
 {{ end }}
