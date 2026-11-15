@@ -2633,7 +2633,6 @@ figcaption {
 
 .route-head {
   fill: var(--accent);
-  filter: drop-shadow(0 0 4px var(--accent));
 }
 
 .route-ping {
@@ -3094,9 +3093,6 @@ html.lenis {
   gap: 1.1rem;
 }
 
-.rb-on .shiny-text {
-  vertical-align: baseline;
-}
 
 /* 19. Page-to-page transitions and the reading bar: native CSS, no script. A browser that does not
    support them simply navigates and scrolls as before. */

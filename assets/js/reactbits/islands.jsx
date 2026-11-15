@@ -9,7 +9,6 @@ import React from 'react';
 import { createRoot } from 'react-dom';
 import SplitText from './SplitText.jsx';
 import SpotlightCard from './SpotlightCard.jsx';
-import ShinyText from './ShinyText.jsx';
 
 const reduced = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const root = document.documentElement;
@@ -50,7 +49,7 @@ const components = {
     function Card() {
       const theme = useTheme();
       return (
-        <SpotlightCard theme={theme} className="rb-card" style={CARD_STYLE} intensity={0.16} spotlightSize={260} borderGlow={0.7} {...props}>
+        <SpotlightCard theme={theme} className="rb-card" style={CARD_STYLE} intensity={0.08} spotlightSize={200} borderGlow={0.5} {...props}>
           <div className="rb-inner" dangerouslySetInnerHTML={{ __html: html }} />
         </SpotlightCard>
       );
@@ -60,15 +59,6 @@ const components = {
   /* The text of the element, split into characters that rise into place. */
   SplitText(el, props) {
     return <SplitText text={el.textContent.trim()} tag="span" textAlign="left" splitType="chars" delay={30} duration={0.9} threshold={0} rootMargin="0px" {...props} />;
-  },
-  /* A soft shine that passes over the text now and then. */
-  ShinyText(el, props) {
-    function Shiny() {
-      const theme = useTheme();
-      const dark = theme === 'dark';
-      return <ShinyText text={el.textContent.trim()} color={dark ? '#a5a49e' : '#5a5a55'} shineColor={dark ? '#ffffff' : '#1d43b5'} speed={3.2} delay={1.5} {...props} />;
-    }
-    return <Shiny />;
   }
 };
 
