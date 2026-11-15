@@ -19,6 +19,9 @@
     <a class="btn" href="#parts">The parts</a>
   </p>
 
+  {{/* Optional animated blocks above the parts, named by intro = "..." in the project's front matter. */}}
+  {{ with .Params.intro }}{{ partial (printf "%s.html" .) $ }}{{ end }}
+
   <section class="block project-parts" id="parts" aria-labelledby="parts-heading">
     <div class="block-head">
       <h2 id="parts-heading">The parts of this project</h2>

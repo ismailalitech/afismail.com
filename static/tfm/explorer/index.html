@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TrustZone and TF-M timing explorer · Ali Ismail</title>
+<meta name="description" content="Watch a Secure call block a task, compare the measured costs, and look at them through confidentiality, integrity, isolation and availability.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}</script>
+<style>
+@font-face{font-family:"Instrument Sans";font-weight:400;font-display:swap;src:url("/fonts/instrument-sans-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Instrument Sans";font-weight:600;font-display:swap;src:url("/fonts/instrument-sans-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-weight:400;font-display:swap;src:url("/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2")}
+:root{--bg:#f6f4ef;--surface:#fcfbf8;--sunken:#ebe8e1;--ink:#17181a;--muted:#5a5a55;--rule:#dcd8ce;--rule-strong:#8b887f;--accent:#1d43b5;--on-accent:#fff;--alert:#b3261e;
+--tint:color-mix(in srgb,var(--accent) 6%,var(--surface));--font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;--radius:6px;--radius-control:4px;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16171a;--surface:#1c1d21;--sunken:#26282d;--ink:#eceae5;--muted:#a5a49e;--rule:#303238;--rule-strong:#76777c;--accent:#9cb3ff;--on-accent:#0d1326;--alert:#ff8a80;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16171a;--surface:#1c1d21;--sunken:#26282d;--ink:#eceae5;--muted:#a5a49e;--rule:#303238;--rule-strong:#76777c;--accent:#9cb3ff;--on-accent:#0d1326;--alert:#ff8a80;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--font-body);padding:1.25rem max(16px,env(safe-area-inset-right,0px)) 3rem max(16px,env(safe-area-inset-left,0px))}
+a{color:var(--accent)} .wrap{max-width:68rem;margin:0 auto;display:flex;flex-direction:column;gap:1.4rem}
+header{display:flex;flex-direction:column;gap:.5rem}
+.top{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;font-size:.9375rem}
+h1{margin:0;font-size:clamp(1.5rem,3vw,2rem);line-height:1.2;text-wrap:balance} .sub{margin:0;color:var(--muted);max-width:50rem}
+.tabs{display:flex;flex-wrap:wrap;gap:.4rem;border-bottom:1px solid var(--ink);padding-bottom:.6rem}
+.tab{font:inherit;font-weight:500;min-height:2.6rem;padding:.4rem 1rem;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--rule-strong);border-radius:var(--radius-control)}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.tab:focus-visible,.theme:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.theme{font:inherit;font-size:.875rem;padding:.3rem .7rem;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--rule);border-radius:999px}
+section[hidden]{display:none} section h2{margin:0 0 .3rem;font-size:1.25rem} section>p.lead{margin:0 0 1rem;color:var(--muted);max-width:50rem}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(14rem,1fr));gap:.6rem;margin:0 0 1rem;padding:0;list-style:none}
+.how li{padding:.6rem .8rem;border:1px solid var(--rule);border-radius:var(--radius);background:var(--surface);font-size:.9375rem}
+.how b{display:block;font-size:.8rem;font-family:var(--font-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+footer{font-size:.875rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:.8rem}
+noscript{display:block;padding:1rem;border:1px solid var(--alert);border-radius:var(--radius)}
+</style>
+<link rel="stylesheet" href="/tfm/tfm.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="top"><a href="/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/">&larr; The project: what a Secure world costs a real-time system</a><button class="theme" type="button" id="theme">Switch theme</button></div>
+  <h1>TrustZone and TF-M timing explorer</h1>
+  <p class="sub">Watch a Secure call delay other tasks, compare what the boards measured, and read the costs through the security property they pay for. Every figure comes from the project's experiments.</p>
+</header>
+<noscript>This explorer needs JavaScript. The same results are written out in <a href="/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/validation/x01-validation-report/">the validation report</a>.</noscript>
+
+<div class="tabs" role="tablist" aria-label="Views">
+  <button class="tab" role="tab" id="t-watch" aria-controls="p-watch" aria-selected="true" data-p="watch">Watch it happen</button>
+  <button class="tab" role="tab" id="t-compare" aria-controls="p-compare" aria-selected="false" data-p="compare">Compare</button>
+  <button class="tab" role="tab" id="t-lens" aria-controls="p-lens" aria-selected="false" data-p="lens">Security lens</button>
+  <button class="tab" role="tab" id="t-find" aria-controls="p-find" aria-selected="false" data-p="find">Find what you need</button>
+</div>
+
+<section id="p-watch" role="tabpanel" aria-labelledby="t-watch">
+  <h2>Watch a Secure call delay other tasks</h2>
+  <p class="lead">Three tasks share one core. The low task makes a call into the Secure world. Choose the service, split it into pieces, switch priority inheritance off, and watch who waits.</p>
+  <ul class="how">
+    <li><b>1 &middot; Pick a service</b>The longest call is what everyone above has to wait for. From 38 &micro;s to 0.3 s.</li>
+    <li><b>2 &middot; Split it</b>More pieces shorten the longest call, and cost 30 &micro;s per extra call.</li>
+    <li><b>3 &middot; Read the stats</b>Red means a deadline was missed. The medium task never calls the Secure world, yet it can miss.</li>
+  </ul>
+  <div data-tfm="sim" data-service="ai" data-n="1"></div>
+</section>
+
+<section id="p-compare" role="tabpanel" aria-labelledby="t-compare" hidden>
+  <h2>Compare what was measured</h2>
+  <p class="lead">Nine side-by-side comparisons. Pick one; each links to the lab that explains it.</p>
+  <div data-tfm="compare"></div>
+</section>
+
+<section id="p-lens" role="tabpanel" aria-labelledby="t-lens" hidden>
+  <h2>Through a security lens</h2>
+  <p class="lead">Security properties cost time. Choose the one you are buying and see its price, how to keep it affordable, and where to read more.</p>
+  <div data-tfm="lens"></div>
+</section>
+
+<section id="p-find" role="tabpanel" aria-labelledby="t-find" hidden>
+  <h2>Find what you need</h2>
+  <p class="lead">Start from what you are trying to do.</p>
+  <div data-tfm="find"></div>
+</section>
+
+<footer>Measured on an STM32H573I-DK (Zephyr with TF-M) and a Renesas FPB-RA4E1 (bare TrustZone-M). The simulator is an illustration of the mechanism, not a replay of a recorded run. See <a href="/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/validation/x02-limits-and-open-questions/">limits and open questions</a>.</footer>
+</div>
+<script src="/tfm/tfm.js"></script>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll(".tab"));
+  function show(p,push){
+    tabs.forEach(function(b){var on=b.getAttribute("data-p")===p;b.setAttribute("aria-selected",on?"true":"false");document.getElementById("p-"+b.getAttribute("data-p")).hidden=!on});
+    if(push){try{history.replaceState(null,"","#"+p)}catch(e){}}
+  }
+  tabs.forEach(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-p"),true)})});
+  tabs.forEach(function(b,i){b.addEventListener("keydown",function(e){var n=e.key==="ArrowRight"?i+1:e.key==="ArrowLeft"?i-1:null;if(n===null)return;n=(n+tabs.length)%tabs.length;tabs[n].focus();show(tabs[n].getAttribute("data-p"),true);e.preventDefault()})});
+  var h=(location.hash||"").slice(1);show(["watch","compare","lens","find"].indexOf(h)>-1?h:"watch",false);
+  document.getElementById("theme").addEventListener("click",function(){
+    var cur=document.documentElement.getAttribute("data-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+    var nx=cur==="dark"?"light":"dark";document.documentElement.setAttribute("data-theme",nx);try{localStorage.setItem("theme",nx)}catch(e){}
+  });
+})();
+</script>
+</body>
+</html>

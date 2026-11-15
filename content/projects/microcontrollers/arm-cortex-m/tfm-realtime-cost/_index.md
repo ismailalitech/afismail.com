@@ -14,18 +14,21 @@ weight = 20
   result = "Each source of delay measured on real hardware and expressed as a term of a response-time analysis. The bounds held on all 288 observed worst cases of 96 random task sets, and a Secure AI service that blocked a 2 ms task for 8.4 ms was brought down to 200 microseconds."
   hardware = "STM32H573I-DK (Cortex-M33 at 240 MHz, Zephyr with TF-M) and Renesas FPB-RA4E1 (Cortex-M33, Zephyr with a bare TrustZone-M Secure image)"
   tools = "Zephyr 4.4, TF-M 2.3, CMSIS-NN, west, on-chip hardware timers, Python"
+  action = "/tfm/explorer/"
+  action_text = "Open the explorer"
+  intro = "tfm-intro"
   toc = true
 +++
 
 ## Problem
 
-On a Cortex-M33 with TrustZone, security-sensitive code runs in a Secure world that the application calls into. For a real-time system this is a scheduling problem as well as a security one. While a call is running, a more urgent Non-Secure task may be ready and still not run. A write to Secure storage slows code that never touches storage. A long service such as a signature check or a neural-network layer adds to the delay.
+On a Cortex-M33 with TrustZone, security-sensitive code runs in a Secure world that the application calls into. For a real-time system this is a scheduling problem as well as a security one. A more urgent task can preempt a Secure call, but if it also needs the Secure world it has to wait for the call to finish, and the tasks in between wait with it. A write to Secure storage slows code that never touches storage. A long service such as a signature check or a neural-network layer adds to the delay.
 
 Response-time analysis can include such delays, but only if each one has a bound that comes from measurement and not from a guess. This project measures each delay on real boards, shows what causes it, and writes it as a term the analysis can use.
 
-![A low-priority task makes a long call into the Secure world. A high-priority task released during the call waits until it returns.](/images/tfm/blocking-timeline.svg)
+![A low-priority task makes a long call into the Secure world. A high-priority task released during the call preempts it, then waits for the call when it needs the Secure world too. The medium task is held back as well.](/images/tfm/blocking-timeline.svg)
 
-*The delay under study: a high-priority task released during a long Secure call has to wait for it.*
+*The delay under study. The high task preempts the Secure call at once, but when it needs the Secure world too it waits for the call to return, and the medium task, which never calls the Secure world, is held back with it.*
 
 ## Hardware and constraints
 

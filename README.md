@@ -166,6 +166,24 @@ Optional lines under `[params]` in a page's front matter change how it is laid o
 | `view = "about"`     | shows the background from `hugo.toml` beside the text     |
 | `contact = true`     | shows the contact block (beside the text on wide screens) |
 
+## The TrustZone timing explorer
+
+The project `content/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/` has animated
+blocks above its list of parts, and a standalone explorer at `/tfm/explorer/`.
+
+| File | What it does |
+| ---- | ------------ |
+| `static/tfm/tfm.js` | The scheduling simulator, the comparison bars, the security lens, the finder and the headline tiles. It has no dependencies. All figures it shows are in this file. |
+| `static/tfm/tfm.css` | Their styles, written with the site's colour tokens so light and dark both work. |
+| `static/tfm/explorer/index.html` | The standalone explorer, with four tabs. |
+| `layouts/_partials/tfm-intro.html` | The blocks on the project page. |
+| `layouts/_partials/project-hub.html` | Shows a partial named by `intro = "..."` in a project's front matter, above the parts. |
+
+To change a number or a link, edit the lists at the top of `tfm.js` (`SERVICES`, `COMPARE`,
+`LENS`, `FIND`, `TILES`, `PAGES`). If you rename or move a lab page, update `PAGES` too. The
+schedule is a simulation of the mechanism, not a replay of a recorded run; the page says so.
+Animations stop when the visitor prefers reduced motion.
+
 ## Search
 
 The magnifier in the header opens a search line on the current page; results appear
