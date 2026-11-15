@@ -1,0 +1,17 @@
+{{/* One project, as a card: kind, title, the three-line summary, what it holds, and buttons.
+     Receives the project (its hub page, or a single page with project = true). */}}
+{{ $count := "" }}
+{{ if .IsSection }}{{ $count = partial "counts.html" . }}{{ end }}
+<li class="project-card">
+  <p class="kind">{{ partial "icon.html" "article" }}<span>Project{{ with .Params.platform }} · {{ . }}{{ end }}</span></p>
+  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+  {{ with .Description }}<p class="work-lead">{{ . }}</p>{{ end }}
+  {{ partial "case-summary.html" . }}
+  {{ if .IsSection }}
+  {{ with .Sections }}<p class="row-state has-content">{{ len . }} parts{{ with $count }} · {{ . }}{{ end }}</p>{{ end }}
+  {{ end }}
+  <p class="actions">
+    <a class="btn btn-small btn-primary" href="{{ .RelPermalink }}">Open the project</a>
+    {{ with .Params.action }}<a class="btn btn-small" href="{{ . }}">{{ $.Params.action_text }}</a>{{ end }}
+  </p>
+</li>

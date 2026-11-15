@@ -1,4 +1,9 @@
 {{ define "main" }}
+{{ if .Params.project }}
+{{ partial "project-hub.html" . }}
+{{ else if eq .Params.view "projects" }}
+{{ partial "project-index.html" . }}
+{{ else }}
 {{/* A folder can show the secure and non-secure diagram beside its title with visual = true. */}}
 {{ if .Params.visual }}<div class="page-top">{{ end }}
 <header class="page-head">
@@ -21,6 +26,7 @@
   {{ range . }}{{ if .Sections }}{{ $nested = true }}{{ end }}{{ end }}
 
   {{ if $nested }}
+    {{ if $.Params.labs_index }}{{ partial "project-labs.html" $ }}{{ end }}
     {{/* The Expertise page. Areas that already hold notes, labs or videos come first.
          Inside an area, sub-topics with content are listed in full and the others are
          gathered on one "Planned" line, so the page shows what exists. */}}
@@ -80,7 +86,7 @@
   <h2 id="list-heading" class="visually-hidden">All {{ .Title | lower }}</h2>
   {{ if and .RegularPages (eq .Section "work") }}
     {{ partial "work-list.html" (dict "pages" .RegularPages "figures" true) }}
-  {{ else if and .RegularPages (ne .Section "topics") }}
+  {{ else if and .RegularPages (ne .Section "topics") (ne .Section "projects") }}
     {{ partial "resource-list.html" .RegularPages }}
   {{ else }}
     {{ partial "entry-list.html" (dict "pages" .RegularPages "section" .) }}
@@ -90,5 +96,6 @@
 
 {{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
 
-{{ if eq .Section "topics" }}{{ partial "siblings.html" . }}{{ end }}
+{{ if or (eq .Section "topics") (eq .Section "projects") }}{{ partial "siblings.html" . }}{{ end }}
+{{ end }}
 {{ end }}
