@@ -46,6 +46,18 @@ The project's own names for them are the port names in its RTL:
 
 The multiplier and divider values of the PLL are in the reference design's script, which this repository does not copy (the build fetches it); this page does not reproduce them and does not need them.
 
+The numbers in the table above are what the clock-conditioning block's configuration window shows. The picture plays through it.
+
+[![The clock conditioning circuit's output clocks in Libero with five numbered callouts: one PLL, outputs 0, 1 and 2 at 125 MHz and output 3 at 50 MHz](/pfdaq/diagrams/cfg-pf-ccc.svg)](/pfdaq/diagrams/cfg-pf-ccc.svg)
+
+1. **One PLL, four outputs.** The configuration is `PLL-Single`.
+2. **Output 0** is requested at 125 MHz and the tool reports an actual 125.000 MHz.
+3. **Output 1** is the same, 125 MHz.
+4. **Output 2** is the same, 125 MHz.
+5. **Output 3** is requested at 50 MHz and the actual frequency is 50.000 MHz.
+
+In Libero: in the Design Hierarchy expand `CLOCKS_AND_RESETS` and double-click the clock-conditioning component (its tabs are Clock Options PLL and Output Clocks). Close with Cancel. For your own design, the same two decisions are the input frequency and one requested frequency per output; the tool then shows the actual value it can reach.
+
 ### The MSS side, in the MSS Configurator
 
 The MSS has its own clock tree, set in the configurator. Its PLL runs at 600 MHz from the 125 MHz reference clock on a dedicated pin; the processor cores get 600 MHz (divider 1), the AXI and level-2 cache clock 300 MHz (divider 2) and the AHB/APB clock 150 MHz (divider 4). The same tab shows the SD/eMMC clock at 200 MHz, the DDR controller and PHY at 800 MHz and the SGMII PHY at 625 MHz. These are the MSS's own clocks; the fabric interface clocks above are supplied separately.
@@ -128,5 +140,5 @@ These are build results: they show the design meets timing with the crossings de
 | **Read first** | [F01 The chip and the board: MSS, fabric and the interfaces between them](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/polarfire-soc-fundamentals/f01-chip-and-board/) |
 | **In the system** | [Fabric clocks and resets](/pfdaq/explorer/#fabric-clocks) · [FIC0 (AXI4, 125 MHz)](/pfdaq/explorer/#fic0) · [FIC3 (APB, 50 MHz)](/pfdaq/explorer/#fic3) · [pfdaq_core](/pfdaq/explorer/#pfdaq-core) |
 | **Source files** | [`hw/libero/overlay/PFDAQ.tcl`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/PFDAQ.tcl): `CLOCKS_AND_RESETS_0`, `FIC_3_CLK`, `RESETN_FIC_3_CLK`; [`hw/libero/overlay/pfdaq_cdc.sdc`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/pfdaq_cdc.sdc); [`hw/rtl/pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_stream_src.v): `ACLK`, `PCLK`, `RSTN`, `PRESETN`; [`hw/rtl/pfdaq_core.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_core.v): `pfdaq_core` |
-| **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1); [Timing analysis without the clock-crossing constraints (the tool's console log; the 40 worst violating paths it lists are the intended crossings)](/pfdaq/evidence/v0.5.1/build/timing-without-cdc-constraints.txt) (build, fabric v0.5.1); [MSS Configurator, Clocks tab: MSS PLL, dividers and the clock tree](/pfdaq/evidence/v0.5.1/build/libero-mss-clocks.png) (build, fabric v0.5.1) |
+| **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1); [Timing analysis without the clock-crossing constraints (the tool's console log; the 40 worst violating paths it lists are the intended crossings)](/pfdaq/evidence/v0.5.1/build/timing-without-cdc-constraints.txt) (build, fabric v0.5.1); [MSS Configurator, Clocks tab: MSS PLL, dividers and the clock tree](/pfdaq/evidence/v0.5.1/build/libero-mss-clocks.png) (build, fabric v0.5.1); [The clock conditioning circuit configurator, output clocks tab](/pfdaq/evidence/v0.5.1/build/libero-cfg-pf-ccc-outputs.png) (build, fabric v0.5.1) |
 | **Related** | [F01 The chip and the board: MSS, fabric and the interfaces between them](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/polarfire-soc-fundamentals/f01-chip-and-board/); [H01 An APB register block that software can trust](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/registers-clocks-timing/h01-apb-register-block/); [H03 Crossing clock domains: toggles, snapshots and constraints](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/registers-clocks-timing/h03-clock-domain-crossing/); [H07 Measuring software from hardware: the latency unit](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/verification-and-instruments/h07-latency-unit/); [K07 Three builds lost to brackets in a constraint file](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/registers-clocks-timing/k07-brackets-in-constraints/) |
