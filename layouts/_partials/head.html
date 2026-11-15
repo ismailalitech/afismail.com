@@ -37,6 +37,9 @@
 <meta name="twitter:card" content="summary_large_image">
 {{ partial "schema.html" . }}
 {{/* Two font families: Instrument Sans for text, IBM Plex Mono for code and signal names. */}}
+{{/* The fonts are served from this site (static/fonts); the two used for body text are fetched early. */}}
+<link rel="preload" href="/fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/instrument-sans-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 {{ if site.Params.googleFonts }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
