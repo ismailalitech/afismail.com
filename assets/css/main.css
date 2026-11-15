@@ -753,7 +753,55 @@ main {
   }
 }
 
-/* 2. A soft highlight follows the pointer over the topic cards. assets/js/home.js sets
+/* 2. Behind the headline, four digital signals drift slowly from left to right, as on a
+      logic analyser. They are faint, fade out toward the edges, and stand still for
+      visitors who ask for reduced motion. One period of the drawing is 640px wide, so
+      moving it by exactly that distance loops without a jump. */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+
+.hero-signals {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, #000 55%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 18%, #000 82%, transparent), linear-gradient(to bottom, #000 55%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.hero-signals svg {
+  display: block;
+  max-width: none;
+  margin-left: -640px;
+  stroke: color-mix(in srgb, var(--accent) 30%, var(--rule));
+  stroke-width: 1.5;
+  opacity: 0.55;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .hero-signals svg {
+    animation: hero-signals 28s linear infinite;
+  }
+}
+
+@keyframes hero-signals {
+  to {
+    transform: translateX(640px);
+  }
+}
+
+@media print {
+  .hero-signals {
+    display: none;
+  }
+}
+
+/* 3. A soft highlight follows the pointer over the topic cards. assets/js/home.js sets
       --spot-x and --spot-y; without it the cards simply look as they always do. */
 [data-spotlight] .cell {
   isolation: isolate;
