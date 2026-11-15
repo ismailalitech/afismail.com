@@ -2,7 +2,7 @@
 # Name of the page in breadcrumbs and search results.
 title = "Freelance"
 # The sentence under the headline.
-description = "We are a team of engineers covering an embedded product from mechanical design and hardware to firmware, FPGA and security, with one contact throughout."
+description = "We are a team of engineers covering an embedded product from mechanical design and hardware to firmware, FPGA and secure design, with one contact throughout."
 
 [params]
   # The large headline at the top of the page.
@@ -25,7 +25,7 @@ description = "We are a team of engineers covering an embedded product from mech
   requests = [
     "A new product that needs mechanics, hardware and firmware designed together.",
     "A board that does not come up, or firmware that crashes and nobody can say why.",
-    "Firmware to write or restructure on Arm Cortex-M, bare-metal or on an RTOS.",
+    "Firmware to write or restructure, bare-metal or on an RTOS.",
     "A processor system and FPGA fabric that have to work together.",
     "HDL that needs a design review or a verification plan.",
     "A product that needs TrustZone, secure boot, or proof that its protections work.",
@@ -34,7 +34,7 @@ description = "We are a team of engineers covering an embedded product from mech
 
   # Team training: the paragraph, and the example subjects.
   training_text = "We run hands-on sessions for engineering teams when a team asks for one. A session is built around exercises on a board: each participant builds, flashes and debugs the code, and keeps the material afterwards. The content is prepared for your hardware and your team's level, so tell us both when you write."
-  training_subjects = ["Zephyr", "Arm Cortex-M and TrustZone", "FPGA and HDL", "Embedded Linux"]
+  training_subjects = ["Arm Cortex-M and TrustZone", "FPGA design, UVM verification and optimisation", "Embedded Linux", "RTOS"]
 
   # The lists below each start with [[params.name]]. Keep them after the lines above:
   # a plain line placed under one of them would be read as part of that list.
@@ -48,13 +48,13 @@ description = "We are a team of engineers covering an embedded product from mech
     text = "Schematics, PCB design and bring-up of the first boards."
   [[params.disciplines]]
     title = "Firmware & RTOS"
-    text = "Drivers, bring-up and fault debugging on Arm Cortex-M, bare-metal or on an RTOS."
+    text = "Drivers, board bring-up and fault debugging, bare-metal or on an RTOS, on Arm Cortex-M, Cortex-A and Cortex-R, RISC-V and other cores."
   [[params.disciplines]]
     title = "FPGA & SoC"
-    text = "HDL design and verification, and integration between a processor system and FPGA fabric."
+    text = "HDL design and verification, timing closure, processor integration, and design optimisation, for example to raise bandwidth."
   [[params.disciplines]]
-    title = "Embedded security"
-    text = "TrustZone and secure boot, secure C and C++, and verification plans that show each protection works."
+    title = "Secure design"
+    text = "Security designed for the hardware you have chosen and for your constraints."
 
   # The ways to work together.
   [[params.formats]]

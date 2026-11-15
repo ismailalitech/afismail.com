@@ -6,10 +6,16 @@ title = "Embedded systems & security engineer"
   # The sentence under the role.
   intro = "I develop and debug firmware, integrate FPGA/SoC systems, and help teams verify embedded security."
 
-  # The right of the home page shows a moving drawing of a chip and its traces. To show
-  # a photo or a capture instead: put the file in static/images/, remove the "# " from
-  # the four lines below and fill them in (the caption is optional). Width and height are
-  # the size of the file in pixels; they keep the page from jumping while it loads.
+  # The moving background of the home page: a circuit board drawn in fine lines.
+  #   "rise"   the board rises from the bottom of the first screen
+  #   "tilt"   the same board seen at an angle, as in a photo of a board
+  #   "full"   a faint board behind the whole page
+  #   "none"   no background
+  background = "rise"
+
+  # Optional photo or capture on the right of the home page: put the file in
+  # static/images/, remove the "# " from the four lines below and fill them in (the
+  # caption is optional). Width and height are the size of the file in pixels.
   # hero_image = "images/polarfire-board.jpg"
   # hero_image_alt = "PolarFire SoC Discovery Kit on the bench, with a logic analyser attached"
   # hero_image_caption = "PolarFire SoC Discovery Kit, with the MSS UART on a logic analyser."
@@ -19,15 +25,15 @@ title = "Embedded systems & security engineer"
   # a service, a case study or a note to point to.
   [[params.expertise]]
     title = "Firmware & RTOS"
-    text = "Board bring-up, drivers and fault debugging on Arm Cortex-M, bare-metal or on an RTOS."
+    text = "Board bring-up, drivers and fault debugging, bare-metal or on an RTOS, on Arm Cortex-M, Cortex-A and Cortex-R, RISC-V and other cores."
     link = "/work/cortex-m-fault-decoder/"
     link_text = "Example: a Cortex-M fault decoder"
   [[params.expertise]]
     title = "FPGA & SoC"
-    text = "HDL design and verification, and hardware/software integration between a processor system and FPGA fabric."
+    text = "HDL design and verification, timing closure, processor integration, and design optimisation, for example to raise bandwidth."
   [[params.expertise]]
-    title = "Embedded security"
-    text = "TrustZone and secure boot, secure C and C++, and verification plans that show each protection does its job."
+    title = "Secure design"
+    text = "Hardware security and embedded security: side-channel attacks, secure boot, TrustZone, debug authentication and root of trust."
 
   # The three steps shown at the top of the Expertise page.
   [[params.steps]]
