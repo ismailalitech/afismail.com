@@ -15,6 +15,7 @@
 {{ $hasToc := or $inTopics .Params.toc }}
 {{ $hasSide := and .Params.contact (not $hasToc) (ne $view "freelance") }}
 <article class="article{{ with $view }} view-{{ . }}{{ end }}">
+  {{ if $hasToc }}<div class="reading-progress" aria-hidden="true"></div>{{ end }}
   <header class="page-head">
     {{ partial "breadcrumbs.html" . }}
     {{ partial "kind.html" . }}

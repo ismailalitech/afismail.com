@@ -14,8 +14,9 @@ disableKinds = ["taxonomy", "term"]
   linkedin = "https://www.linkedin.com/in/ali-ismail-4132a7230/"
   # Full address of your YouTube channel. Shows a button on the home page and a footer link.
   youtube = ""
-  # true loads IBM Plex from Google Fonts. false uses system fonts and makes no third-party request.
-  googleFonts = true
+  # The fonts (Instrument Sans, IBM Plex Mono) are served from this site, so no third-party request is made.
+  # true loads them from Google Fonts instead.
+  googleFonts = false
   # Address of your email sign-up page (from a newsletter service). Leave empty to hide the sign-up block.
   subscribe_url = ""
   # Visitor statistics with Cloudflare Web Analytics (no cookies). This is the site token from the

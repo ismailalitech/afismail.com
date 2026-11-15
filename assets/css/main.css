@@ -1,3 +1,45 @@
+/* The two font families, served from this site (OFL-1.1, see static/fonts/LICENSE.txt). Latin letters only;
+   other characters fall back to the system font. */
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/instrument-sans-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/instrument-sans-latin-500-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/instrument-sans-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2");
+}
+
 /* Design idea: an engineer's workbench notebook. Warm off-white paper, near-black ink,
    fine dividers and one cobalt blue for links and actions. Deep charcoal at night.
    Instrument Sans carries the text; IBM Plex Mono is kept for what is technical: signal
@@ -3054,4 +3096,59 @@ html.lenis {
 
 .rb-on .shiny-text {
   vertical-align: baseline;
+}
+
+/* 19. Page-to-page transitions and the reading bar: native CSS, no script. A browser that does not
+   support them simply navigates and scrolls as before. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+}
+
+.site-header {
+  view-transition-name: site-header;
+}
+
+.reading-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  height: 3px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .reading-progress {
+    animation: reading-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  @keyframes reading-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  .reading-progress {
+    display: none;
+  }
+}
+
+@media print {
+  .reading-progress {
+    display: none;
+  }
 }
