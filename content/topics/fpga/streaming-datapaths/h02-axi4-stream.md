@@ -176,7 +176,7 @@ Simulation shows that the source keeps the protocol under random backpressure. I
 | **How to run** | Simulation only: Icarus Verilog and Python, no board |
 | **Status** | validated |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) |
-| **Source files** | `hw/rtl/pfdaq_stream_src.v`: `pfdaq_stream_src`, `w_ready`, `out_valid`; `hw/tb/tb_pfdaq_stream_src.v`: `VALID_GAP`, `PROTOCOL_ERROR`, `KEEP_ERROR`; `hw/tb/check_trace.py` |
+| **Source files** | [`hw/rtl/pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_stream_src.v): `pfdaq_stream_src`, `w_ready`, `out_valid`; [`hw/tb/tb_pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/tb_pfdaq_stream_src.v): `VALID_GAP`, `PROTOCOL_ERROR`, `KEEP_ERROR`; [`hw/tb/check_trace.py`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/check_trace.py) |
 | **Evidence** | [Stream source simulation, 20 scenarios checked by the Python model](/pfdaq/evidence/v0.5.1/sim/stream.txt) (sim, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1) |
 | **Related** | [K03 A DMA core that needs TVALID without gaps](/topics/fpga/streaming-datapaths/k03-tvalid-gaps/); [H06 Real-time sources: slots, credits and honest drops](/topics/fpga/streaming-datapaths/h06-real-time-source/); [H11 Verification with an independent model](/topics/fpga/verification-and-instruments/h11-independent-model/); [I04 DMA stream descriptors: the rules this core really follows](/topics/fpga/soc-integration/i04-dma-stream-descriptors/) |
-| **Code** | The commands on this page run from the pfdaq repository, which is being prepared for public release. |
+| **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |

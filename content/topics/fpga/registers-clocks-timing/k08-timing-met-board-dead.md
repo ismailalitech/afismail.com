@@ -120,6 +120,6 @@ Since this case the build aborts unless all 64 I/Os are placed.
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
 | **In the system** | [Fabric clocks and resets](/pfdaq/explorer/#fabric-clocks) · [pfdaq_core](/pfdaq/explorer/#pfdaq-core) · [Mi-V inter-hart communication](/pfdaq/explorer/#ihc) |
-| **Source files** | `hw/libero/overlay/reference-design-v2026.04.patch`: `organize_tool_files`; `hw/libero/build.sh` |
+| **Source files** | [`hw/libero/overlay/reference-design-v2026.04.patch`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/overlay/reference-design-v2026.04.patch): `organize_tool_files`; [`hw/libero/build.sh`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/build.sh) |
 | **Evidence** | [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1) |
 | **Related** | H10 (planned); [K07 Three builds lost to brackets in a constraint file](/topics/fpga/registers-clocks-timing/k07-brackets-in-constraints/); B06 (planned) |

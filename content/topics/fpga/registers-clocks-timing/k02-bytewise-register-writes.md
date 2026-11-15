@@ -83,6 +83,6 @@ Habits that followed:
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [FIC3 (APB, 50 MHz)](/pfdaq/explorer/#fic3) |
-| **Source files** | `tests/legacy/mmio.c`: `mmio_wr32`, `mmio_rd32`; `hw/rtl/pfdaq_stream_src.v`: `apb_write`, `PWDATA` |
+| **Source files** | [`tests/legacy/mmio.c`](https://github.com/ismailalitech/pfdaq/blob/main/tests/legacy/mmio.c): `mmio_wr32`, `mmio_rd32`; [`hw/rtl/pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_stream_src.v): `apb_write`, `PWDATA` |
 | **Evidence** | [Fabric-side throughput of single bursts, 931 to 947 MB/s](/pfdaq/evidence/v0.3.0/board/suite-python-x3.txt) (board, fabric v0.3.0) |
 | **Related** | [H01 An APB register block that software can trust](/topics/fpga/registers-clocks-timing/h01-apb-register-block/); I01 (planned); [K05 Two interrupts for every event](/topics/fpga/soc-integration/k05-two-interrupts-per-event/) |

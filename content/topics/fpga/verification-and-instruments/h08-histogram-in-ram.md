@@ -270,7 +270,7 @@ Every odd bin from 3 up reads 0 and the even bin below it holds both halves: bin
 | **Status** | validated |
 | **Read first** | [H07 Measuring software from hardware: the latency unit](/topics/fpga/verification-and-instruments/h07-latency-unit/) |
 | **In the system** | [Latency unit (two channels)](/pfdaq/explorer/#pfdaq-latency) |
-| **Source files** | `hw/rtl/pfdaq_latency.v`: `bin_of`, `hist_a`, `hist_b`, `hw_en`, `inc_pend`, `clearing`, `clr_idx`; `hw/tb/check_latency.py`: `bin_of` |
+| **Source files** | [`hw/rtl/pfdaq_latency.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_latency.v): `bin_of`, `hist_a`, `hist_b`, `hw_en`, `inc_pend`, `clearing`, `clr_idx`; [`hw/tb/check_latency.py`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/check_latency.py): `bin_of` |
 | **Evidence** | [Latency unit simulation, four phases checked by the Python model](/pfdaq/evidence/v0.5.1/sim/latency.txt) (sim, fabric v0.5.1); [Place and route result, timing met in all corners, 64 of 64 pins placed, 26 % of the fabric](/pfdaq/evidence/v0.5.1/build/timing-and-utilisation.txt) (build, fabric v0.5.1) |
 | **Related** | [H07 Measuring software from hardware: the latency unit](/topics/fpga/verification-and-instruments/h07-latency-unit/); [H11 Verification with an independent model](/topics/fpga/verification-and-instruments/h11-independent-model/); [P02 Interrupt latency: bare metal, RTOS task, kernel, user space](/topics/microcontrollers/linux-and-rtos/p02-interrupt-latency/) |
-| **Code** | The commands on this page run from the pfdaq repository, which is being prepared for public release. |
+| **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |

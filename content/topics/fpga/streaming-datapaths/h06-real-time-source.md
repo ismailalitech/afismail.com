@@ -203,7 +203,7 @@ Three things follow from the table.
 | **Status** | validated |
 | **Read first** | [H02 AXI4-Stream: the handshake, backpressure and TLAST](/topics/fpga/streaming-datapaths/h02-axi4-stream/) |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [pfdaq_cap](/pfdaq/explorer/#pfdaq-cap) |
-| **Source files** | `hw/rtl/pfdaq_stream_src.v`: `pfdaq_stream_src`, `R_RTWAIT`, `rt_timer`, `can_start`, `drop_now`, `tdest_idx`; `hw/tb/tb_pfdaq_stream_src.v`; `hw/tb/check_trace.py` |
+| **Source files** | [`hw/rtl/pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/rtl/pfdaq_stream_src.v): `pfdaq_stream_src`, `R_RTWAIT`, `rt_timer`, `can_start`, `drop_now`, `tdest_idx`; [`hw/tb/tb_pfdaq_stream_src.v`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/tb_pfdaq_stream_src.v); [`hw/tb/check_trace.py`](https://github.com/ismailalitech/pfdaq/blob/main/hw/tb/check_trace.py) |
 | **Evidence** | [Stream source simulation, 20 scenarios checked by the Python model](/pfdaq/evidence/v0.5.1/sim/stream.txt) (sim, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1) |
 | **Related** | [H02 AXI4-Stream: the handshake, backpressure and TLAST](/topics/fpga/streaming-datapaths/h02-axi4-stream/); [I04 DMA stream descriptors: the rules this core really follows](/topics/fpga/soc-integration/i04-dma-stream-descriptors/); I07 (planned); [K04 The descriptor that was re-armed too late](/topics/fpga/soc-integration/k04-descriptor-rearmed-too-late/); P01 (planned) |
-| **Code** | The commands on this page run from the pfdaq repository, which is being prepared for public release. |
+| **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |
