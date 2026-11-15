@@ -1,0 +1,24 @@
+{{/* Every numbered lab in the projects, in lab order, with the project and part it belongs to. Receives a page. */}}
+{{ $labs := slice }}
+{{ range site.RegularPages }}{{ if and .Params.lab (eq .Section "projects") }}{{ $labs = $labs | append . }}{{ end }}{{ end }}
+{{ with sort $labs "Params.lab" }}
+<section class="block labs-index" aria-labelledby="labs-index-heading">
+  <div class="block-head">
+    <h2 id="labs-index-heading">Labs from the projects</h2>
+    <p>Each lab lists the board and tools, gives every step and ends with the result to expect. They sit inside the project they belong to; this list is the same labs in number order.</p>
+  </div>
+  <ul class="entry-list">
+    {{ range . }}
+    <li class="entry">
+      {{ partial "kind.html" . }}
+      <div class="entry-body">
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        {{ partial "lab-meta.html" .Params }}
+        <p class="lab-where">{{ with .Parent }}{{ with .Parent }}{{ .Title }} · {{ end }}{{ .Title }}{{ end }}</p>
+      </div>
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}

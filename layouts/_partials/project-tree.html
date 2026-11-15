@@ -1,0 +1,27 @@
+{{/* Projects below a folder, grouped by the folders they sit in (field, then platform).
+     Receives (dict "node" folderPage "depth" 0). A folder that is itself a project is shown as a card. */}}
+{{ $node := .node }}
+{{ $depth := .depth }}
+{{ $cards := slice }}
+{{ $groups := slice }}
+{{ range $node.Pages.ByWeight }}
+  {{ if .Params.project }}
+    {{ $cards = $cards | append . }}
+  {{ else if and .IsSection (partial "has-project.html" .) }}
+    {{ $groups = $groups | append . }}
+  {{ end }}
+{{ end }}
+{{ with $cards }}
+<ul class="project-cards">
+  {{ range . }}{{ partial "project-card.html" . }}{{ end }}
+</ul>
+{{ end }}
+{{ range $groups }}
+<section class="project-group depth-{{ $depth }}" aria-labelledby="g-{{ .File.ContentBaseName }}">
+  <div class="block-head">
+    <h{{ add 2 $depth }} id="g-{{ .File.ContentBaseName }}"><a href="{{ .RelPermalink }}">{{ .Title }}</a></h{{ add 2 $depth }}>
+    {{ with .Description }}<p>{{ . }}</p>{{ end }}
+  </div>
+  {{ partial "project-tree.html" (dict "node" . "depth" (add $depth 1)) }}
+</section>
+{{ end }}

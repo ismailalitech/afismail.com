@@ -1,0 +1,54 @@
+{{/* A project's own page: what it is, the parts it is made of in reading order, then the write-up. Receives the project folder. */}}
+<article class="article view-project">
+  <header class="page-head">
+    {{ partial "breadcrumbs.html" . }}
+    <p class="kind">{{ partial "icon.html" "article" }}<span>Project{{ with .Params.platform }} · {{ . }}{{ end }}</span></p>
+    <h1>{{ with .Params.headline }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
+    {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+  </header>
+  {{ partial "case-summary.html" . }}
+  {{ if or .Params.hardware .Params.tools }}
+  <dl class="spec">
+    {{ with .Params.hardware }}<div><dt>Hardware</dt><dd>{{ . }}</dd></div>{{ end }}
+    {{ with .Params.tools }}<div><dt>Tools</dt><dd>{{ . }}</dd></div>{{ end }}
+  </dl>
+  {{ end }}
+  <p class="actions">
+    {{ with .Params.guide }}<a class="btn btn-primary" href="{{ . }}">Build it yourself</a>{{ end }}
+    {{ with .Params.action }}<a class="btn" href="{{ . }}">{{ $.Params.action_text }}</a>{{ end }}
+    <a class="btn" href="#parts">The parts</a>
+  </p>
+
+  <section class="block project-parts" id="parts" aria-labelledby="parts-heading">
+    <div class="block-head">
+      <h2 id="parts-heading">The parts of this project</h2>
+      <p>In the order a reader would work through them. Each part holds notes and numbered labs.</p>
+    </div>
+    <ol class="parts">
+      {{ range $i, $part := .Sections.ByWeight }}
+      {{ $count := partial "counts.html" . }}
+      <li class="part">
+        <span class="part-no" aria-hidden="true">{{ add $i 1 }}</span>
+        <div class="part-body">
+          <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+          {{ with .Description }}<p>{{ . }}</p>{{ end }}
+          {{ with $count }}<p class="row-state has-content">{{ . }}</p>{{ end }}
+          <ul class="part-pages">
+            {{ range .RegularPages.ByWeight }}
+            <li>{{ with .Params.lab }}<span class="part-lab">Lab {{ printf "0x%02X" (int .) }}</span>{{ end }}<a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{ end }}
+          </ul>
+        </div>
+      </li>
+      {{ end }}
+    </ol>
+  </section>
+
+  <div class="article-body">
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      {{ .TableOfContents }}
+    </aside>
+    <div class="prose">{{ .Content }}</div>
+  </div>
+</article>

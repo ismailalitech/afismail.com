@@ -1833,6 +1833,20 @@ figcaption {
   text-decoration: underline;
 }
 
+/* The section being read (set by assets/js/site.js). */
+.toc a {
+  border-left: 2px solid transparent;
+  padding-left: 0.6rem;
+  margin-left: -0.6rem;
+  transition: color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.toc a.is-current {
+  border-left-color: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+
 @media (min-width: 64rem) {
   .article-body {
     display: grid;
@@ -2865,4 +2879,139 @@ html.lenis {
     color: inherit;
     text-decoration: none;
   }
+}
+
+/* 17. Projects: the project list, a project's page and its parts */
+.project-cards {
+  display: grid;
+  gap: 1.25rem;
+  margin-block: 1rem 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.project-card h3 {
+  font-size: 1.35rem;
+}
+
+.project-card h3 a,
+.project-group h2 a,
+.project-group h3 a,
+.part-body h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.project-card h3 a:hover,
+.project-group h2 a:hover,
+.project-group h3 a:hover,
+.part-body h3 a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.project-group {
+  margin-block: 2.5rem 0;
+}
+
+.project-group .block-head {
+  margin-bottom: 1rem;
+}
+
+.project-group.depth-1 > .block-head h3 {
+  font-size: 1.1rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.parts {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.part {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.part-no {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1.5px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.part-body > p {
+  margin-block: 0.25rem 0;
+  color: var(--muted);
+}
+
+.part-pages {
+  display: grid;
+  gap: 0.15rem 2rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 52rem) {
+  .part-pages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.part-pages a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.part-pages a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.part-lab {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--copper);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-where {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.view-project .project-parts {
+  margin-block: 2.5rem;
 }

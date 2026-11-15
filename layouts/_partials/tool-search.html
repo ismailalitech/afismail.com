@@ -7,7 +7,7 @@
   {{ partial "search-form.html" (dict "id" "search-input" "live" true) }}
   <p class="search-status" data-search-status aria-live="polite"></p>
   <ol class="search-results" data-search-results></ol>
-  <noscript><p class="tool-note">Search needs JavaScript. Everything on the site is also listed under Topics and Resources.</p></noscript>
+  <noscript><p class="tool-note">Search needs JavaScript. Everything on the site is also listed under Projects, Labs and References.</p></noscript>
 </section>
 
 {{ $index := slice }}
@@ -17,9 +17,10 @@
     {{ if .IsSection }}
       {{ $kind = "Section" }}
       {{ if eq .Section "topics" }}{{ $kind = "Topic" }}{{ end }}
-    {{ else if eq .Section "work" }}
-      {{ $kind = "Case study" }}
-    {{ else if eq .Section "topics" }}
+      {{ if .Params.project }}{{ $kind = "Project" }}{{ end }}
+    {{ else if or (eq .Section "work") (and (eq .Section "projects") .Params.problem) }}
+      {{ $kind = "Project" }}
+    {{ else if or (eq .Section "topics") (eq .Section "projects") }}
       {{ $kind = "Article" }}
       {{ if .Params.lab }}{{ $kind = "Lab" }}{{ else if .Params.youtube }}{{ $kind = "Video" }}{{ end }}
     {{ else }}

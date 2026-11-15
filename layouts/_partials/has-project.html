@@ -1,0 +1,4 @@
+{{/* True when a folder holds, at any depth, a project (a page or folder with project = true). Receives a folder. */}}
+{{- $found := false }}
+{{- range site.Pages }}{{ if and .Params.project (.IsDescendant $) }}{{ $found = true }}{{ end }}{{ end }}
+{{- return $found -}}

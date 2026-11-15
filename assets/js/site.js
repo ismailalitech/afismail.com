@@ -176,3 +176,52 @@
     tools.hidden = false;
   }
 })();
+
+/* Reading position in the "On this page" list: the entry of the section being read is
+   highlighted, and follows the reader up and down the page. */
+(function () {
+  var toc = document.querySelector('.toc');
+  if (!toc || document.querySelector('.view-roadmap')) return;
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]'));
+  var items = links.map(function (a) {
+    var id = decodeURIComponent(a.getAttribute('href').slice(1));
+    return { a: a, h: document.getElementById(id) };
+  }).filter(function (i) { return i.h; });
+  if (!items.length) return;
+  var header = document.querySelector('.site-header');
+  var current = null;
+  var queued = false;
+
+  function offset() { return (header ? header.offsetHeight : 0) + 32; }
+
+  function show(item) {
+    if (item === current) return;
+    if (current) { current.a.classList.remove('is-current'); current.a.removeAttribute('aria-current'); }
+    current = item;
+    item.a.classList.add('is-current');
+    item.a.setAttribute('aria-current', 'location');
+    /* The list scrolls by itself on a short screen: keep the current entry in view. */
+    if (toc.scrollHeight > toc.clientHeight + 2) {
+      var top = item.a.offsetTop - toc.offsetTop;
+      if (top < toc.scrollTop || top > toc.scrollTop + toc.clientHeight - 48) {
+        toc.scrollTop = Math.max(0, top - toc.clientHeight / 3);
+      }
+    }
+  }
+
+  function update() {
+    queued = false;
+    var line = offset();
+    var best = items[0];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].h.getBoundingClientRect().top - line <= 0) best = items[i]; else break;
+    }
+    if (window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 4) best = items[items.length - 1];
+    show(best);
+  }
+
+  function queue() { if (!queued) { queued = true; window.requestAnimationFrame(update); } }
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  update();
+})();
