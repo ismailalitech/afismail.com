@@ -36,10 +36,3 @@ teams and technical training.
 
 Learning continues alongside it. Recent courses cover secured embedded Linux (secure
 boot, OP-TEE), Zephyr, RISC-V and Rust.
-
-## Outside work
-
-Four years as a volunteer with the Lebanese Civil Defense, in first aid and emergency
-response, and two summers leading youth teams in digital media projects.
-
-Everything on this site is based on public documentation and personal projects.
