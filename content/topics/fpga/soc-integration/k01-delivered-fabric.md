@@ -83,4 +83,4 @@ The raw read-back from before programming is recorded in the project's notes; th
 | **In the system** | [FPGA fabric](/pfdaq/explorer/#fabric) · [MMUART 0, 1 and 4](/pfdaq/explorer/#mss-uarts) · [eNVM boot flash](/pfdaq/explorer/#envm) · [FlashPro5 on USB-C](/pfdaq/explorer/#debug-usb) |
 | **Source files** | [`hw/libero/program.sh`](https://github.com/ismailalitech/pfdaq/blob/main/hw/libero/program.sh): `DEVICE_INFO` |
 | **Evidence** | [Programming, verify and device read-back of the v0.5.1 fabric](/pfdaq/evidence/v0.5.1/build/programming.txt) (board, fabric v0.5.1) |
-| **Related** | B06 (planned); F05 (planned); [K08 Timing met, board dead: the missing pin constraints](/topics/fpga/registers-clocks-timing/k08-timing-met-board-dead/) |
+| **Related** | [B06 Programming safely: components, digests and what never to touch](/topics/embedded-linux/boot-and-images/b06-programming-safely/); [F05 The tool flow in batch: Libero, the IP vault and FlashPro Express](/topics/fpga/polarfire-soc-fundamentals/f05-tool-flow-in-batch/); [K08 Timing met, board dead: the missing pin constraints](/topics/fpga/registers-clocks-timing/k08-timing-met-board-dead/) |

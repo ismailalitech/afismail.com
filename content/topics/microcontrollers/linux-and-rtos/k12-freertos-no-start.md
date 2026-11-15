@@ -105,8 +105,8 @@ Because leaving it out would make the validation look better than it is. A syste
 | **Level** | Intermediate |
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
-| **Read first** | B02 (planned) |
+| **Read first** | [B02 The HSS payload: starting two operating systems](/topics/embedded-linux/boot-and-images/b02-hss-payload/) |
 | **In the system** | [U54 hart 4](/pfdaq/explorer/#u54-4) · [E51 (hart 0)](/pfdaq/explorer/#e51) · [Hart Software Services](/pfdaq/explorer/#hss) · [pfdaq supervisor](/pfdaq/explorer/#supervisor) |
 | **Source files** | [`tests/host/amp_reboot_test.sh`](https://github.com/ismailalitech/pfdaq/blob/main/tests/host/amp_reboot_test.sh) |
 | **Evidence** | [Thirty warm reboots, both systems up and a supervised capture passing each time](/pfdaq/evidence/v0.5.1/board/reboot-30.csv) (board, fabric v0.5.1) |
-| **Related** | B02 (planned); P06 (planned) |
+| **Related** | [B02 The HSS payload: starting two operating systems](/topics/embedded-linux/boot-and-images/b02-hss-payload/); [P06 Soak and reboot testing](/topics/fpga/performance-and-reliability/p06-soak-and-reboot/) |
