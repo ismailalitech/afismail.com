@@ -54,22 +54,14 @@ limits. Add a real picture with `image`, `image_alt`, `image_size` and
 the home page. Publish only what you are allowed to show: no employer material, no
 unpublished measurements, nothing from a private repository.
 
-## The home page background
+## The picture on the home page
 
-The home page has a moving background: a circuit board drawn in fine lines, with
-signals travelling along its traces. Choose how it is shown with `background` in
-`content/_index.md`:
-
-- `"rise"`: the board rises from the bottom of the first screen and, on a wide screen,
-  up the empty right-hand side. No line passes under the text.
-- `"tilt"`: the same board seen at an angle, under the text.
-- `"full"`: a faint board behind the whole page.
-- `"none"`: no background.
-
-You can also show a photo or a capture on the right of the text: put the file in
-`static/images/` and fill in the `hero_image` lines in `content/_index.md` (remove the
-`# ` in front of them). Save photos as JPEG or WebP, about 1600 pixels wide and under
-300 KB, and give the real width and height of the file.
+The right of the home page shows a moving drawing: a chip with its traces fanning out
+and signals travelling along them. It has no caption. To show a photo or a capture
+instead, put the file in `static/images/` and fill in the `hero_image` lines in
+`content/_index.md` (remove the `# ` in front of them). Save photos as JPEG or WebP,
+about 1600 pixels wide and under 300 KB, and give the real width and height of the
+file so the page does not jump while the picture loads.
 
 ## Preview on your computer
 
@@ -193,13 +185,14 @@ email list. To take a page offline, set `draft = true` in it.
 
 ## Motion and smooth scrolling
 
-- **Moving background.** The home page has a circuit board with signals travelling on
-  it (see "The home page background"). Every other page has circuit traces in its
-  empty margins, only as wide as the margin, so they appear on screens about 1220
-  pixels wide or more and never sit behind text. Everything is drawn by
+- **Moving background, on every page.** Circuit-board traces are drawn in the empty
+  page margins, with signals travelling along them, and the home page has the chip
+  drawing. They are never behind text: the margin traces are only as wide as the
+  margin (so they appear on screens about 1220 pixels wide or more), and the chip sits
+  beside the text, or under the buttons on a phone. Everything is in
   `assets/js/traces.js`, with the colours and sizes in `assets/css/main.css`
-  (`.board`, `.traces`). Each page gets its own routing. To remove the margin traces,
-  delete the two `<canvas class="traces ...">` lines in `layouts/baseof.html`.
+  (`.traces`, `.hero-field`). Each page gets its own routing. To remove the margin
+  traces, delete the two `<canvas class="traces ...">` lines in `layouts/baseof.html`.
 - **Signal under the header, on every page.** A short signal runs along the line under
   the header every few seconds (`.site-header::after` in the stylesheet).
 - **Roadmap route.** On the roadmap page the stages are joined by a route that lights

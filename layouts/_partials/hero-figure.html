@@ -1,8 +1,12 @@
-{{/* Optional photo or capture on the right of the home page, shown when hero_image is set
-     in content/_index.md. Without one the hero is text only, over the board background. */}}
+{{/* The right-hand side of the home page.
+     By default it is a moving drawing: a chip with its traces fanning out and signals
+     travelling along them (assets/js/traces.js). It carries no text and no caption.
+     With hero_image set in content/_index.md it shows that photo or capture instead. */}}
 {{ with .Params.hero_image }}
 <figure class="hero-figure">
   <img src="{{ . | relURL }}" alt="{{ $.Params.hero_image_alt }}"{{ with $.Params.hero_image_size }} width="{{ index . 0 }}" height="{{ index . 1 }}"{{ end }} fetchpriority="high">
   {{ with $.Params.hero_image_caption }}<figcaption>{{ . }}</figcaption>{{ end }}
 </figure>
+{{ else }}
+<canvas class="hero-field" data-traces="chip" aria-hidden="true"></canvas>
 {{ end }}

@@ -1,10 +1,9 @@
 /* The moving background: circuit-board traces with signals travelling along them.
 
-   It draws on <canvas data-traces="..."> elements:
-     data-traces="left" / "right"   the page margins, on every page except the home page
-                                    (wide screens only)
-     data-traces="board"            the home page: a whole board, with chips, their traces
-                                    fanning out, small parts and bundles of traces
+   It draws on <canvas data-traces="..."> elements, which sit where there is no text:
+     data-traces="left" / "right"   the page margins, on every page (wide screens only)
+     data-traces="chip"             the picture area of the home page: a chip with its
+                                    traces fanning out, like the mark beside your name
 
    The routing is drawn by rules a real board follows: traces run in lanes, change lane
    at 45 degrees, stay parallel while they do, and end on a via (a small ring). Each page
@@ -76,14 +75,12 @@
 
   /* ---------- routing: the page margins ---------- */
 
-  /* A bundle of traces running down a region { x, w, h, mirror, most }. It works in
-     "distance from the outer edge", so the left and right margins mirror each other,
-     with the busiest lanes at the edge of the screen and none near the text. */
-  function routeLanes(region, random) {
-    var field = region;
+  /* Works in "distance from the outer edge", so the left and right margins mirror each
+     other, with the busiest lanes at the edge of the screen and none near the text. */
+  function routeMargin(field, random) {
     var pitch = 14;
     var first = 12;
-    var count = Math.min(region.most || 12, Math.floor((region.w - first - 18) / pitch) + 1);
+    var count = Math.min(12, Math.floor((field.w - first - 18) / pitch) + 1);
     var traces = [];
     if (count < 2) { return traces; }
 
@@ -173,97 +170,54 @@
     }
 
     return traces.filter(function (trace) {
-      trace.pts.forEach(function (point) {
-        point[0] = region.x + (region.mirror ? region.w - point[0] : point[0]);
-      });
+      if (field.kind === 'right') {
+        trace.pts.forEach(function (point) { point[0] = field.w - point[0]; });
+      }
       return measure(trace).length > 36;
     });
   }
 
-  /* ---------- routing: the board on the home page ---------- */
+  /* ---------- routing: the chip on the home page ---------- */
 
-  /* One chip and the traces that leave it. "limits" says how far the traces may run on
-     each side; a side that cannot reach the edge of the drawing ends on vias. */
-  function placeChip(field, chip, limits, traces) {
-    var pitch = 12;
-    var spread = 26;
-    var stub = 6;
-    var half = chip.size / 2;
-    var middle = (chip.pins - 1) / 2;
-    chip.pitch = pitch;
-    chip.stub = stub;
-    chip.glow = 0;
-    field.chips.push(chip);
+  function routeChip(field) {
+    var beside = field.w >= 420;            /* beside the text (desktop) or under it (phone) */
+    var size = beside ? 104 : 62;
+    var pins = beside ? 7 : 5;
+    var pitch = beside ? 12 : 9;
+    var spread = beside ? 30 : 19;           /* distance between traces once fanned out */
+    var stub = beside ? 7 : 5;
+    var run = beside ? 16 : 8;
+    var stagger = pitch * (beside ? 0.9 : 0.6);
+    var cx = Math.round(beside ? field.w * 0.56 : field.w / 2);
+    var cy = Math.round(field.h / 2);
+    var half = size / 2;
+    var middle = (pins - 1) / 2;
+    var traces = [];
 
-    /* "along" is the direction the traces leave in, "across" the direction the pins are
-       lined up in. Outer pins bend first, so the fan opens without any trace crossing. */
+    field.chip = { x: cx, y: cy, size: size, pins: pins, pitch: pitch, stub: stub, glow: 0 };
+
+    /* One side of the chip. "along" is the direction the traces leave in, "across" the
+       direction the pins are lined up in. */
     function side(ax, ay, bx, by, reach, viaEnds) {
-      for (var pin = 0; pin < chip.pins; pin++) {
+      for (var pin = 0; pin < pins; pin++) {
         var offset = pin - middle;
         var fan = Math.abs(offset) * (spread - pitch);
-        var straight = 14 + (middle - Math.abs(offset)) * pitch * 0.9;
+        var straight = run + (middle - Math.abs(offset)) * stagger;
         var sign = offset < 0 ? -1 : 1;
-        var used = half + stub + straight + fan;
-        var tail = viaEnds ? Math.max(6, (reach - used) * (0.3 + ((pin * 37 + chip.pins) % 7) / 10)) : Math.max(4, reach - used);
-        var start = [chip.x + ax * (half + stub) + bx * offset * pitch, chip.y + ay * (half + stub) + by * offset * pitch];
+        var start = [cx + ax * (half + stub) + bx * offset * pitch, cy + ay * (half + stub) + by * offset * pitch];
         var bend = [start[0] + ax * straight, start[1] + ay * straight];
         var fanned = [bend[0] + ax * fan + bx * sign * fan, bend[1] + ay * fan + by * sign * fan];
+        var tail = viaEnds ? 18 + ((pin * 37) % 5) * 13 : Math.max(4, reach - (half + stub + straight + fan));
         var end = [fanned[0] + ax * tail, fanned[1] + ay * tail];
         var points = offset === 0 ? [start, end] : [start, bend, fanned, end];
-        traces.push(measure({ pts: points, startVia: false, endVia: viaEnds, chip: chip }));
+        traces.push(measure({ pts: points, startVia: false, endVia: viaEnds, chip: true }));
       }
     }
 
-    side(1, 0, 0, 1, limits.right - chip.x, limits.rightVias);
-    side(-1, 0, 0, 1, chip.x - limits.left, limits.leftVias);
-    side(0, -1, 1, 0, chip.y + 12, false);
-    side(0, 1, 1, 0, field.h - chip.y + 12, false);
-
-    /* Small two-pad parts in the corners, where no trace passes. */
-    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(function (corner, index) {
-      var reach = half + 20 + (index % 2) * 9;
-      field.parts.push({ x: chip.x + corner[0] * reach, y: chip.y + corner[1] * reach, upright: index % 2 === 0 });
-    });
-  }
-
-  /* The whole board: the drawing is cut into columns, one chip per column, with a
-     bundle of traces running down between two columns. */
-  function routeBoard(field, random) {
-    var traces = [];
-    var columns = field.w >= 1500 ? 4 : field.w >= 900 ? 3 : field.w >= 560 ? 2 : 1;
-    var width = field.w / columns;
-    var gutter = 46;
-    /* Where the chips sit depends on how the board is shown (see .board-... in the
-       stylesheet): low in the picture when it rises from the bottom of the hero, with
-       the last one higher up, beside the text. */
-    var rising = field.canvas.classList.contains('board-rise');
-    var tall = field.h > 420;
-
-    for (var column = 0; column < columns; column++) {
-      var size = [96, 72, 84, 60][Math.floor(random() * 4)];
-      var y;
-      if (rising) {
-        y = field.h - 104 - random() * 26;
-        if (tall && columns > 1 && column === columns - 1) { y = field.h * 0.46; size = 96; }
-      } else {
-        y = field.h * (tall ? 0.34 + random() * 0.42 : 0.52 + random() * 0.08);
-      }
-      placeChip(field, {
-        x: Math.round(width * (column + 0.5) + (random() - 0.5) * width * 0.16),
-        y: Math.round(y),
-        size: size,
-        pins: Math.round(size / 12) - 2
-      }, {
-        left: column === 0 ? -12 : width * column + gutter,
-        right: column === columns - 1 ? field.w + 12 : width * (column + 1) - gutter,
-        leftVias: column > 0,
-        rightVias: column < columns - 1
-      }, traces);
-
-      if (column > 0) {
-        traces = traces.concat(routeLanes({ x: width * column - 38, w: 92, h: field.h, mirror: column % 2 === 1, most: 5 }, random));
-      }
-    }
+    side(1, 0, 0, 1, field.w - cx + 12, false);          /* right, to the edge */
+    side(0, -1, 1, 0, cy + 12, false);                   /* top */
+    side(0, 1, 1, 0, field.h - cy + 12, false);          /* bottom */
+    side(-1, 0, 0, 1, cx + 12, beside);                  /* left: short, towards the text */
     return traces;
   }
 
@@ -316,16 +270,8 @@
       if (trace.endVia) { via(ctx, trace.pts[trace.pts.length - 1], 3, line); }
     });
 
-    ctx.strokeStyle = line;
-    field.parts.forEach(function (part) {
-      var w = part.upright ? 5 : 8;
-      var h = part.upright ? 8 : 5;
-      var gap = 3;
-      ctx.strokeRect(part.x - (part.upright ? w / 2 : w + gap / 2), part.y - (part.upright ? h + gap / 2 : h / 2), w, h);
-      ctx.strokeRect(part.x + (part.upright ? -w / 2 : gap / 2), part.y + (part.upright ? gap / 2 : -h / 2), w, h);
-    });
-
-    field.chips.forEach(function (chip) {
+    var chip = field.chip;
+    if (chip) {
       var half = chip.size / 2;
       var middle = (chip.pins - 1) / 2;
       ctx.strokeStyle = rgba(field.pulse, 0.9);
@@ -345,7 +291,7 @@
       ctx.stroke();
       roundedSquare(ctx, chip.x, chip.y, chip.size * 0.44, chip.size * 0.05);
       ctx.stroke();
-    });
+    }
   }
 
   /* One frame: the kept board, then the signals on top. */
@@ -356,13 +302,12 @@
     ctx.drawImage(field.board, 0, 0);
     ctx.setTransform(field.scale, 0, 0, field.scale, 0, 0);
 
-    field.chips.forEach(function (chip) {
-      if (chip.glow > 0.01) {
-        roundedSquare(ctx, chip.x, chip.y, chip.size * 0.44, chip.size * 0.05);
-        ctx.fillStyle = rgba(field.pulse, 0.55 * chip.glow);
-        ctx.fill();
-      }
-    });
+    var chip = field.chip;
+    if (chip && chip.glow > 0.01) {
+      roundedSquare(ctx, chip.x, chip.y, chip.size * 0.44, chip.size * 0.05);
+      ctx.fillStyle = rgba(field.pulse, 0.55 * chip.glow);
+      ctx.fill();
+    }
 
     ctx.lineWidth = 1.6;
     ctx.lineCap = 'round';
@@ -412,12 +357,11 @@
   }
 
   function build(field) {
-    /* The size the canvas is laid out at, before any tilt applied by the stylesheet. */
-    field.w = field.canvas.clientWidth;
-    field.h = field.canvas.clientHeight;
+    var box = field.canvas.getBoundingClientRect();
+    field.w = Math.round(box.width);
+    field.h = Math.round(box.height);
     field.pulses = [];
-    field.chips = [];
-    field.parts = [];
+    field.chip = null;
     field.ready = field.w >= 44 && field.h >= 80;
     if (!field.ready) { return; }
 
@@ -425,9 +369,7 @@
     field.canvas.width = field.board.width = Math.round(field.w * field.scale);
     field.canvas.height = field.board.height = Math.round(field.h * field.scale);
     var random = seeded(field.kind + window.location.pathname);
-    field.traces = field.kind === 'board'
-      ? routeBoard(field, random)
-      : routeLanes({ x: 0, w: field.w, h: field.h, mirror: field.kind === 'right' }, random);
+    field.traces = field.kind === 'chip' ? routeChip(field) : routeMargin(field, random);
     colors(field);
     drawBoard(field);
     draw(field);
@@ -439,14 +381,14 @@
     window.clearTimeout(field.timer);
     field.canvas.dataset.state = reducedMotion.matches ? 'still' : 'live';
     if (reducedMotion.matches || !field.ready) { return; }
-    var wait = field.kind === 'board' ? 180 + Math.random() * 520 : 500 + Math.random() * 1300;
+    var wait = field.kind === 'chip' ? 250 + Math.random() * 700 : 500 + Math.random() * 1300;
     field.timer = window.setTimeout(function () {
-      var limit = field.kind === 'board' ? 9 : 4;
+      var limit = field.kind === 'chip' ? 6 : 4;
       if (!document.hidden && field.visible && field.traces.length && field.pulses.length < limit) {
         var trace = field.traces[Math.floor(Math.random() * field.traces.length)];
         field.pulses.push({
           trace: trace,
-          /* At a chip, more signals arrive than leave. */
+          /* On the chip, more signals arrive than leave. */
           forward: trace.chip ? Math.random() < 0.4 : Math.random() < 0.7,
           d: 0,
           tail: 44 + Math.random() * 30,
@@ -464,24 +406,20 @@
     last = now;
     fields.forEach(function (field) {
       if (!field.ready) { return; }
-      var glowing = field.chips.some(function (chip) { return chip.glow > 0.01; });
-      var before = field.pulses.length + (glowing ? 1 : 0);
+      var chip = field.chip;
+      var before = field.pulses.length + (chip && chip.glow > 0.01 ? 1 : 0);
       field.pulses = field.pulses.filter(function (pulse) {
         pulse.d += pulse.speed * elapsed;
-        /* A signal that reaches a chip lights its core for a moment. */
-        if (pulse.trace.chip && !pulse.forward && !pulse.arrived && pulse.d >= pulse.trace.length) {
+        /* A signal that reaches the chip lights its core for a moment. */
+        if (chip && pulse.trace.chip && !pulse.forward && !pulse.arrived && pulse.d >= pulse.trace.length) {
           pulse.arrived = true;
-          pulse.trace.chip.glow = 1;
+          chip.glow = 1;
         }
         return pulse.d < pulse.trace.length + pulse.tail;
       });
-      glowing = false;
-      field.chips.forEach(function (chip) {
-        chip.glow = Math.max(0, chip.glow - elapsed * 2.2);
-        if (chip.glow > 0.01) { glowing = true; }
-      });
+      if (chip) { chip.glow = Math.max(0, chip.glow - elapsed * 2.2); }
       if (before) { draw(field); }
-      if (field.pulses.length || glowing) { moving = true; }
+      if (field.pulses.length || (chip && chip.glow > 0.01)) { moving = true; }
     });
     raf = moving ? window.requestAnimationFrame(frame) : 0;
   }
@@ -510,8 +448,6 @@
       kind: canvas.getAttribute('data-traces'),
       pulses: [],
       traces: [],
-      chips: [],
-      parts: [],
       visible: true
     };
     if (!field.ctx) { return; }
@@ -534,7 +470,7 @@
   function motionChanged() {
     fields.forEach(function (field) {
       field.pulses = [];
-      field.chips.forEach(function (chip) { chip.glow = 0; });
+      if (field.chip) { field.chip.glow = 0; }
       if (field.ready) { draw(field); }
       plan(field);
     });

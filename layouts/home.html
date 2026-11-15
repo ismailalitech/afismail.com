@@ -1,9 +1,7 @@
 {{ define "main" }}
-{{/* 1. Name, role, one sentence and two actions, over the moving board background
-     (assets/js/traces.js). The texts and the kind of background are in content/_index.md. */}}
-{{ $background := .Params.background | default "rise" }}
-<section class="hero{{ if ne $background "none" }} hero-{{ $background }}{{ end }}{{ if .Params.hero_image }} has-figure{{ end }}">
-  {{ if ne $background "none" }}<canvas class="board board-{{ $background }}" data-traces="board" aria-hidden="true"></canvas>{{ end }}
+{{/* 1. Name, role, one sentence and two actions on the left; the moving chip drawing on the right.
+     The texts are in content/_index.md. */}}
+<section class="hero">
   <div class="hero-text">
     <h1>{{ site.Title }}</h1>
     <p class="hero-role">{{ .Title }}</p>

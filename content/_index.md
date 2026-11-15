@@ -6,16 +6,10 @@ title = "Embedded systems & security engineer"
   # The sentence under the role.
   intro = "I develop and debug firmware, integrate FPGA/SoC systems, and help teams verify embedded security."
 
-  # The moving background of the home page: a circuit board drawn in fine lines.
-  #   "rise"   the board rises from the bottom of the first screen
-  #   "tilt"   the same board seen at an angle, as in a photo of a board
-  #   "full"   a faint board behind the whole page
-  #   "none"   no background
-  background = "rise"
-
-  # Optional photo or capture on the right of the home page: put the file in
-  # static/images/, remove the "# " from the four lines below and fill them in (the
-  # caption is optional). Width and height are the size of the file in pixels.
+  # The right of the home page shows a moving drawing of a chip and its traces. To show
+  # a photo or a capture instead: put the file in static/images/, remove the "# " from
+  # the four lines below and fill them in (the caption is optional). Width and height are
+  # the size of the file in pixels; they keep the page from jumping while it loads.
   # hero_image = "images/polarfire-board.jpg"
   # hero_image_alt = "PolarFire SoC Discovery Kit on the bench, with a logic analyser attached"
   # hero_image_caption = "PolarFire SoC Discovery Kit, with the MSS UART on a logic analyser."

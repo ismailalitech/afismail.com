@@ -11,12 +11,9 @@
   </main>
   {{ partial "footer.html" . }}
   {{/* The moving background, in the page margins on wide screens: circuit traces with
-       signals travelling along them (assets/js/traces.js). On every page except the
-       home page, which has its own board background. */}}
-  {{ if not .IsHome }}
+       signals travelling along them. Drawn by assets/js/traces.js, on every page. */}}
   <canvas class="traces traces-left" data-traces="left" aria-hidden="true"></canvas>
   <canvas class="traces traces-right" data-traces="right" aria-hidden="true"></canvas>
-  {{ end }}
   {{ with resources.Get "js/site.js" }}
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
