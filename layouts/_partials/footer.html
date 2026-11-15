@@ -1,0 +1,32 @@
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-col">
+      <p class="footer-name">{{ site.Title }}</p>
+      {{ with site.Params.role }}<p>{{ . }}</p>{{ end }}
+    </div>
+    <nav class="footer-col" aria-label="Footer">
+      <p class="footer-title">Site</p>
+      <ul>
+        {{ range site.Menus.main }}<li><a href="{{ .URL }}">{{ .Name }}</a></li>{{ end }}
+      </ul>
+    </nav>
+    <div class="footer-col">
+      <p class="footer-title">Elsewhere</p>
+      <ul>
+        {{ with site.Params.email }}<li><a href="mailto:{{ . }}">Email</a></li>{{ end }}
+        {{ with site.Params.github }}<li><a href="{{ . }}" rel="me">GitHub</a></li>{{ end }}
+        {{ with site.Params.linkedin }}<li><a href="{{ . }}" rel="me">LinkedIn</a></li>{{ end }}
+        {{ with site.Params.youtube }}<li><a href="{{ . }}" rel="me">YouTube</a></li>{{ end }}
+        {{ with site.Home.OutputFormats.Get "rss" }}<li><a href="{{ .RelPermalink }}">RSS</a></li>{{ end }}
+      </ul>
+    </div>
+  </div>
+  <div class="wrap legal">
+    <p>© {{ now.Year }} {{ site.Title }}. Opinions are my own.</p>
+    {{/* These links appear once the pages are published (draft = false). */}}
+    <ul>
+      {{ with site.GetPage "/privacy" }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}
+      {{ with site.GetPage "/legal" }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}
+    </ul>
+  </div>
+</footer>

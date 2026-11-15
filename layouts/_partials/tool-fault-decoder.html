@@ -1,0 +1,37 @@
+{{/* The Cortex-M fault decoder. Its logic is in assets/js/fault-decoder.js. */}}
+<section class="tool" aria-labelledby="tool-heading">
+  <h2 id="tool-heading" class="visually-hidden">Decoder</h2>
+  <form class="tool-form" data-fault-form novalidate>
+    <div class="fields">
+      <div class="field">
+        <label for="fd-cfsr">CFSR <span class="hint">at 0xE000ED28</span></label>
+        <input id="fd-cfsr" name="cfsr" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x00000000" aria-describedby="fd-cfsr-error">
+        <p class="field-error" id="fd-cfsr-error"></p>
+      </div>
+      <div class="field">
+        <label for="fd-hfsr">HFSR <span class="hint">at 0xE000ED2C</span></label>
+        <input id="fd-hfsr" name="hfsr" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x00000000" aria-describedby="fd-hfsr-error">
+        <p class="field-error" id="fd-hfsr-error"></p>
+      </div>
+      <div class="field">
+        <label for="fd-sfsr">SFSR <span class="hint">at 0xE000EDE4, TrustZone only</span></label>
+        <input id="fd-sfsr" name="sfsr" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="0x00000000" aria-describedby="fd-sfsr-error">
+        <p class="field-error" id="fd-sfsr-error"></p>
+      </div>
+    </div>
+    <p class="actions">
+      <button class="btn btn-primary" type="submit">Decode</button>
+      <button class="btn" type="button" data-fault-example>Load an example</button>
+      <button class="btn" type="button" data-fault-clear>Clear</button>
+    </p>
+  </form>
+  <div class="tool-output" data-fault-output aria-live="polite">
+    <p class="empty">Enter at least one register value in hexadecimal, then press Decode.</p>
+  </div>
+  <p class="tool-note">Everything runs in your browser. The values you enter are not sent anywhere.</p>
+  <noscript><p class="tool-note">This tool needs JavaScript. The cheat sheet lists the same bits.</p></noscript>
+</section>
+{{ with resources.Get "js/fault-decoder.js" }}
+  {{ $js := . | fingerprint }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+{{ end }}

@@ -1,0 +1,107 @@
+{{ define "main" }}
+{{/* A page is a lab when it has a lab number, and shows a video when it has a youtube ID.
+     Optional front matter, under [params]:
+       toc = true          shows the "On this page" list (always shown inside Topics)
+       view = "glossary"   term and definition side by side, with a filter box
+       view = "roadmap"    stages drawn along a line
+       view = "about"      background (params.highlights in hugo.toml) beside the text
+       view = "freelance"  the Freelance page, laid out from its front matter
+       headline = "..."    a longer headline than the title, at the top of the page
+     A page with contact = true shows the contact block beside its text on wide screens. */}}
+{{ $isLab := false }}
+{{ with .Params.lab }}{{ $isLab = true }}{{ end }}
+{{ $inTopics := eq .Section "topics" }}
+{{ $view := .Params.view }}
+{{ $hasToc := or $inTopics .Params.toc }}
+{{ $hasSide := and .Params.contact (not $hasToc) (ne $view "freelance") }}
+<article class="article{{ with $view }} view-{{ . }}{{ end }}">
+  <header class="page-head">
+    {{ partial "breadcrumbs.html" . }}
+    {{ partial "kind.html" . }}
+    {{/* Optional portrait: set photo = "images/your-file.jpg" in the page's front matter. */}}
+    {{ if not $hasSide }}{{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}{{ end }}
+    <h1>{{ with .Params.headline }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
+    {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
+    {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+    {{ if eq $view "freelance" }}
+    <p class="actions">
+      {{ with site.Params.email }}<a class="btn btn-primary" href="mailto:{{ . }}">Discuss a project</a>{{ end }}
+      <a class="btn" href="#how-a-project-runs">How a project runs</a>
+    </p>
+    {{ end }}
+    {{ if $inTopics }}
+      {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
+      {{ if or (not .Date.IsZero) .Params.repo }}
+      <p class="byline">
+        {{ if not .Date.IsZero }}<time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>{{ end }}
+        {{ with .Params.repo }}<a href="{{ . }}">Source code</a>{{ end }}
+      </p>
+      {{ end }}
+    {{ end }}
+    {{ if .Params.print }}
+      <p class="actions"><button class="btn" type="button" data-print>Print or save as PDF</button></p>
+    {{ end }}
+  </header>
+
+  {{ if $isLab }}{{ partial "lab-spec.html" .Params }}{{ end }}
+
+  {{/* A case study (a page in content/work): its three-line summary, hardware, picture and a button. */}}
+  {{ if eq .Section "work" }}
+    {{ partial "case-summary.html" . }}
+    {{ if or .Params.hardware .Params.tools }}
+    <dl class="spec">
+      {{ with .Params.hardware }}<div><dt>Hardware</dt><dd>{{ . }}</dd></div>{{ end }}
+      {{ with .Params.tools }}<div><dt>Tools</dt><dd>{{ . }}</dd></div>{{ end }}
+    </dl>
+    {{ end }}
+    {{ partial "work-figure.html" (dict "page" . "label" "Fig. 1") }}
+    {{ with .Params.action }}<p class="actions"><a class="btn btn-primary" href="{{ . }}">{{ $.Params.action_text }}</a></p>{{ end }}
+  {{ end }}
+
+  {{ with .Params.youtube }}{{ partial "video.html" (dict "id" . "title" $.Title) }}{{ end }}
+
+  {{/* A page can load a tool with tool = "name" in its front matter. */}}
+  {{ if .Params.tool }}
+    {{ if eq .Params.tool "fault-decoder" }}{{ partial "tool-fault-decoder.html" . }}{{ end }}
+    {{ if eq .Params.tool "search" }}{{ partial "tool-search.html" . }}{{ end }}
+  {{ end }}
+
+  {{ if eq $view "glossary" }}{{ partial "glossary-tools.html" . }}{{ end }}
+
+  {{ if eq $view "freelance" }}
+  {{ partial "freelance.html" . }}
+  {{ else if $hasToc }}
+  <div class="article-body">
+    <aside class="toc" aria-label="On this page">
+      <p class="toc-title">On this page</p>
+      {{ .TableOfContents }}
+    </aside>
+    <div class="prose">{{ .Content }}</div>
+  </div>
+  {{ else if $hasSide }}
+  <div class="article-body has-side">
+    <div class="prose">{{ .Content }}</div>
+    <div class="side">
+      {{ if or .Params.photo (eq $view "about") }}
+      <aside class="glance" aria-label="At a glance">
+        {{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}
+        {{ if eq $view "about" }}{{ partial "background.html" . }}{{ end }}
+      </aside>
+      {{ end }}
+      {{ partial "contact.html" . }}
+    </div>
+  </div>
+  {{ else }}
+  <div class="prose">{{ .Content }}</div>
+  {{ end }}
+
+  {{ if and $inTopics (or .PrevInSection .NextInSection) }}
+  <nav class="pager" aria-label="More on this subject">
+    {{ with .PrevInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
+    {{ with .NextInSection }}<a class="pager-link" href="{{ .RelPermalink }}"><span class="pager-label">More on this subject</span>{{ .Title }}</a>{{ end }}
+  </nav>
+  {{ end }}
+
+  {{ if and .Params.contact (not $hasSide) }}{{ partial "contact.html" . }}{{ end }}
+</article>
+{{ end }}

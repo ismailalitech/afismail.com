@@ -1,0 +1,43 @@
+{{/* The Search page. Hugo writes a list of every page (title, description, text) into
+     this page, and assets/js/search.js (loaded on every page) searches that list in the
+     visitor's browser. The search line under the header reads the same list from here.
+     Nothing is sent to a server. New articles, labs and videos are included automatically. */}}
+<section class="search" aria-labelledby="search-heading">
+  <h2 id="search-heading" class="visually-hidden">Search</h2>
+  {{ partial "search-form.html" (dict "id" "search-input" "live" true) }}
+  <p class="search-status" data-search-status aria-live="polite"></p>
+  <ol class="search-results" data-search-results></ol>
+  <noscript><p class="tool-note">Search needs JavaScript. Everything on the site is also listed under Topics and Resources.</p></noscript>
+</section>
+
+{{ $index := slice }}
+{{ range site.Pages }}
+  {{ if and (ne . $) (not .IsHome) (or .IsPage .IsSection) }}
+    {{ $kind := "Page" }}
+    {{ if .IsSection }}
+      {{ $kind = "Section" }}
+      {{ if eq .Section "topics" }}{{ $kind = "Topic" }}{{ end }}
+    {{ else if eq .Section "work" }}
+      {{ $kind = "Case study" }}
+    {{ else if eq .Section "topics" }}
+      {{ $kind = "Article" }}
+      {{ if .Params.lab }}{{ $kind = "Lab" }}{{ else if .Params.youtube }}{{ $kind = "Video" }}{{ end }}
+    {{ else }}
+      {{ with .Params.topics }}{{ $kind = index . 0 }}{{ end }}
+    {{ end }}
+    {{ $where := "" }}
+    {{ with .Parent }}{{ if not .IsHome }}{{ $where = .Title }}{{ end }}{{ end }}
+    {{/* The text that is searched: the page's text, plus the lists a page keeps in its
+         front matter (the Freelance page). */}}
+    {{ $page := . }}
+    {{ $text := .Plain }}
+    {{ range $key := slice "disciplines" "formats" "steps" "principles" }}
+      {{ range index $page.Params $key }}{{ $text = printf "%s %s. %s" $text .title .text }}{{ end }}
+    {{ end }}
+    {{ range .Params.requests }}{{ $text = printf "%s %s" $text . }}{{ end }}
+    {{ with .Params.training_text }}{{ $text = printf "%s %s" $text . }}{{ end }}
+    {{ range .Params.training_subjects }}{{ $text = printf "%s %s." $text . }}{{ end }}
+    {{ $index = $index | append (dict "title" .Title "url" .RelPermalink "description" .Description "kind" $kind "where" $where "text" $text) }}
+  {{ end }}
+{{ end }}
+<script type="application/json" data-search-index>{{ $index | jsonify | safeJS }}</script>

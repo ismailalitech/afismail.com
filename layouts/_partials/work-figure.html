@@ -1,0 +1,13 @@
+{{/* The picture of a case study: its photo or diagram, or the decoder's output.
+     Receives (dict "page" page "label" "Fig. 2"). Writes nothing if the page has no picture. */}}
+{{ $p := .page }}
+{{ if or $p.Params.image $p.Params.figure }}
+<figure class="work-figure">
+  {{ with $p.Params.image }}
+  <img src="{{ . | relURL }}" alt="{{ $p.Params.image_alt }}"{{ with $p.Params.image_size }} width="{{ index . 0 }}" height="{{ index . 1 }}"{{ end }} loading="lazy">
+  {{ else }}
+    {{ if eq $p.Params.figure "register" }}{{ partial "register-figure.html" . }}{{ end }}
+  {{ end }}
+  {{ with $p.Params.figure_caption }}<figcaption><span class="fig-label">{{ $.label }}</span> {{ . }}</figcaption>{{ end }}
+</figure>
+{{ end }}

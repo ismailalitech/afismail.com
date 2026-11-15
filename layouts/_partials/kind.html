@@ -1,0 +1,20 @@
+{{/* What a page is, with its icon. Receives a page.
+     In Topics: a lab (it has a lab number), a video (it has a youtube ID) or an article.
+     Elsewhere: the first entry of "topics" in the front matter (Tool, Reference, Guide). */}}
+{{- $name := "" }}
+{{- $label := "" }}
+{{- $id := "" }}
+{{- if eq .Section "topics" }}
+  {{- if .Params.lab }}
+    {{- $name = "lab" }}{{ $label = "Lab" }}{{ $id = printf "0x%02X" (int .Params.lab) }}
+  {{- else if .Params.youtube }}
+    {{- $name = "video" }}{{ $label = "Video" }}
+  {{- else }}
+    {{- $name = "article" }}{{ $label = "Article" }}
+  {{- end }}
+{{- else if and .IsPage (eq .Section "work") }}
+  {{- $name = "article" }}{{ $label = "Case study" }}
+{{- else }}
+  {{- with .Params.topics }}{{ $label = index . 0 }}{{ $name = lower $label }}{{ end }}
+{{- end }}
+{{- if $label }}<p class="kind">{{ partial "icon.html" $name }}<span>{{ $label }}{{ with $id }} <span class="kind-id">{{ . }}</span>{{ end }}</span></p>{{ end -}}

@@ -1,0 +1,94 @@
+{{ define "main" }}
+{{/* A folder can show the secure and non-secure diagram beside its title with visual = true. */}}
+{{ if .Params.visual }}<div class="page-top">{{ end }}
+<header class="page-head">
+  {{ partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
+  {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+</header>
+{{ if .Params.visual }}
+<figure class="figure">
+  {{ partial "hero-visual.html" . }}
+  <figcaption>On a Cortex-M with TrustZone, non-secure code reaches secure code only through a gateway.</figcaption>
+</figure>
+</div>
+{{ end }}
+
+{{ with .Sections }}
+  {{/* Does any sub-folder have sub-folders of its own? True on the Expertise page. */}}
+  {{ $nested := false }}
+  {{ range . }}{{ if .Sections }}{{ $nested = true }}{{ end }}{{ end }}
+
+  {{ if $nested }}
+    {{/* The Expertise page. Areas that already hold notes, labs or videos come first.
+         Inside an area, sub-topics with content are listed in full and the others are
+         gathered on one "Planned" line, so the page shows what exists. */}}
+    {{ $areas := . }}
+    {{ range $pass := slice true false }}
+      {{ range $areas }}
+        {{ $hasContent := gt (len .RegularPagesRecursive) 0 }}
+        {{ if eq $hasContent $pass }}
+        {{ $published := slice }}
+        {{ $planned := slice }}
+        {{ range .Sections }}
+          {{ if .RegularPagesRecursive }}{{ $published = $published | append . }}{{ else }}{{ $planned = $planned | append . }}{{ end }}
+        {{ end }}
+        <section class="topic-block">
+          <div class="block-head">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+          </div>
+          {{ with $published }}{{ partial "folder-rows.html" . }}{{ end }}
+          {{ with $planned }}
+          <p class="planned"><span class="planned-label">Planned</span>{{ range . }} <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}</p>
+          {{ end }}
+        </section>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ with $.Params.planned }}
+    <p class="planned"><span class="planned-label">Also planned</span>{{ range . }} <span>{{ . }}</span>{{ end }}</p>
+    {{ end }}
+
+    {{/* The three ways a subject is covered. The texts come from content/_index.md (params.steps). */}}
+    {{ with site.Home.Params.steps }}
+    <section class="block" aria-labelledby="legend-heading">
+      <h2 id="legend-heading" class="visually-hidden">How each subject is covered</h2>
+      <ul class="legend">
+        {{ range $i, $step := . }}
+        <li>
+          {{ if lt $i 3 }}{{ partial "icon.html" (index (slice "article" "video" "lab") $i) }}{{ end }}
+          <h3>{{ $step.title }}</h3>
+          <p>{{ $step.text }}</p>
+        </li>
+        {{ end }}
+      </ul>
+    </section>
+    {{ end }}
+  {{ else }}
+    <section class="block" aria-labelledby="folders-heading">
+      <h2 id="folders-heading" class="visually-hidden">In {{ $.Title }}</h2>
+      {{ partial "folder-rows.html" . }}
+    </section>
+  {{ end }}
+{{ end }}
+
+{{/* Pages directly in this folder. Skipped for a folder that only holds sub-folders. */}}
+{{ if or .RegularPages (not .Sections) }}
+<section class="block" aria-labelledby="list-heading">
+  <h2 id="list-heading" class="visually-hidden">All {{ .Title | lower }}</h2>
+  {{ if and .RegularPages (eq .Section "work") }}
+    {{ partial "work-list.html" (dict "pages" .RegularPages "figures" true) }}
+  {{ else if and .RegularPages (ne .Section "topics") }}
+    {{ partial "resource-list.html" .RegularPages }}
+  {{ else }}
+    {{ partial "entry-list.html" (dict "pages" .RegularPages "section" .) }}
+  {{ end }}
+</section>
+{{ end }}
+
+{{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
+
+{{ if eq .Section "topics" }}{{ partial "siblings.html" . }}{{ end }}
+{{ end }}

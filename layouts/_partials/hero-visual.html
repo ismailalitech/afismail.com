@@ -1,0 +1,34 @@
+{{/* Diagram beside the headline on the home page. Colours follow the light or dark theme. */}}
+<svg class="diagram" viewBox="0 0 340 242" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">Secure and non-secure worlds on a microcontroller</title>
+  <desc id="diagram-desc">Application code, the RTOS and drivers run in the non-secure world. Secure services, keys and boot code run in the secure world. Calls cross from one to the other only through a gateway. Both run on a Cortex-M core with TrustZone.</desc>
+  <defs>
+    <marker id="diagram-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path class="dg-head" d="M0 0L8 4L0 8z"/>
+    </marker>
+  </defs>
+
+  <rect class="dg-panel" x="1" y="1" width="140" height="178" rx="8"/>
+  <text class="dg-label" x="15" y="25">NON-SECURE</text>
+  <rect class="dg-box" x="15" y="38" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="71" y="60" text-anchor="middle">Application</text>
+  <rect class="dg-box" x="15" y="82" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="71" y="104" text-anchor="middle">RTOS</text>
+  <rect class="dg-box" x="15" y="126" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="71" y="148" text-anchor="middle">Drivers</text>
+
+  <rect class="dg-panel dg-secure" x="199" y="1" width="140" height="178" rx="8"/>
+  <text class="dg-label dg-label-secure" x="213" y="25">SECURE</text>
+  <rect class="dg-box" x="213" y="38" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="269" y="60" text-anchor="middle">Secure services</text>
+  <rect class="dg-box" x="213" y="82" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="269" y="104" text-anchor="middle">Keys</text>
+  <rect class="dg-box" x="213" y="126" width="112" height="36" rx="5"/>
+  <text class="dg-text" x="269" y="148" text-anchor="middle">Secure boot</text>
+
+  <text class="dg-gate" x="170" y="88" text-anchor="middle">gateway</text>
+  <path class="dg-arrow" d="M145 100H195" marker-end="url(#diagram-arrow)"/>
+
+  <rect class="dg-hw" x="1" y="195" width="338" height="42" rx="8"/>
+  <text class="dg-text" x="170" y="221" text-anchor="middle">Cortex-M core with TrustZone</text>
+</svg>

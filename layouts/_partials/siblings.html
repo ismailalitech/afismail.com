@@ -1,0 +1,12 @@
+{{/* Links to the folders next to this one. Receives a folder page inside Topics. */}}
+{{ $self := . }}
+{{ with .Parent }}
+  {{ if and (not .IsHome) (gt (len .Sections) 1) }}
+  <nav class="siblings" aria-labelledby="siblings-heading">
+    <h2 id="siblings-heading">{{ if .Parent.IsHome }}Other topics{{ else }}Also in {{ .Title }}{{ end }}</h2>
+    <ul>
+      {{ range .Sections }}{{ if ne . $self }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}{{ end }}
+    </ul>
+  </nav>
+  {{ end }}
+{{ end }}

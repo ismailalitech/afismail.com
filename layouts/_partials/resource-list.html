@@ -1,0 +1,18 @@
+{{/* The resources. The first one is shown large, with the decoder's output as its
+     picture; the others follow as a list. Receives the pages. */}}
+{{ $first := index . 0 }}
+<article class="feature">
+  <div class="feature-text">
+    {{ partial "kind.html" $first }}
+    <h3><a href="{{ $first.RelPermalink }}">{{ $first.Title }}</a></h3>
+    {{ with $first.Description }}<p>{{ . }}</p>{{ end }}
+    <p class="actions"><a class="btn btn-primary btn-small" href="{{ $first.RelPermalink }}">Open the {{ if eq $first.Params.tool "fault-decoder" }}decoder{{ else }}page{{ end }}</a></p>
+  </div>
+  {{ if eq $first.Params.tool "fault-decoder" }}
+  <figure class="work-figure">
+    {{ partial "register-figure.html" . }}
+    <figcaption><span class="fig-label">Fig. 1</span> The decoder's output for the built-in example, a bus fault with a valid fault address.</figcaption>
+  </figure>
+  {{ end }}
+</article>
+{{ with after 1 . }}{{ partial "entry-list.html" (dict "pages" .) }}{{ end }}

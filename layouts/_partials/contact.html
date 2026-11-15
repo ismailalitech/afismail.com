@@ -1,0 +1,14 @@
+{{/* Contact block. Shown on pages with "contact = true" in their front matter.
+     A page can set its own heading and first sentence with contact_title and contact_text. */}}
+{{ $title := "Contact" }}
+{{ $text := "For questions or to get in touch, write to" }}
+{{ with .Params.contact_title }}{{ $title = . }}{{ end }}
+{{ with .Params.contact_text }}{{ $text = . }}{{ end }}
+{{ with site.Params.email }}
+<section class="contact" aria-labelledby="contact-heading">
+  <h2 id="contact-heading">{{ $title }}</h2>
+  <p>{{ $text }} <a href="mailto:{{ . }}">{{ . }}</a>.</p>
+  <p class="actions"><a class="btn btn-primary" href="mailto:{{ . }}">Write an email</a></p>
+  {{ with site.Params.linkedin }}<p>I'm also on <a href="{{ . }}" rel="me">LinkedIn</a>{{ with site.Params.github }} and <a href="{{ . }}" rel="me">GitHub</a>{{ end }}.</p>{{ end }}
+</section>
+{{ end }}

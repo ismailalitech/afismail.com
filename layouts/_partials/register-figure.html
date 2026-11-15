@@ -1,0 +1,15 @@
+{{/* The fault decoder's output for its own example (CFSR = 0x00008200), as a picture.
+     If the example in assets/js/fault-decoder.js changes, change it here too. */}}
+<div class="register-figure">
+  <p class="reg-value">CFSR = 0x00008200</p>
+  <div class="regstrip" role="img" aria-label="The 32 bits of the value, drawn as two rows of sixteen. Bits 15 and 9 are set.">
+      <div class="regrow"><i class="bit-cell">31<b>0</b></i><i class="bit-cell">30<b>0</b></i><i class="bit-cell">29<b>0</b></i><i class="bit-cell">28<b>0</b></i><i class="bit-cell">27<b>0</b></i><i class="bit-cell">26<b>0</b></i><i class="bit-cell">25<b>0</b></i><i class="bit-cell">24<b>0</b></i><i class="bit-cell">23<b>0</b></i><i class="bit-cell">22<b>0</b></i><i class="bit-cell">21<b>0</b></i><i class="bit-cell">20<b>0</b></i><i class="bit-cell">19<b>0</b></i><i class="bit-cell">18<b>0</b></i><i class="bit-cell">17<b>0</b></i><i class="bit-cell">16<b>0</b></i></div>
+      <div class="regfields" aria-hidden="true"><span style="grid-column: span 16">UsageFault</span></div>
+      <div class="regrow"><i class="bit-cell is-set">15<b>1</b></i><i class="bit-cell">14<b>0</b></i><i class="bit-cell">13<b>0</b></i><i class="bit-cell">12<b>0</b></i><i class="bit-cell">11<b>0</b></i><i class="bit-cell">10<b>0</b></i><i class="bit-cell is-set">9<b>1</b></i><i class="bit-cell">8<b>0</b></i><i class="bit-cell">7<b>0</b></i><i class="bit-cell">6<b>0</b></i><i class="bit-cell">5<b>0</b></i><i class="bit-cell">4<b>0</b></i><i class="bit-cell">3<b>0</b></i><i class="bit-cell">2<b>0</b></i><i class="bit-cell">1<b>0</b></i><i class="bit-cell">0<b>0</b></i></div>
+      <div class="regfields" aria-hidden="true"><span style="grid-column: span 8">BusFault</span><span style="grid-column: span 8">MemManage</span></div>
+  </div>
+  <ul class="reg-bits">
+    <li><code>PRECISERR</code> <span>BusFault, bit 9</span><br>Bus error on a data access. The stacked PC points to the instruction that caused it.</li>
+    <li><code>BFARVALID</code> <span>BusFault, bit 15</span><br>BFAR (0xE000ED38) holds the address that faulted.</li>
+  </ul>
+</div>

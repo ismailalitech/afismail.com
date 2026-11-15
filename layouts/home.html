@@ -1,0 +1,83 @@
+{{ define "main" }}
+{{/* 1. Name, role, one sentence and two actions on the left; the moving chip drawing on the right.
+     The texts are in content/_index.md. */}}
+<section class="hero">
+  <div class="hero-text">
+    <h1>{{ site.Title }}</h1>
+    <p class="hero-role">{{ .Title }}</p>
+    {{ with .Params.intro }}<p class="hero-intro">{{ . }}</p>{{ end }}
+    <p class="actions">
+      {{ with site.GetPage "/freelance" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Discuss a project</a>{{ end }}
+      {{ with site.GetPage "/work" }}<a class="btn" href="{{ .RelPermalink }}">View selected work</a>{{ end }}
+    </p>
+  </div>
+  {{ partial "hero-figure.html" . }}
+</section>
+
+{{/* 2. The three areas of work (params.expertise in content/_index.md). */}}
+{{ with .Params.expertise }}
+<section class="block" aria-labelledby="expertise-heading">
+  <div class="block-head">
+    <h2 id="expertise-heading">Expertise</h2>
+    {{ with site.GetPage "/topics" }}<a href="{{ .RelPermalink }}">Notes and labs by area</a>{{ end }}
+  </div>
+  <ul class="columns">
+    {{ range . }}
+    <li>
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+      {{ $linkText := .link_text }}
+      {{ with .link }}<p class="expertise-link"><a href="{{ . }}">{{ $linkText }}</a></p>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
+
+{{/* 3. Selected work: the first case study in content/work (lowest weight). */}}
+{{ with site.GetPage "/work" }}
+  {{ $work := . }}
+  {{ with .RegularPages }}
+  <section class="block" aria-labelledby="work-heading">
+    <div class="block-head">
+      <h2 id="work-heading">Selected work</h2>
+      <a href="{{ $work.RelPermalink }}">All work</a>
+    </div>
+    {{ partial "work-list.html" (dict "pages" (first 1 .) "figures" false) }}
+  </section>
+  {{ end }}
+{{ end }}
+
+{{/* 4. Tools and technical writing: the resources, then the newest notes and labs once there are some. */}}
+{{ with site.GetPage "/resources" }}
+  {{ $resources := . }}
+  {{ with .RegularPages }}
+  <section class="block" aria-labelledby="tools-heading">
+    <div class="block-head">
+      <h2 id="tools-heading">Tools and technical writing</h2>
+      <a href="{{ $resources.RelPermalink }}">All resources</a>
+    </div>
+    {{ partial "entry-list.html" (dict "pages" (first 4 .)) }}
+    {{ $latest := where site.RegularPages "Section" "topics" }}
+    {{ if $latest }}
+    <p class="sub">Latest notes and labs</p>
+    {{ partial "entry-list.html" (dict "pages" (first 3 $latest)) }}
+    {{ end }}
+  </section>
+  {{ end }}
+{{ end }}
+
+{{/* 5. Work with me. The text comes from content/freelance.md (home_text). */}}
+{{ with site.GetPage "/freelance" }}
+<section class="invite" id="contact" aria-labelledby="invite-heading">
+  <h2 id="invite-heading">Work with me</h2>
+  <p>{{ with .Params.home_text }}{{ . }}{{ else }}{{ .Description }}{{ end }}</p>
+  <p class="actions">
+    <a class="btn btn-primary" href="{{ .RelPermalink }}">How an engagement works</a>
+    {{ with site.Params.email }}<a class="btn" href="mailto:{{ . }}">{{ . }}</a>{{ end }}
+  </p>
+</section>
+{{ end }}
+
+{{ partial "subscribe.html" . }}
+{{ end }}

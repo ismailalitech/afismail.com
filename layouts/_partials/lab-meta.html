@@ -1,0 +1,9 @@
+{{/* Spec line for a lab. Receives a map: a page's .Params, or one "upcoming" entry. */}}
+{{ if or .board .core .level .duration }}
+<dl class="meta">
+  {{ with .board }}<div><dt>Board</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .core }}<div><dt>Core</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .level }}<div><dt>Level</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .duration }}<div><dt>Time</dt><dd>{{ . }}</dd></div>{{ end }}
+</dl>
+{{ end }}

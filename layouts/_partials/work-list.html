@@ -1,0 +1,35 @@
+{{/* Case studies, one after the other.
+     Receives (dict "pages" pages "figures" true or false).
+     With figures (the Work page): the picture on one side, the summary on the other.
+     Without (the home page): text only, the title on one side, the summary on the other. */}}
+<ul class="work-list">
+  {{ range $i, $p := .pages }}
+  {{ if $.figures }}
+  <li class="work-item">
+    {{ partial "work-figure.html" (dict "page" $p "label" (printf "Fig. %d" (add $i 1))) }}
+    <div class="work-text">
+      <p class="kind">Case study{{ with $p.Params.status }} <span class="pill">{{ . }}</span>{{ end }}</p>
+      <h3><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h3>
+      {{ partial "case-summary.html" $p }}
+      <p class="actions">
+        <a class="btn btn-small" href="{{ $p.RelPermalink }}">Read the case study</a>
+        {{ with $p.Params.action }}<a class="btn btn-small" href="{{ . }}">{{ $p.Params.action_text }}</a>{{ end }}
+      </p>
+    </div>
+  </li>
+  {{ else }}
+  <li class="work-item work-plain">
+    <div class="work-text">
+      <p class="kind">Case study{{ with $p.Params.status }} <span class="pill">{{ . }}</span>{{ end }}</p>
+      <h3><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h3>
+      {{ with $p.Description }}<p class="work-lead">{{ . }}</p>{{ end }}
+      <p class="actions">
+        <a class="btn btn-small" href="{{ $p.RelPermalink }}">Read the case study</a>
+        {{ with $p.Params.action }}<a class="btn btn-small" href="{{ . }}">{{ $p.Params.action_text }}</a>{{ end }}
+      </p>
+    </div>
+    {{ partial "case-summary.html" $p }}
+  </li>
+  {{ end }}
+  {{ end }}
+</ul>
