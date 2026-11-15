@@ -1,0 +1,53 @@
+{{/* The animated blocks at the top of the TrustZone/TF-M project page: a live schedule, what the
+     project is built for, the numbers that matter, a security lens and a finder. The drawing and
+     the data live in static/tfm/tfm.js; this file only provides the places where they mount.
+     Switched on by intro = "tfm-intro" in the project's front matter. */}}
+<link rel="stylesheet" href="{{ "tfm/tfm.css" | relURL }}">
+<div class="tfm-intro">
+
+  <section class="block" id="see" aria-labelledby="see-heading">
+    <div class="block-head">
+      <h2 id="see-heading">See what happens</h2>
+      <a href="{{ "tfm/explorer/" | relURL }}">Open the full explorer</a>
+    </div>
+    <p>Three tasks share one core. The low task makes a call into the Secure world. Watch who waits, then change the service or split the call into pieces.</p>
+    <div data-tfm="sim" data-compact data-service="ai" data-n="1">
+      <noscript><img src="{{ "images/tfm/blocking-timeline.svg" | relURL }}" alt="A long Secure call blocks the high-priority task and delays the task between them" width="800" height="330"></noscript>
+    </div>
+  </section>
+
+  <section class="block" id="built-for" aria-labelledby="built-heading">
+    <div class="block-head"><h2 id="built-heading">What it is built for</h2></div>
+    <ol class="tfm-built">
+      <li><h3>Measure</h3><p>About forty experiments time each source of Secure-side delay on two boards, with hardware timestamps.</p><a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/measuring/m01-hardware-timestamps/" | relURL }}">How it is timed</a></li>
+      <li><h3>Model</h3><p>Each delay becomes a term of a response-time analysis: blocking, interference and a cost per preemption.</p><a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/fundamentals/f02-response-time-analysis/" | relURL }}">The analysis in ten minutes</a></li>
+      <li><h3>Mitigate</h3><p>Split long services, keep flash code and handlers in SRAM, restore compiler builtins. Each fix is measured.</p><a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/blocking-and-scheduling/b02-chunking-shapes-blocking/" | relURL }}">Chunking a service</a></li>
+      <li><h3>Enforce</h3><p>A cap, a budget and a client identity inside the Secure partition keep one client from taking everyone's deadlines.</p><a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/containment-and-availability/a01-secure-side-budget-and-identity/" | relURL }}">The runaway client</a></li>
+      <li><h3>Validate</h3><p>The bounds are checked on random task sets nobody designed, on the hardware.</p><a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/blocking-and-scheduling/b04-random-task-sets/" | relURL }}">96 random sets</a></li>
+    </ol>
+  </section>
+
+  <section class="block" id="numbers" aria-labelledby="numbers-heading">
+    <div class="block-head">
+      <h2 id="numbers-heading">The results at a glance</h2>
+      <a href="{{ "projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/validation/x01-validation-report/" | relURL }}">Every result, with its experiment</a>
+    </div>
+    <div data-tfm="stats"></div>
+  </section>
+
+  <section class="block" id="lens" aria-labelledby="lens-heading">
+    <div class="block-head">
+      <h2 id="lens-heading">Through a security lens</h2>
+      <a href="{{ "tfm/explorer/#compare" | relURL }}">Compare the measurements</a>
+    </div>
+    <p>Security properties cost time. Pick the one you are buying to see its price in timing, how to keep it affordable, and where to read more.</p>
+    <div data-tfm="lens"></div>
+  </section>
+
+  <section class="block" id="find" aria-labelledby="find-heading">
+    <div class="block-head"><h2 id="find-heading">Find what you need</h2></div>
+    <div data-tfm="find"></div>
+  </section>
+
+</div>
+<script src="{{ "tfm/tfm.js" | relURL }}" defer></script>
