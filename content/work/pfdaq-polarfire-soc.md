@@ -106,4 +106,4 @@ Limits, stated plainly:
   reboot. See [the case study](/topics/microcontrollers/linux-and-rtos/k11-remoteproc-restart/).
 - The ten-minute, 17.8 GB soak was run on an earlier fabric version and has not been repeated on the final one.
 - Everything was measured on one board.
-- The code is being prepared for public release; until then the labs describe commands that run from the repository.
+- The code is public: [github.com/ismailalitech/pfdaq](https://github.com/ismailalitech/pfdaq). The labs run from it.
