@@ -27,7 +27,7 @@
     <ol class="parts">
       {{ range $i, $part := .Sections.ByWeight }}
       {{ $count := partial "counts.html" . }}
-      <li class="part">
+      <li class="part" data-rb="SpotlightCard">
         <span class="part-no" aria-hidden="true">{{ add $i 1 }}</span>
         <div class="part-body">
           <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>

@@ -3,7 +3,7 @@
      The texts are in content/_index.md. */}}
 <section class="hero">
   <div class="hero-text">
-    <h1>{{ site.Title }}</h1>
+    <h1><span data-rb="SplitText">{{ site.Title }}</span></h1>
     <p class="hero-role">{{ .Title }}</p>
     {{ with .Params.intro }}<p class="hero-intro">{{ . }}</p>{{ end }}
     <p class="actions">

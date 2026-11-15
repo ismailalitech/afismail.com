@@ -1,0 +1,34 @@
+{{/* GSAP and ScrollTrigger on every page (scroll reveals, shared with Lenis), and, on pages that
+     have React Bits components, SplitText, React, ReactDOM and the components' own bundle.
+     Pages with components: the home page and the project pages. Every file is loaded with defer,
+     in this order, from this site, and each one is optional: if one is missing the page is
+     still complete, only plainer. */}}
+{{ $gsap := partial "vendor.html" "gsap" }}
+{{ $trigger := partial "vendor.html" "scrolltrigger" }}
+{{ $islands := or .IsHome (and .IsSection (eq .Section "projects")) }}
+{{ if and $gsap $trigger }}
+  <script src="{{ $gsap.RelPermalink }}" integrity="{{ $gsap.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  <script src="{{ $trigger.RelPermalink }}" integrity="{{ $trigger.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  {{ if $islands }}
+    {{ $split := partial "vendor.html" "splittext" }}
+    {{ $react := partial "vendor.html" "react" }}
+    {{ $dom := partial "vendor.html" "reactdom" }}
+    {{ if and $split $react $dom }}
+      <script src="{{ $split.RelPermalink }}" integrity="{{ $split.Data.Integrity }}" crossorigin="anonymous" defer></script>
+      <script src="{{ $react.RelPermalink }}" integrity="{{ $react.Data.Integrity }}" crossorigin="anonymous" defer></script>
+      <script src="{{ $dom.RelPermalink }}" integrity="{{ $dom.Data.Integrity }}" crossorigin="anonymous" defer></script>
+      {{/* The React Bits components, compiled from JSX. The imports of react, react-dom and gsap are
+           mapped to the global files loaded above instead of being bundled again. */}}
+      {{ $shims := dict "react" "js/shims/react.js" "react-dom" "js/shims/react-dom.js" "gsap" "js/shims/gsap.js" "gsap/ScrollTrigger" "js/shims/gsap-scrolltrigger.js" "gsap/SplitText" "js/shims/gsap-splittext.js" }}
+      {{ $opts := dict "targetPath" "js/reactbits.js" "format" "iife" "minify" true "shims" $shims "target" "es2019" }}
+      {{ with resources.Get "js/reactbits/islands.jsx" }}
+        {{ $bundle := . | js.Build $opts | fingerprint }}
+        <script src="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}" crossorigin="anonymous" defer></script>
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ with resources.Get "js/motion.js" }}
+    {{ $js := . | fingerprint }}
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
+  {{ end }}
+{{ end }}

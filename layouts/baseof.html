@@ -26,6 +26,7 @@
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end }}
+  {{ partial "motion-scripts.html" . }}
   {{/* The roadmap page only: the route that lights up while reading. */}}
   {{ if eq .Params.view "roadmap" }}
     {{ with resources.Get "js/roadmap.js" }}
@@ -37,9 +38,9 @@
        checks it against the fingerprint in hugo.toml, and serves it from this site, so visitors
        contact no other server. If the download or the check fails, the site is built without
        smooth scrolling and Hugo prints a warning. Settings: params.smoothScroll in hugo.toml.
-       It is used on the home page only, on a desktop; every other page scrolls natively. */}}
+       It is used on a desktop only; a phone or a tablet scrolls natively. */}}
   {{ with site.Params.smoothScroll }}
-    {{ if and .enabled $.IsHome }}
+    {{ if .enabled }}
       {{ $url := .url }}
       {{ $expected := .integrity }}
       {{ $download := try (resources.GetRemote $url) }}
