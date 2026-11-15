@@ -24,7 +24,7 @@
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{ with .Description }}<p>{{ . }}</p>{{ end }}
       {{ partial "lab-meta.html" .Params }}
-      {{ if eq .Section "topics" }}{{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}{{ end }}
+      {{ if or (eq .Section "topics") (eq .Section "projects") }}{{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}{{ end }}
     </div>
   </li>
   {{ end }}
@@ -51,7 +51,7 @@
 <div class="empty-state">
   <p class="empty-title">Nothing is published here yet</p>
   <p>{{ $empty }}</p>
-  {{ with $section }}{{ if eq .Section "topics" }}
+  {{ with $section }}{{ if or (eq .Section "topics") (eq .Section "projects") }}
   <p>{{ with site.GetPage "/resources" }}The <a href="{{ .RelPermalink }}">free resources</a> are ready to use now.{{ end }}{{ with site.Home.OutputFormats.Get "rss" }} New pieces appear in the <a href="{{ .RelPermalink }}">RSS feed</a>.{{ end }}</p>
   {{ end }}{{ end }}
 </div>

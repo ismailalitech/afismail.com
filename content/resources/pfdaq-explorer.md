@@ -33,4 +33,4 @@ behind it: simulation, tool output or measurement on the board.
 
 - [Architecture reference](/resources/pfdaq-architecture/): register maps, frame format, DMA rules, protocols.
 - [Results and evidence](/resources/pfdaq-results/): every test, its method, its result and its record.
-- [The case study](/work/pfdaq-polarfire-soc/).
+- [The project page](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/).

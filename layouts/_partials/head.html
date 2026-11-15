@@ -6,7 +6,7 @@
 {{ with .Params.head_title }}{{ $name = . }}{{ end }}
 {{ $title := printf "%s · %s" $name site.Title }}
 {{ if .IsHome }}{{ $title = printf "%s · %s" site.Title site.Params.role }}{{ end }}
-{{ $isPiece := and .IsPage (eq .Section "topics") }}
+{{ $isPiece := and .IsPage (or (eq .Section "topics") (eq .Section "projects")) }}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ $title }}</title>

@@ -1,0 +1,8 @@
+{{/* A folder of projects: the projects below it, grouped by field and platform. Receives the folder. */}}
+<header class="page-head">
+  {{ partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+  {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+</header>
+{{ partial "project-tree.html" (dict "node" . "depth" 0) }}
+{{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}

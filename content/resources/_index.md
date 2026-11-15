@@ -1,8 +1,8 @@
 +++
-title = "Resources"
-description = "Tools and references I use for embedded systems and security work, free to use."
+title = "References"
+description = "Tools, reference pages and results that go with the projects and labs, free to use."
 
 [params]
-  head_title = "Embedded systems tools and references"
+  head_title = "Embedded systems references and tools"
   empty_text = "The first resource is in preparation."
 +++
