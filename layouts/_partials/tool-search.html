@@ -27,7 +27,17 @@
     {{ end }}
     {{ $where := "" }}
     {{ with .Parent }}{{ if not .IsHome }}{{ $where = .Title }}{{ end }}{{ end }}
-    {{ $index = $index | append (dict "title" .Title "url" .RelPermalink "description" .Description "kind" $kind "where" $where "text" .Plain) }}
+    {{/* The text that is searched: the page's text, plus the lists a page keeps in its
+         front matter (the Freelance page). */}}
+    {{ $page := . }}
+    {{ $text := .Plain }}
+    {{ range $key := slice "disciplines" "formats" "steps" "principles" }}
+      {{ range index $page.Params $key }}{{ $text = printf "%s %s. %s" $text .title .text }}{{ end }}
+    {{ end }}
+    {{ range .Params.requests }}{{ $text = printf "%s %s" $text . }}{{ end }}
+    {{ with .Params.training_text }}{{ $text = printf "%s %s" $text . }}{{ end }}
+    {{ range .Params.training_subjects }}{{ $text = printf "%s %s." $text . }}{{ end }}
+    {{ $index = $index | append (dict "title" .Title "url" .RelPermalink "description" .Description "kind" $kind "where" $where "text" $text) }}
   {{ end }}
 {{ end }}
 <script type="application/json" data-search-index>{{ $index | jsonify | safeJS }}</script>

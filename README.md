@@ -125,7 +125,8 @@ weight = 50
 | Name, role, email, links, YouTube | `hugo.toml`                                 |
 | Academic background, fields of work, languages (About page) | `params.highlights` in `hugo.toml` |
 | Home page: role, introduction, picture, the three areas | `content/_index.md`   |
-| Home page "Work with me" text     | `description` in `content/freelance.md`     |
+| Home page "Work with me" text     | `home_text` in `content/freelance.md`       |
+| Freelance page: every section (disciplines, requests, ways to work, steps, assurances, training) | `content/freelance.md` |
 | A case study                      | its file in `content/work/`                 |
 | Planned subjects with no page yet (Expertise page) | `planned` in `content/topics/_index.md` |
 | The three steps on the Expertise page | `params.steps` in `content/_index.md`   |

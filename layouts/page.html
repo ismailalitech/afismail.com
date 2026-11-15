@@ -5,22 +5,30 @@
        view = "glossary"   term and definition side by side, with a filter box
        view = "roadmap"    stages drawn along a line
        view = "about"      background (params.highlights in hugo.toml) beside the text
+       view = "freelance"  the Freelance page, laid out from its front matter
+       headline = "..."    a longer headline than the title, at the top of the page
      A page with contact = true shows the contact block beside its text on wide screens. */}}
 {{ $isLab := false }}
 {{ with .Params.lab }}{{ $isLab = true }}{{ end }}
 {{ $inTopics := eq .Section "topics" }}
 {{ $view := .Params.view }}
 {{ $hasToc := or $inTopics .Params.toc }}
-{{ $hasSide := and .Params.contact (not $hasToc) }}
+{{ $hasSide := and .Params.contact (not $hasToc) (ne $view "freelance") }}
 <article class="article{{ with $view }} view-{{ . }}{{ end }}">
   <header class="page-head">
     {{ partial "breadcrumbs.html" . }}
     {{ partial "kind.html" . }}
     {{/* Optional portrait: set photo = "images/your-file.jpg" in the page's front matter. */}}
     {{ if not $hasSide }}{{ with .Params.photo }}<img class="portrait" src="{{ . | relURL }}" alt="Portrait of {{ site.Title }}" width="144" height="144">{{ end }}{{ end }}
-    <h1>{{ .Title }}</h1>
+    <h1>{{ with .Params.headline }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
     {{ with .Params.status }}<p><span class="pill">{{ . }}</span></p>{{ end }}
     {{ with .Description }}<p class="lead">{{ . }}</p>{{ end }}
+    {{ if eq $view "freelance" }}
+    <p class="actions">
+      {{ with site.Params.email }}<a class="btn btn-primary" href="mailto:{{ . }}">Discuss a project</a>{{ end }}
+      <a class="btn" href="#how-a-project-runs">How a project runs</a>
+    </p>
+    {{ end }}
     {{ if $inTopics }}
       {{ with .Params.topics }}<ul class="chips">{{ range . }}<li>{{ . }}</li>{{ end }}</ul>{{ end }}
       {{ if or (not .Date.IsZero) .Params.repo }}
@@ -60,7 +68,9 @@
 
   {{ if eq $view "glossary" }}{{ partial "glossary-tools.html" . }}{{ end }}
 
-  {{ if $hasToc }}
+  {{ if eq $view "freelance" }}
+  {{ partial "freelance.html" . }}
+  {{ else if $hasToc }}
   <div class="article-body">
     <aside class="toc" aria-label="On this page">
       <p class="toc-title">On this page</p>

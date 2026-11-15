@@ -21,7 +21,7 @@
     <h2 id="expertise-heading">Expertise</h2>
     {{ with site.GetPage "/topics" }}<a href="{{ .RelPermalink }}">Notes and labs by area</a>{{ end }}
   </div>
-  <ul class="expertise">
+  <ul class="columns">
     {{ range . }}
     <li>
       <h3>{{ .title }}</h3>
@@ -67,11 +67,11 @@
   {{ end }}
 {{ end }}
 
-{{/* 5. Work with me. The text comes from content/freelance.md (description). */}}
+{{/* 5. Work with me. The text comes from content/freelance.md (home_text). */}}
 {{ with site.GetPage "/freelance" }}
 <section class="invite" id="contact" aria-labelledby="invite-heading">
   <h2 id="invite-heading">Work with me</h2>
-  <p>{{ .Description }}</p>
+  <p>{{ with .Params.home_text }}{{ . }}{{ else }}{{ .Description }}{{ end }}</p>
   <p class="actions">
     <a class="btn btn-primary" href="{{ .RelPermalink }}">How an engagement works</a>
     {{ with site.Params.email }}<a class="btn" href="mailto:{{ . }}">{{ . }}</a>{{ end }}

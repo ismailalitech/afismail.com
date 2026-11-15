@@ -25,6 +25,21 @@
     });
   }
 
+  /* Marks an element (data-seen) the first time it scrolls into view, so that a
+     one-time effect can play: the chain on the Freelance page lights up. */
+  var unseen = document.querySelectorAll('[data-seen]');
+  if (unseen.length && 'IntersectionObserver' in window) {
+    var watcher = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-seen');
+          watcher.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    Array.prototype.forEach.call(unseen, function (element) { watcher.observe(element); });
+  }
+
   /* Print button on the cheat sheet */
   var printButton = document.querySelector('[data-print]');
   if (printButton) {

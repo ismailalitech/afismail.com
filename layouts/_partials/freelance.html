@@ -1,0 +1,103 @@
+{{/* The Freelance page. Every text is in content/freelance.md. The sections:
+     1. what the team covers, drawn as a chain from mechanics to security
+     2. typical requests
+     3. the ways to work together
+     4. how a project runs, step by step
+     5. what a client can count on
+     6. team training
+     The contact block follows (layouts/_partials/contact.html). */}}
+{{ with .Params.disciplines }}
+<section class="block" aria-labelledby="cover-heading">
+  <div class="block-head">
+    <h2 id="cover-heading">What we cover</h2>
+    {{ with $.Params.cover_intro }}<p>{{ . }}</p>{{ end }}
+  </div>
+  {{/* The chain lights up from left to right once, when it comes into view. */}}
+  <ol class="chain" data-seen>
+    {{ range $i, $item := . }}
+    <li style="--i: {{ $i }}">
+      <h3>{{ $item.title }}</h3>
+      <p>{{ $item.text }}</p>
+    </li>
+    {{ end }}
+  </ol>
+</section>
+{{ end }}
+
+{{ with .Params.requests }}
+<section class="block" aria-labelledby="requests-heading">
+  <div class="block-head">
+    <h2 id="requests-heading">When teams call us</h2>
+  </div>
+  <ul class="requests">
+    {{ range . }}<li>{{ . }}</li>{{ end }}
+  </ul>
+</section>
+{{ end }}
+
+{{ with .Params.formats }}
+<section class="block" aria-labelledby="formats-heading">
+  <div class="block-head">
+    <h2 id="formats-heading">Three ways to work with us</h2>
+  </div>
+  <ul class="columns">
+    {{ range . }}
+    <li>
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
+
+{{ with .Params.steps }}
+<section class="block" id="how-a-project-runs" aria-labelledby="steps-heading">
+  <div class="block-head">
+    <h2 id="steps-heading">How a project runs</h2>
+  </div>
+  <ol class="steps">
+    {{ range . }}
+    <li>
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+    </li>
+    {{ end }}
+  </ol>
+</section>
+{{ end }}
+
+{{ with .Params.principles }}
+<section class="block" aria-labelledby="principles-heading">
+  <div class="block-head">
+    <h2 id="principles-heading">What you can count on</h2>
+  </div>
+  <dl class="assurances">
+    {{ range . }}
+    <div>
+      <dt>{{ .title }}</dt>
+      <dd>{{ .text }}</dd>
+    </div>
+    {{ end }}
+  </dl>
+</section>
+{{ end }}
+
+{{ with .Params.training_text }}
+<section class="block" aria-labelledby="training-heading">
+  <div class="block-head">
+    <h2 id="training-heading">Team training on request</h2>
+  </div>
+  <div class="training">
+    <p>{{ . }}</p>
+    {{ with $.Params.training_subjects }}
+    <div>
+      <p class="training-label">Example subjects</p>
+      <ul class="subjects">
+        {{ range . }}<li>{{ . }}</li>{{ end }}
+      </ul>
+    </div>
+    {{ end }}
+  </div>
+</section>
+{{ end }}

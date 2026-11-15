@@ -694,13 +694,13 @@ figcaption {
 }
 
 /* The three areas of work: columns divided by fine lines */
-.expertise {
+.columns {
   display: grid;
   padding: 0;
   list-style: none;
 }
 
-.expertise li {
+.columns li {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -708,11 +708,11 @@ figcaption {
   border-bottom: 1px solid var(--rule);
 }
 
-.expertise p {
+.columns p {
   color: var(--muted);
 }
 
-.expertise .expertise-link {
+.columns .expertise-link {
   margin-top: auto;
   padding-top: 0.4rem;
   font-size: 0.9375rem;
@@ -725,22 +725,22 @@ figcaption {
 }
 
 @media (min-width: 52rem) {
-  .expertise {
+  .columns {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .expertise li {
+  .columns li {
     padding: 1.5rem 2rem 0.5rem;
     border-bottom: 0;
     border-left: 1px solid var(--rule);
   }
 
-  .expertise li:first-child {
+  .columns li:first-child {
     padding-left: 0;
     border-left: 0;
   }
 
-  .expertise li:last-child {
+  .columns li:last-child {
     padding-right: 0;
   }
 }
@@ -940,6 +940,266 @@ figcaption {
 
 .invite .btn {
   overflow-wrap: anywhere;
+}
+
+/* The Freelance page (layouts/_partials/freelance.html) */
+.block-head > p {
+  flex-basis: 100%;
+  color: var(--muted);
+}
+
+/* What the team covers: a chain of disciplines, joined like stages on a trace. Square
+   pad first, as pin 1 is on a board. It lights up once when it comes into view. */
+.chain {
+  display: grid;
+  gap: 1.75rem;
+  padding: 0.5rem 0 0;
+  list-style: none;
+}
+
+.chain li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-left: 2.25rem;
+}
+
+.chain p {
+  color: var(--muted);
+}
+
+/* The pad of each discipline */
+.chain li::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  top: 0.4rem;
+  left: 0;
+  width: 13px;
+  height: 13px;
+  border: 1.5px solid var(--rule-strong);
+  border-radius: 50%;
+  background: var(--bg);
+}
+
+.chain li:first-child::before {
+  border-radius: 2px;
+}
+
+/* The trace to the next discipline: a grey line, and a blue one that grows over it */
+.chain li:not(:last-child) {
+  background:
+    linear-gradient(var(--rule-strong), var(--rule-strong)) 6px calc(0.4rem + 13px) / 1.5px calc(100% + 1.75rem - 13px) no-repeat;
+}
+
+.chain li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: calc(0.4rem + 13px);
+  left: 5.5px;
+  width: 2px;
+  height: calc(100% + 1.75rem - 13px);
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top left;
+}
+
+.chain.is-seen li::before {
+  border-width: 4.5px;
+  border-color: var(--accent);
+}
+
+.chain.is-seen li:not(:last-child)::after {
+  transform: none;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  .chain li::before {
+    transition: border-color 0.2s ease-out, border-width 0.2s ease-out;
+    transition-delay: calc(var(--i) * 0.32s);
+  }
+
+  .chain li:not(:last-child)::after {
+    transition: transform 0.32s linear;
+    transition-delay: calc(var(--i) * 0.32s + 0.1s);
+  }
+}
+
+@media (min-width: 62rem) {
+  .chain {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-top: 1rem;
+  }
+
+  .chain li {
+    padding: 2rem 1.5rem 0 0;
+  }
+
+  .chain li::before {
+    top: 0;
+  }
+
+  .chain li:not(:last-child) {
+    background:
+      linear-gradient(var(--rule-strong), var(--rule-strong)) 13px 6px / calc(100% - 13px) 1.5px no-repeat;
+  }
+
+  .chain li:not(:last-child)::after {
+    top: 5.5px;
+    left: 13px;
+    width: calc(100% - 13px);
+    height: 2px;
+    transform: scaleX(0);
+  }
+}
+
+/* Typical requests: a plain list in two columns */
+.requests {
+  display: grid;
+  gap: 0.5rem 3rem;
+  padding: 0.4rem 0 0 1.1rem;
+}
+
+.requests li::marker {
+  color: var(--rule-strong);
+}
+
+@media (min-width: 52rem) {
+  .requests {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* How a project runs: numbered steps, because the order matters */
+.steps {
+  display: grid;
+  gap: 1.5rem 2.5rem;
+  padding: 0.5rem 0 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  counter-increment: step;
+}
+
+.steps li::before {
+  content: counter(step);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 1.75rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.steps p {
+  color: var(--muted);
+}
+
+@media (min-width: 40rem) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 62rem) {
+  .steps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* What a client can count on: name on the left, sentence on the right */
+.assurances {
+  display: flex;
+  flex-direction: column;
+}
+
+.assurances div {
+  display: grid;
+  gap: 0.15rem 2rem;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.assurances dt {
+  font-weight: 600;
+}
+
+.assurances dd {
+  color: var(--muted);
+}
+
+@media (min-width: 40rem) {
+  .assurances div {
+    grid-template-columns: 14rem minmax(0, 1fr);
+  }
+}
+
+/* Team training */
+.training {
+  display: grid;
+  gap: 1.5rem 4rem;
+  padding-top: 0.5rem;
+}
+
+.training > p {
+  max-width: var(--read);
+}
+
+.training-label {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.subjects {
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem 0 0;
+  list-style: none;
+}
+
+.subjects li {
+  padding-block: 0.45rem;
+  border-bottom: 1px solid var(--rule);
+  font-weight: 500;
+}
+
+@media (min-width: 56rem) {
+  .training {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  }
+}
+
+/* The contact block closes the page across its full width */
+.view-freelance > .contact {
+  max-width: none;
+  padding: 2rem 1.5rem;
+}
+
+.view-freelance > .contact h2 {
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2rem);
+  letter-spacing: -0.02em;
+}
+
+.view-freelance > .contact > p:not(.actions) {
+  max-width: var(--read);
+}
+
+.view-freelance .page-head .actions {
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .view-freelance > .contact {
+    padding: 2.5rem;
+  }
 }
 
 /* Planned subjects of an area, on one line */
