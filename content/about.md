@@ -24,15 +24,11 @@ to train.
   work, and verification with SystemVerilog and UVM.
 - **Secure design.** Threat modelling and firmware security reviews, TrustZone,
   secure boot chains, root of trust and secure firmware update.
-- **Training.** Courses and mentoring for engineering teams on Arm, RTOS, embedded C
-  and C++, and HDL.
 
 ## Background
 
 Experience ranges from FPGA design for high-speed communication links and SoC design
 for a hardware security tool to a wearable medical device taken from a blank page to a
-production-ready design. Today the work is split between consulting for engineering
-teams and technical training.
+production-ready design. Today the work is consulting for engineering
+teams.
 
-Learning continues alongside it. Recent courses cover secured embedded Linux (secure
-boot, OP-TEE), Zephyr, RISC-V and Rust.

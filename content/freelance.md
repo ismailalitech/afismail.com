@@ -10,7 +10,7 @@ description = "We are a team of engineers covering an embedded product from mech
   # The title shown in the browser tab and in search results.
   head_title = "Freelance engineering team for embedded products"
   # The sentence under "Work with me" on the home page.
-  home_text = "I take on freelance engineering in firmware, FPGA/SoC integration and embedded security, and run hands-on team training on request."
+  home_text = "I take on freelance engineering in firmware, FPGA/SoC integration and embedded security."
   # Draws this page with its own layout (layouts/_partials/freelance.html).
   view = "freelance"
   # The contact block at the end of the page.
@@ -31,10 +31,6 @@ description = "We are a team of engineers covering an embedded product from mech
     "A product that needs TrustZone, secure boot, or proof that its protections work.",
     "C or C++ that needs a review for memory safety.",
   ]
-
-  # Team training: the paragraph, and the example subjects.
-  training_text = "We run hands-on sessions for engineering teams when a team asks for one. A session is built around exercises on a board: each participant builds, flashes and debugs the code, and keeps the material afterwards. The content is prepared for your hardware and your team's level, so tell us both when you write."
-  training_subjects = ["Arm Cortex-M and TrustZone", "FPGA design, UVM verification and optimisation", "Embedded Linux", "RTOS"]
 
   # The lists below each start with [[params.name]]. Keep them after the lines above:
   # a plain line placed under one of them would be read as part of that list.
