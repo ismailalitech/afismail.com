@@ -3015,3 +3015,43 @@ html.lenis {
 .view-project .project-parts {
   margin-block: 2.5rem;
 }
+
+/* 18. React Bits components (assets/js/reactbits) and their stand-ins before they load */
+.rb-pending [data-rb="SplitText"] {
+  visibility: hidden;
+}
+
+/* A card that became a spotlight card: the component draws the surface and border. */
+.project-card.rb-on,
+.part.rb-on {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+.project-card.rb-on .rb-card,
+.part.rb-on .rb-card {
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius);
+}
+
+.part.rb-on .rb-card {
+  padding: 1.25rem 1.5rem;
+}
+
+.project-card.rb-on .rb-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.part.rb-on .rb-inner {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr);
+  gap: 1.1rem;
+}
+
+.rb-on .shiny-text {
+  vertical-align: baseline;
+}

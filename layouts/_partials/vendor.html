@@ -1,0 +1,23 @@
+{{/* Fetches a library listed under params.libs in hugo.toml, once, when the site is built, and
+     checks it against the fingerprint written there. Receives the library's name; returns the
+     fingerprinted file, or nothing if it could not be fetched or does not match (the page then
+     works without it, and Hugo prints a warning). */}}
+{{- $found := false }}
+{{- with index site.Params.libs . }}
+  {{- $url := .url }}
+  {{- $expected := .integrity }}
+  {{- $download := try (resources.GetRemote $url) }}
+  {{- if $download.Err }}
+    {{- warnf "Library left out of this build: could not download %s (%s)" $url $download.Err }}
+  {{- else if $download.Value }}
+    {{- $file := $download.Value | fingerprint }}
+    {{- if eq $file.Data.Integrity $expected }}
+      {{- $found = $file }}
+    {{- else }}
+      {{- warnf "Library left out of this build: %s does not match the fingerprint in hugo.toml" $url }}
+    {{- end }}
+  {{- else }}
+    {{- warnf "Library left out of this build: nothing found at %s" $url }}
+  {{- end }}
+{{- end }}
+{{- return $found -}}

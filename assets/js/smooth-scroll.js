@@ -1,8 +1,7 @@
-/* Smooth scrolling on the home page, using the Lenis library. It runs only on a desktop:
+/* Smooth scrolling, using the Lenis library. It runs only on a desktop:
    a wide screen with a mouse or trackpad. The library is fetched from this site only
    when it is going to be used, so a phone or a tablet never downloads it and keeps its
-   native scrolling. Every other page scrolls natively too, because this file is loaded
-   on the home page only.
+   native scrolling.
 
    Nothing is fetched or started for visitors who ask their system for reduced motion,
    and the page scrolls normally if the library cannot be loaded. */
@@ -31,12 +30,16 @@
       allowNestedScroll: true,
       stopInertiaOnNavigate: true
     });
+    /* Lets assets/js/motion.js keep the GSAP scroll triggers in step with the smooth scroll. */
+    window.__lenis = lenis;
+    window.dispatchEvent(new CustomEvent('lenis:ready', { detail: lenis }));
   }
 
   function stop() {
     if (!lenis) { return; }
     lenis.destroy();
     lenis = null;
+    window.__lenis = null;
   }
 
   /* Fetches the library once, checked against the fingerprint written at build time. */
