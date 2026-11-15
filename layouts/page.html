@@ -37,6 +37,19 @@
 
   {{ if $isLab }}{{ partial "lab-spec.html" .Params }}{{ end }}
 
+  {{/* A case study (a page in content/work): its three-line summary, hardware, picture and a button. */}}
+  {{ if eq .Section "work" }}
+    {{ partial "case-summary.html" . }}
+    {{ if or .Params.hardware .Params.tools }}
+    <dl class="spec">
+      {{ with .Params.hardware }}<div><dt>Hardware</dt><dd>{{ . }}</dd></div>{{ end }}
+      {{ with .Params.tools }}<div><dt>Tools</dt><dd>{{ . }}</dd></div>{{ end }}
+    </dl>
+    {{ end }}
+    {{ partial "work-figure.html" (dict "page" . "label" "Fig. 1") }}
+    {{ with .Params.action }}<p class="actions"><a class="btn btn-primary" href="{{ . }}">{{ $.Params.action_text }}</a></p>{{ end }}
+  {{ end }}
+
   {{ with .Params.youtube }}{{ partial "video.html" (dict "id" . "title" $.Title) }}{{ end }}
 
   {{/* A page can load a tool with tool = "name" in its front matter. */}}

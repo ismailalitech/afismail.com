@@ -17,6 +17,8 @@
     {{ if .IsSection }}
       {{ $kind = "Section" }}
       {{ if eq .Section "topics" }}{{ $kind = "Topic" }}{{ end }}
+    {{ else if eq .Section "work" }}
+      {{ $kind = "Case study" }}
     {{ else if eq .Section "topics" }}
       {{ $kind = "Article" }}
       {{ if .Params.lab }}{{ $kind = "Lab" }}{{ else if .Params.youtube }}{{ $kind = "Video" }}{{ end }}

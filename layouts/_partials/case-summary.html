@@ -1,0 +1,8 @@
+{{/* The three lines that sum up a case study. Receives the page. */}}
+{{ if or .Params.problem .Params.role .Params.result }}
+<dl class="case-summary">
+  {{ with .Params.problem }}<div><dt>Problem</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .Params.role }}<div><dt>My role</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ with .Params.result }}<div><dt>Result</dt><dd>{{ . }}</dd></div>{{ end }}
+</dl>
+{{ end }}

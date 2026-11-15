@@ -1,21 +1,42 @@
 +++
-title = "Hands-on embedded systems and security"
+# The role shown under your name on the home page.
+title = "Embedded systems & security engineer"
 
-# The three steps shown at the top of the Topics page.
-[[params.steps]]
-  title = "Read the idea"
-  text = "Each subject starts with a short explanation of the concept and why it matters."
-[[params.steps]]
-  title = "Watch the explanation"
-  text = "Where a video helps, it sits at the top of the page."
-[[params.steps]]
-  title = "Run the lab"
-  text = "Labs list the board and tools, give every step, and end with the result to expect."
+[params]
+  # The sentence under the role.
+  intro = "I develop and debug firmware, integrate FPGA/SoC systems, and help teams verify embedded security."
+
+  # Picture on the right of the home page. Until you add one, a drawing of an SPI
+  # transfer is shown. To use your own photo or capture: put the file in static/images/,
+  # remove the "# " from the four lines below and fill them in. Width and height are the
+  # size of the file in pixels; they keep the page from jumping while the picture loads.
+  # hero_image = "images/polarfire-board.jpg"
+  # hero_image_alt = "PolarFire SoC Discovery Kit on the bench, with a logic analyser attached"
+  # hero_image_caption = "PolarFire SoC Discovery Kit, with the MSS UART on a logic analyser."
+  # hero_image_size = [1600, 1200]
+
+  # The three areas of work. "link" and "link_text" are optional: add them when there is
+  # a service, a case study or a note to point to.
+  [[params.expertise]]
+    title = "Firmware & RTOS"
+    text = "Board bring-up, drivers and fault debugging on Arm Cortex-M, bare-metal or on an RTOS."
+    link = "/work/cortex-m-fault-decoder/"
+    link_text = "Example: a Cortex-M fault decoder"
+  [[params.expertise]]
+    title = "FPGA & SoC"
+    text = "HDL design and verification, and hardware/software integration between a processor system and FPGA fabric."
+  [[params.expertise]]
+    title = "Embedded security"
+    text = "TrustZone and secure boot, secure C and C++, and verification plans that show each protection does its job."
+
+  # The three steps shown at the top of the Expertise page.
+  [[params.steps]]
+    title = "Read the idea"
+    text = "Each subject starts with a short explanation of the concept and why it matters."
+  [[params.steps]]
+    title = "Watch the explanation"
+    text = "Where a video helps, it sits at the top of the page."
+  [[params.steps]]
+    title = "Run the lab"
+    text = "Labs list the board and tools, give every step, and end with the result to expect."
 +++
-
-Welcome. Embedded systems and security are best learned by practice. Here you'll
-find them explained step by step, from microcontrollers and real-time operating
-systems to FPGA and hardware security, with ideas, labs and videos.
-
-If something here interests you, feel free to [get in touch](#contact): for a
-freelance project, for training on one of these subjects, or simply with a question.

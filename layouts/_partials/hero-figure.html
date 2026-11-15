@@ -1,0 +1,31 @@
+{{/* The picture on the right of the home page.
+     With hero_image set in content/_index.md it shows that photo or capture.
+     Without one it shows a drawing of one SPI transfer as a logic analyser displays it:
+     chip-select (CS) goes low, the clock (SCLK) gives eight pulses, and the data line
+     (MOSI) carries the byte 0xA5, one bit per pulse. The bit values are written underneath. */}}
+<figure class="hero-figure">
+  {{ with .Params.hero_image }}
+  <img src="{{ . | relURL }}" alt="{{ $.Params.hero_image_alt }}"{{ with $.Params.hero_image_size }} width="{{ index . 0 }}" height="{{ index . 1 }}"{{ end }} fetchpriority="high">
+  <figcaption><span class="fig-label">Fig. 1</span> {{ $.Params.hero_image_caption }}</figcaption>
+  {{ else }}
+  <div class="hero-drawing">
+    <svg viewBox="0 0 460 160" role="img" aria-label="Three digital signals: chip-select goes low, the clock gives eight pulses, and the data line carries the bits 1 0 1 0 0 1 0 1, the byte 0xA5." fill="none">
+      <text x="0" y="28">CS</text>
+      <path d="M52 10H62V34H442V10H452"/>
+      <text x="0" y="78">SCLK</text>
+      <path d="M52 84H87V60H109V84H131V60H153V84H175V60H197V84H219V60H241V84H263V60H285V84H307V60H329V84H351V60H373V84H395V60H417V84H452"/>
+      <text x="0" y="128">MOSI</text>
+      <path d="M52 134H76V110H120V134H164V110H208V134H252H296V110H340V134H384V110H428V134H452"/>
+      <text class="bit-value" x="98" y="154" text-anchor="middle">1</text>
+      <text class="bit-value" x="142" y="154" text-anchor="middle">0</text>
+      <text class="bit-value" x="186" y="154" text-anchor="middle">1</text>
+      <text class="bit-value" x="230" y="154" text-anchor="middle">0</text>
+      <text class="bit-value" x="274" y="154" text-anchor="middle">0</text>
+      <text class="bit-value" x="318" y="154" text-anchor="middle">1</text>
+      <text class="bit-value" x="362" y="154" text-anchor="middle">0</text>
+      <text class="bit-value" x="406" y="154" text-anchor="middle">1</text>
+    </svg>
+  </div>
+  <figcaption><span class="fig-label">Fig. 1</span> One SPI transfer as a logic analyser shows it: chip-select goes low, the clock gives eight pulses, and the data line carries <code>0xA5</code>, one bit per pulse.</figcaption>
+  {{ end }}
+</figure>

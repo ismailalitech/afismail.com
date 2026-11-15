@@ -16,11 +16,41 @@
 {{ end }}
 
 {{ with .Sections }}
-  {{/* Does any sub-folder have sub-folders of its own? True on the Topics page. */}}
+  {{/* Does any sub-folder have sub-folders of its own? True on the Expertise page. */}}
   {{ $nested := false }}
   {{ range . }}{{ if .Sections }}{{ $nested = true }}{{ end }}{{ end }}
 
   {{ if $nested }}
+    {{/* The Expertise page. Areas that already hold notes, labs or videos come first.
+         Inside an area, sub-topics with content are listed in full and the others are
+         gathered on one "Planned" line, so the page shows what exists. */}}
+    {{ $areas := . }}
+    {{ range $pass := slice true false }}
+      {{ range $areas }}
+        {{ $hasContent := gt (len .RegularPagesRecursive) 0 }}
+        {{ if eq $hasContent $pass }}
+        {{ $published := slice }}
+        {{ $planned := slice }}
+        {{ range .Sections }}
+          {{ if .RegularPagesRecursive }}{{ $published = $published | append . }}{{ else }}{{ $planned = $planned | append . }}{{ end }}
+        {{ end }}
+        <section class="topic-block">
+          <div class="block-head">
+            <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+            {{ with .Description }}<p>{{ . }}</p>{{ end }}
+          </div>
+          {{ with $published }}{{ partial "folder-rows.html" . }}{{ end }}
+          {{ with $planned }}
+          <p class="planned"><span class="planned-label">Planned</span>{{ range . }} <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}</p>
+          {{ end }}
+        </section>
+        {{ end }}
+      {{ end }}
+    {{ end }}
+    {{ with $.Params.planned }}
+    <p class="planned"><span class="planned-label">Also planned</span>{{ range . }} <span>{{ . }}</span>{{ end }}</p>
+    {{ end }}
+
     {{/* The three ways a subject is covered. The texts come from content/_index.md (params.steps). */}}
     {{ with site.Home.Params.steps }}
     <section class="block" aria-labelledby="legend-heading">
@@ -36,17 +66,6 @@
       </ul>
     </section>
     {{ end }}
-
-    {{/* Each topic with its sub-topics. */}}
-    {{ range . }}
-    <section class="topic-block">
-      <div class="block-head">
-        <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-        {{ with .Description }}<p>{{ . }}</p>{{ end }}
-      </div>
-      {{ with .Sections }}{{ partial "folder-rows.html" . }}{{ end }}
-    </section>
-    {{ end }}
   {{ else }}
     <section class="block" aria-labelledby="folders-heading">
       <h2 id="folders-heading" class="visually-hidden">In {{ $.Title }}</h2>
@@ -59,8 +78,10 @@
 {{ if or .RegularPages (not .Sections) }}
 <section class="block" aria-labelledby="list-heading">
   <h2 id="list-heading" class="visually-hidden">All {{ .Title | lower }}</h2>
-  {{ if and .RegularPages (ne .Section "topics") }}
-    {{ partial "resource-cells.html" (dict "pages" .RegularPages "short" false) }}
+  {{ if and .RegularPages (eq .Section "work") }}
+    {{ partial "work-list.html" .RegularPages }}
+  {{ else if and .RegularPages (ne .Section "topics") }}
+    {{ partial "resource-list.html" .RegularPages }}
   {{ else }}
     {{ partial "entry-list.html" (dict "pages" .RegularPages "section" .) }}
   {{ end }}

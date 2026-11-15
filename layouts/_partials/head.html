@@ -1,6 +1,10 @@
 {{ $desc := site.Params.description }}
 {{ with .Description }}{{ $desc = . }}{{ end }}
-{{ $title := printf "%s · %s" .Title site.Title }}
+{{/* The title shown in the browser tab and in search results. A page can give a longer,
+     more descriptive one with head_title in its front matter. */}}
+{{ $name := .Title }}
+{{ with .Params.head_title }}{{ $name = . }}{{ end }}
+{{ $title := printf "%s · %s" $name site.Title }}
 {{ if .IsHome }}{{ $title = printf "%s · %s" site.Title site.Params.role }}{{ end }}
 {{ $isPiece := and .IsPage (eq .Section "topics") }}
 <meta charset="utf-8">
@@ -13,15 +17,15 @@
 {{ if or (eq .Kind "404") (eq .Params.tool "search") (and .IsSection (not .Sections) (not .RegularPages)) }}
 <meta name="robots" content="noindex, follow">
 {{ end }}
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#151922" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c1d20" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{ "images/apple-touch-icon.png" | relURL }}">
 {{/* Applies a saved light or dark choice before the page is drawn. */}}
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)} }catch(e){}</script>
 {{/* Preview shown when a link to the site is shared (LinkedIn, messaging apps). */}}
 <meta property="og:site_name" content="{{ site.Title }}">
-<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}: {{ .Title }}{{ else }}{{ .Title }}{{ end }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}: {{ .Title }}{{ else }}{{ $name }}{{ end }}">
 <meta property="og:description" content="{{ $desc }}">
 <meta property="og:type" content="{{ if $isPiece }}article{{ else }}website{{ end }}">
 <meta property="og:url" content="{{ .Permalink }}">
@@ -32,11 +36,11 @@
 <meta property="og:image:alt" content="{{ site.Title }}: {{ site.Home.Title }}">
 <meta name="twitter:card" content="summary_large_image">
 {{ partial "schema.html" . }}
-{{/* Two font families: one for text, one for code. */}}
+{{/* Two font families: Instrument Sans for text, IBM Plex Mono for code and signal names. */}}
 {{ if site.Params.googleFonts }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap">
 {{ end }}
 {{ with resources.Get "css/main.css" }}
   {{ $css := . | fingerprint }}

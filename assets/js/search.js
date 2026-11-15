@@ -192,7 +192,7 @@
         hits.sort(function (a, b) { return b.points - a.points || a.page.title.localeCompare(b.page.title); });
 
         if (!hits.length) {
-          status.textContent = 'No result for "' + query.trim() + '". Try a shorter word, or browse the topics.';
+          status.textContent = 'No result for "' + query.trim() + '". Try a shorter word, or look under Expertise and Resources.';
           return;
         }
         status.textContent = (hits.length === 1 ? '1 result' : hits.length + ' results') + ' for "' + query.trim() + '"' +

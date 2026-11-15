@@ -1,0 +1,18 @@
+{{/* Case studies, one after the other: picture on one side, summary on the other.
+     Receives the pages. */}}
+<ul class="work-list">
+  {{ range $i, $p := . }}
+  <li class="work-item">
+    {{ partial "work-figure.html" (dict "page" $p "label" (printf "Fig. %d" (add $i 1))) }}
+    <div class="work-text">
+      <p class="kind">Case study{{ with $p.Params.status }} <span class="pill">{{ . }}</span>{{ end }}</p>
+      <h3><a href="{{ $p.RelPermalink }}">{{ $p.Title }}</a></h3>
+      {{ partial "case-summary.html" $p }}
+      <p class="actions">
+        <a class="btn btn-small" href="{{ $p.RelPermalink }}">Read the case study</a>
+        {{ with $p.Params.action }}<a class="btn btn-small" href="{{ . }}">{{ $p.Params.action_text }}</a>{{ end }}
+      </p>
+    </div>
+  </li>
+  {{ end }}
+</ul>

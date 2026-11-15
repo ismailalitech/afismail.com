@@ -12,6 +12,8 @@
   {{- else }}
     {{- $name = "article" }}{{ $label = "Article" }}
   {{- end }}
+{{- else if and .IsPage (eq .Section "work") }}
+  {{- $name = "article" }}{{ $label = "Case study" }}
 {{- else }}
   {{- with .Params.topics }}{{ $label = index . 0 }}{{ $name = lower $label }}{{ end }}
 {{- end }}

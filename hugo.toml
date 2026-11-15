@@ -6,7 +6,7 @@ disableKinds = ["taxonomy", "term"]
 
 [params]
   role = "Embedded systems and security engineer"
-  description = "Embedded systems and security explained with ideas, labs and videos: embedded security, software security, FPGA, microcontrollers and RTOS."
+  description = "Embedded systems and security engineer: firmware and RTOS, FPGA/SoC integration, embedded security. Freelance engineering, tools and technical notes."
   # Contact address shown on the home page, the About page and the footer. Leave empty to hide it.
   email = "ismail.ali.tech@gmail.com"
   # Full profile URLs. Leave empty to hide the link in the footer.
@@ -59,7 +59,11 @@ disableKinds = ["taxonomy", "term"]
 
 [menus]
   [[menus.main]]
-    name = "Topics"
+    name = "Work"
+    pageRef = "/work"
+    weight = 5
+  [[menus.main]]
+    name = "Expertise"
     pageRef = "/topics"
     weight = 10
   [[menus.main]]

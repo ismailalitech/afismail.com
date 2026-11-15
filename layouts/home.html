@@ -1,91 +1,83 @@
 {{ define "main" }}
-{{/* Headline and introduction on the left; background on the right. */}}
+{{/* 1. Name, role, one sentence and two actions on the left; a picture on the right.
+     The texts are in content/_index.md. */}}
 <section class="hero">
   <div class="hero-text">
-    {{/* The headline appears word by word (CSS only). Screen readers get it as one sentence. */}}
-    <h1 class="reveal" aria-label="{{ .Title }}">{{ range $i, $word := split .Title " " }}{{ if $i }} {{ end }}<span class="reveal-word" style="--i: {{ $i }}" aria-hidden="true">{{ $word }}</span>{{ end }}</h1>
-    <div class="prose">{{ .Content }}</div>
+    <h1>{{ site.Title }}</h1>
+    <p class="hero-role">{{ .Title }}</p>
+    {{ with .Params.intro }}<p class="hero-intro">{{ . }}</p>{{ end }}
     <p class="actions">
-      {{ with site.GetPage "/topics" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Explore the topics</a>{{ end }}
-      {{ with site.GetPage "/resources" }}<a class="btn" href="{{ .RelPermalink }}">Free resources</a>{{ end }}
-      {{ with site.Params.youtube }}<a class="btn" href="{{ . }}">YouTube channel</a>{{ end }}
+      {{ with site.GetPage "/freelance" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Discuss a project</a>{{ end }}
+      {{ with site.GetPage "/work" }}<a class="btn" href="{{ .RelPermalink }}">View selected work</a>{{ end }}
     </p>
   </div>
-  {{/* Academic background, fields of work and languages. Edit them in hugo.toml under params.highlights. */}}
-  {{ if site.Params.highlights }}
-  <aside class="hero-side" aria-label="Background">
-    {{ partial "background.html" . }}
-  </aside>
-  {{ end }}
-  {{ partial "hero-signals.html" . }}
+  {{ partial "hero-figure.html" . }}
 </section>
 
-{{/* One cell per folder in content/topics, with its sub-folders as links. */}}
-{{ with site.GetPage "/topics" }}
-  {{ $topics := . }}
-  {{ with .Sections }}
-  <section class="block" aria-labelledby="topics-heading">
+{{/* 2. The three areas of work (params.expertise in content/_index.md). */}}
+{{ with .Params.expertise }}
+<section class="block" aria-labelledby="expertise-heading">
+  <div class="block-head">
+    <h2 id="expertise-heading">Expertise</h2>
+    {{ with site.GetPage "/topics" }}<a href="{{ .RelPermalink }}">Notes and labs by area</a>{{ end }}
+  </div>
+  <ul class="expertise">
+    {{ range . }}
+    <li>
+      <h3>{{ .title }}</h3>
+      <p>{{ .text }}</p>
+      {{ $linkText := .link_text }}
+      {{ with .link }}<p class="expertise-link"><a href="{{ . }}">{{ $linkText }}</a></p>{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+</section>
+{{ end }}
+
+{{/* 3. Selected work: the first case study in content/work (lowest weight). */}}
+{{ with site.GetPage "/work" }}
+  {{ $work := . }}
+  {{ with .RegularPages }}
+  <section class="block" aria-labelledby="work-heading">
     <div class="block-head">
-      <h2 id="topics-heading">Topics</h2>
-      <a href="{{ $topics.RelPermalink }}">All topics</a>
+      <h2 id="work-heading">Selected work</h2>
+      <a href="{{ $work.RelPermalink }}">All work</a>
     </div>
-    {{ partial "topic-cards.html" . }}
+    {{ partial "work-list.html" (first 1 .) }}
   </section>
   {{ end }}
 {{ end }}
 
-{{/* The newest articles, labs and videos from every topic. Shown once there is one. */}}
-{{ $latest := where site.RegularPages "Section" "topics" }}
-{{ if $latest }}
-<section class="block" aria-labelledby="latest-heading">
-  <div class="block-head">
-    <h2 id="latest-heading">Latest</h2>
-  </div>
-  {{ partial "entry-list.html" (dict "pages" (first 5 $latest)) }}
-</section>
-{{ end }}
-
-{{/* The free tools and references. */}}
+{{/* 4. Tools and technical writing: the resources, then the newest notes and labs once there are some. */}}
 {{ with site.GetPage "/resources" }}
   {{ $resources := . }}
   {{ with .RegularPages }}
-  <section class="block" aria-labelledby="resources-heading">
+  <section class="block" aria-labelledby="tools-heading">
     <div class="block-head">
-      <h2 id="resources-heading">Free resources</h2>
+      <h2 id="tools-heading">Tools and technical writing</h2>
       <a href="{{ $resources.RelPermalink }}">All resources</a>
     </div>
-    {{ partial "resource-cells.html" (dict "pages" (first 4 .) "short" true) }}
+    {{ partial "entry-list.html" (dict "pages" (first 4 .)) }}
+    {{ $latest := where site.RegularPages "Section" "topics" }}
+    {{ if $latest }}
+    <p class="sub">Latest notes and labs</p>
+    {{ partial "entry-list.html" (dict "pages" (first 3 $latest)) }}
+    {{ end }}
   </section>
   {{ end }}
 {{ end }}
 
-{{/* Closing section: who writes the site, then how to work together and get in touch.
-     The texts come from content/about.md (params.teaser) and content/freelance.md (description). */}}
-<section class="closing">
-  {{ with site.GetPage "/about" }}
-  <div class="closing-part">
-    <h2>About</h2>
-    {{ with .Params.teaser }}<p>{{ . }}</p>{{ end }}
-    <p class="closing-link"><a href="{{ .RelPermalink }}">More about me</a></p>
-  </div>
-  {{ end }}
-  <div class="closing-side">
-    {{ with site.GetPage "/freelance" }}
-    <div class="closing-part">
-      <h2>Have a project?</h2>
-      <p>{{ .Description }}</p>
-      <p class="closing-link"><a href="{{ .RelPermalink }}">See how it works</a></p>
-    </div>
-    {{ end }}
-    {{ with site.Params.email }}
-    {{/* The introduction at the top of the page links here. */}}
-    <div class="closing-part" id="contact">
-      <h2>Contact</h2>
-      <p>For questions or to get in touch, write to <a href="mailto:{{ . }}">{{ . }}</a>.</p>
-    </div>
-    {{ end }}
-  </div>
+{{/* 5. Work with me. The text comes from content/freelance.md (description). */}}
+{{ with site.GetPage "/freelance" }}
+<section class="invite" id="contact" aria-labelledby="invite-heading">
+  <h2 id="invite-heading">Work with me</h2>
+  <p>{{ .Description }}</p>
+  <p class="actions">
+    <a class="btn btn-primary" href="{{ .RelPermalink }}">How an engagement works</a>
+    {{ with site.Params.email }}<a class="btn" href="mailto:{{ . }}">{{ . }}</a>{{ end }}
+  </p>
 </section>
+{{ end }}
 
 {{ partial "subscribe.html" . }}
 {{ end }}
