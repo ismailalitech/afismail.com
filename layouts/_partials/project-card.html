@@ -2,8 +2,8 @@
      Receives the project (its hub page, or a single page with project = true). */}}
 {{ $count := "" }}
 {{ if .IsSection }}{{ $count = partial "counts.html" . }}{{ end }}
-<li class="project-card">
-  <p class="kind">{{ partial "icon.html" "article" }}<span>Project{{ with .Params.platform }} · {{ . }}{{ end }}</span></p>
+<li class="project-card" data-rb="SpotlightCard">
+  <p class="kind">{{ partial "icon.html" "article" }}<span data-rb="ShinyText">Project{{ with .Params.platform }} · {{ . }}{{ end }}</span></p>
   <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
   {{ with .Description }}<p class="work-lead">{{ . }}</p>{{ end }}
   {{ partial "case-summary.html" . }}

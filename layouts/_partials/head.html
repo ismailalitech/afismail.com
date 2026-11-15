@@ -46,6 +46,17 @@
   {{ $css := . | fingerprint }}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" crossorigin="anonymous">
 {{ end }}
+{{/* The styles of the React Bits components (MIT with Commons Clause; the licence is in assets/js/reactbits). */}}
+{{ with resources.Match "css/reactbits/*.css" }}
+  {{ $rb := . | resources.Concat "css/reactbits.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $rb.RelPermalink }}" integrity="{{ $rb.Data.Integrity }}" crossorigin="anonymous">
+{{ end }}
+{{/* Hides the hero title until its letters are ready, so it does not flash. Lifted by
+     assets/js/reactbits/islands.jsx, or after two seconds if that never runs. Not set for
+     visitors who ask for reduced motion, or when scripts are off. */}}
+{{ if or .IsHome (and .IsSection (eq .Section "projects")) }}
+<script>if(!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){document.documentElement.classList.add("rb-pending");setTimeout(function(){document.documentElement.classList.remove("rb-pending")},2000)}</script>
+{{ end }}
 {{ with site.Home.OutputFormats.Get "rss" }}
 <link rel="alternate" type="application/rss+xml" href="{{ .RelPermalink }}" title="{{ site.Title }}">
 {{ end }}
