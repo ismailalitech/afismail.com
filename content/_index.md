@@ -20,7 +20,7 @@ title = "Embedded systems & security engineer"
   [[params.expertise]]
     title = "Firmware & RTOS"
     text = "Board bring-up, drivers and fault debugging, bare-metal or on an RTOS, on Arm Cortex-M, Cortex-A and Cortex-R, RISC-V and other cores."
-    link = "/work/cortex-m-fault-decoder/"
+    link = "/projects/microcontrollers/arm-cortex-m/cortex-m-fault-decoder/"
     link_text = "Example: a Cortex-M fault decoder"
   [[params.expertise]]
     title = "FPGA & SoC"
@@ -29,7 +29,7 @@ title = "Embedded systems & security engineer"
     title = "Secure design"
     text = "Hardware security and embedded security: side-channel attacks, secure boot, TrustZone, debug authentication and root of trust."
 
-  # The three steps shown at the top of the Expertise page.
+  # The three steps shown at the top of the Labs page.
   [[params.steps]]
     title = "Read the idea"
     text = "Each subject starts with a short explanation of the concept and why it matters."

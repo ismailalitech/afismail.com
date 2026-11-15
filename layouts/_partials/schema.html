@@ -31,7 +31,7 @@
 {{ end }}
 
 {{/* Articles, labs and videos. The date is included only when the page has one. */}}
-{{ if and .IsPage (eq .Section "topics") }}
+{{ if and .IsPage (or (eq .Section "topics") (eq .Section "projects")) }}
   {{ $article := dict "@context" "https://schema.org" "@type" "TechArticle" "headline" .Title "description" .Description "url" .Permalink "inLanguage" "en" "author" (dict "@id" $personID "@type" "Person" "name" site.Title "url" site.Home.Permalink) }}
   {{ if not .Date.IsZero }}
     {{ $article = dict "@context" "https://schema.org" "@type" "TechArticle" "headline" .Title "description" .Description "url" .Permalink "inLanguage" "en" "datePublished" (.Date.Format "2006-01-02") "author" (dict "@id" $personID "@type" "Person" "name" site.Title "url" site.Home.Permalink) }}

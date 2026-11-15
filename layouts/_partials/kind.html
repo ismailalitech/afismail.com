@@ -4,7 +4,9 @@
 {{- $name := "" }}
 {{- $label := "" }}
 {{- $id := "" }}
-{{- if eq .Section "topics" }}
+{{- if and .IsPage (eq .Section "projects") .Params.problem }}
+  {{- $name = "article" }}{{ $label = "Project" }}
+{{- else if or (eq .Section "topics") (eq .Section "projects") }}
   {{- if .Params.lab }}
     {{- $name = "lab" }}{{ $label = "Lab" }}{{ $id = printf "0x%02X" (int .Params.lab) }}
   {{- else if .Params.youtube }}

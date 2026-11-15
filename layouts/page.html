@@ -10,7 +10,7 @@
      A page with contact = true shows the contact block beside its text on wide screens. */}}
 {{ $isLab := false }}
 {{ with .Params.lab }}{{ $isLab = true }}{{ end }}
-{{ $inTopics := eq .Section "topics" }}
+{{ $inTopics := or (eq .Section "topics") (eq .Section "projects") }}
 {{ $view := .Params.view }}
 {{ $hasToc := or $inTopics .Params.toc }}
 {{ $hasSide := and .Params.contact (not $hasToc) (ne $view "freelance") }}
@@ -46,7 +46,7 @@
   {{ if $isLab }}{{ partial "lab-spec.html" .Params }}{{ end }}
 
   {{/* A case study (a page in content/work): its three-line summary, hardware, picture and a button. */}}
-  {{ if eq .Section "work" }}
+  {{ if or (eq .Section "work") (and (eq .Section "projects") .Params.problem) }}
     {{ partial "case-summary.html" . }}
     {{ if or .Params.hardware .Params.tools }}
     <dl class="spec">

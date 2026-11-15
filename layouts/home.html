@@ -8,7 +8,7 @@
     {{ with .Params.intro }}<p class="hero-intro">{{ . }}</p>{{ end }}
     <p class="actions">
       {{ with site.GetPage "/freelance" }}<a class="btn btn-primary" href="{{ .RelPermalink }}">Discuss a project</a>{{ end }}
-      {{ with site.GetPage "/work" }}<a class="btn" href="{{ .RelPermalink }}">View selected work</a>{{ end }}
+      {{ with site.GetPage "/projects" }}<a class="btn" href="{{ .RelPermalink }}">View projects</a>{{ end }}
     </p>
   </div>
   {{ partial "hero-figure.html" . }}
@@ -18,8 +18,8 @@
 {{ with .Params.expertise }}
 <section class="block" aria-labelledby="expertise-heading">
   <div class="block-head">
-    <h2 id="expertise-heading">Expertise</h2>
-    {{ with site.GetPage "/topics" }}<a href="{{ .RelPermalink }}">Notes and labs by area</a>{{ end }}
+    <h2 id="expertise-heading">What I work on</h2>
+    {{ with site.GetPage "/topics" }}<a href="{{ .RelPermalink }}">Labs</a>{{ end }}
   </div>
   <ul class="columns">
     {{ range . }}
@@ -34,31 +34,35 @@
 </section>
 {{ end }}
 
-{{/* 3. Selected work: the first case study in content/work (lowest weight). */}}
-{{ with site.GetPage "/work" }}
-  {{ $work := . }}
-  {{ with .RegularPages }}
+{{/* 3. Projects: the featured projects (hubs and pages with project = true, lowest weight first). */}}
+{{ with site.GetPage "/projects" }}
+  {{ $projects := . }}
+  {{ $found := slice }}
+  {{ range site.Pages.ByWeight }}{{ if and .Params.project (.IsDescendant $projects) }}{{ $found = $found | append . }}{{ end }}{{ end }}
+  {{ with $found }}
   <section class="block" aria-labelledby="work-heading">
     <div class="block-head">
-      <h2 id="work-heading">Selected work</h2>
-      <a href="{{ $work.RelPermalink }}">All work</a>
+      <h2 id="work-heading">Projects</h2>
+      <a href="{{ $projects.RelPermalink }}">All projects</a>
     </div>
-    {{ partial "work-list.html" (dict "pages" (first 1 .) "figures" false) }}
+    <ul class="project-cards">
+      {{ range first 2 . }}{{ partial "project-card.html" . }}{{ end }}
+    </ul>
   </section>
   {{ end }}
 {{ end }}
 
-{{/* 4. Tools and technical writing: the resources, then the newest notes and labs once there are some. */}}
+{{/* 4. References, then the newest labs. */}}
 {{ with site.GetPage "/resources" }}
   {{ $resources := . }}
   {{ with .RegularPages }}
   <section class="block" aria-labelledby="tools-heading">
     <div class="block-head">
-      <h2 id="tools-heading">Tools and technical writing</h2>
-      <a href="{{ $resources.RelPermalink }}">All resources</a>
+      <h2 id="tools-heading">References</h2>
+      <a href="{{ $resources.RelPermalink }}">All references</a>
     </div>
     {{ partial "entry-list.html" (dict "pages" (first 4 .)) }}
-    {{ $latest := where site.RegularPages "Section" "topics" }}
+    {{ $latest := where site.RegularPages "Section" "in" (slice "topics" "projects") }}
     {{ if $latest }}
     <p class="sub">Latest notes and labs</p>
     {{ partial "entry-list.html" (dict "pages" (first 3 $latest)) }}
