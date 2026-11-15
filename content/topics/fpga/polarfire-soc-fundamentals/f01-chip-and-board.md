@@ -74,16 +74,17 @@ The shared L2 is split between ordinary cache, a scratchpad and a loosely integr
 
 The clock figures are what the fabric design supplies; module F04 shows where they come from. FIC1 and FIC2 are clocked but nothing in this project connects to them, and this page does not describe them further.
 
+The MSS Configurator, which Libero opens from the MSS component, shows the same choices. To open it: in the Design Hierarchy double-click `MSS_WRAPPER`, then double-click the MSS block in the canvas that opens. Its tabs are the ones in the pictures. The fabric interface tab has FIC0 and FIC1 with both an initiator and a target interface, FIC2 with a target interface, and FIC3 (APB) with an initiator interface. Having an interface enabled is not the same as using it: as the table says, nothing in this project connects to FIC1 or FIC2.
+
+[![MSS Configurator, fabric interface controllers: FIC_0 to FIC_3 settings](/pfdaq/evidence/v0.5.1/build/libero-mss-fics.png)](/pfdaq/evidence/v0.5.1/build/libero-mss-fics.png)
+
+The peripherals tab lists what the MSS exposes on the board's pins. Highlighted in green: the Gigabit Ethernet MAC 0, the SD interface on the bank 4 I/Os, SPI 0 and 1, MMUART 0, 1 and 4, I2C 0, GPIO 1 on the bank 2 I/Os and GPIO 2 routed to the fabric.
+
+[![MSS Configurator, peripherals tab: enabled peripherals highlighted and the I/O multiplexing table](/pfdaq/evidence/v0.5.1/build/libero-mss-peripherals.png)](/pfdaq/evidence/v0.5.1/build/libero-mss-peripherals.png)
+
 The picture to keep is this:
 
-```text
-  U54 harts ---- FIC3 (APB, registers) ----> fabric: pfdaq_core, mailbox, LEDs ...
-       |                                          |
-       |  ---- FIC0 (AXI4) <--- DMA writes -------+--> DDR through the MSS
-       |  <---- interrupt lines (F2M) ------------+
-       v
-      DDR (1 GB), shared by all harts and by the DMA
-```
+[![How software and fabric are joined: the U54 harts reach fabric registers over FIC3 (APB, 50 MHz); the fabric's DMA writes into DDR over FIC0 (AXI4, 125 MHz) through the MSS; interrupt lines run from the fabric to the harts; the harts also load and store directly to DDR.](/pfdaq/diagrams/fabric-interfaces.svg)](/pfdaq/diagrams/fabric-interfaces.svg)
 
 Interrupts take a third path: a wire from the fabric into the MSS, described in module F03.
 
@@ -141,5 +142,5 @@ These records show the software view of the chip. They do not measure anything a
 | **How to run** | Explanation with recorded evidence; nothing to run |
 | **Status** | validated |
 | **In the system** | [PolarFire SoC Discovery Kit](/pfdaq/explorer/#board) · [MPFS095T system-on-chip](/pfdaq/explorer/#soc) · [Microprocessor subsystem (MSS)](/pfdaq/explorer/#mss) · [FPGA fabric](/pfdaq/explorer/#fabric) · [E51 (hart 0)](/pfdaq/explorer/#e51) · [U54 harts 1 to 3](/pfdaq/explorer/#u54-linux) · [U54 hart 4](/pfdaq/explorer/#u54-4) · [FIC0 (AXI4, 125 MHz)](/pfdaq/explorer/#fic0) · [FIC3 (APB, 50 MHz)](/pfdaq/explorer/#fic3) · [Platform-level interrupt controller](/pfdaq/explorer/#plic) · [DDR4 memory, 1 GB](/pfdaq/explorer/#ddr) · [Hart Software Services](/pfdaq/explorer/#hss) |
-| **Evidence** | [Boot monitor console from power-up to all four application cores running](/pfdaq/evidence/v0.5.1/board/boot-hss.txt) (board, fabric v0.5.1); [Key lines of the U-Boot and Linux console from OpenSBI to login, including remoteproc attaching to hart 4](/pfdaq/evidence/v0.5.1/board/boot-uboot-linux.txt) (board, fabric v0.5.1) |
+| **Evidence** | [Boot monitor console from power-up to all four application cores running](/pfdaq/evidence/v0.5.1/board/boot-hss.txt) (board, fabric v0.5.1); [Key lines of the U-Boot and Linux console from OpenSBI to login, including remoteproc attaching to hart 4](/pfdaq/evidence/v0.5.1/board/boot-uboot-linux.txt) (board, fabric v0.5.1); [MSS Configurator, fabric interface controllers tab](/pfdaq/evidence/v0.5.1/build/libero-mss-fics.png) (build, fabric v0.5.1); [MSS Configurator, Peripherals tab: enabled peripherals and I/O mux](/pfdaq/evidence/v0.5.1/build/libero-mss-peripherals.png) (build, fabric v0.5.1) |
 | **Related** | [F02 The memory map and the three faces of DDR](/topics/fpga/polarfire-soc-fundamentals/f02-memory-map-ddr/); [F03 Interrupts from fabric to hart: F2M lines, the PLIC and contexts](/topics/fpga/soc-integration/f03-fabric-interrupts/); [F04 Clocks and resets: one PLL, two bus clocks](/topics/fpga/polarfire-soc-fundamentals/f04-clocks-and-resets/); [X01 pfdaq in one page](/work/pfdaq-polarfire-soc/) |

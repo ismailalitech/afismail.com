@@ -42,6 +42,11 @@ Constraints that shaped the design:
 - The DMA controller has rules that its documentation does not state. They were found by testing and are collected in
   [DMA stream descriptors](/topics/fpga/soc-integration/i04-dma-stream-descriptors/).
 
+The fabric half of the system, as the vendor's tool shows it: the project's own block, `pfdaq_core`, feeds the DMA
+controller over an AXI4-Stream link and raises two latency interrupts. The other blocks are the reference design's.
+
+[![The FIC_0_PERIPHERALS canvas in Libero SoC: pfdaq_core, the DMA controller, its initiator and target interconnects and the on-chip SRAM](/pfdaq/evidence/v0.5.1/build/libero-fic0-peripherals.png)](/pfdaq/evidence/v0.5.1/build/libero-fic0-peripherals.png)
+
 ## My contribution
 
 - **FPGA logic.** A stream source that produces framed data (header, sequence number, timestamp, payload, CRC-32) two
