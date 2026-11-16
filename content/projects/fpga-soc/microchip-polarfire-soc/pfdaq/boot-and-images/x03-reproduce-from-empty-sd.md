@@ -7,7 +7,7 @@ weight = 70
 aliases = ["/topics/embedded-linux/boot-and-images/x03-reproduce-from-empty-sd/"]
 
 [params]
-  lab = 18
+  lab = 20
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Intermediate"

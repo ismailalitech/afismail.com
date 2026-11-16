@@ -7,7 +7,7 @@ weight = 12
 aliases = ["/topics/microcontrollers/linux-and-rtos/m02-rpmsg-in-practice/"]
 
 [params]
-  lab = 26
+  lab = 29
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Intermediate"

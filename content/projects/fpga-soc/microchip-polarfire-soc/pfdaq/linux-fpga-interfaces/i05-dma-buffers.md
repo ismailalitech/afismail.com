@@ -7,7 +7,7 @@ weight = 40
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i05-dma-buffers/"]
 
 [params]
-  lab = 22
+  lab = 24
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Intermediate"
@@ -169,7 +169,7 @@ The addresses fit the layout: `0xC800_0000 + 0x1F0_0000 = 0xC9F0_0000` and `0x88
 
 It shows that **two processors**, Linux on a cached mapping and hart 4 through its cached window, saw each other's writes in that region with no cache maintenance on either side, in every iteration. The cached run was faster, 20.10 ms against 31.15 ms.
 
-It does **not** show anything about a **DMA controller** writing into a cached buffer. No DMA took part. Whether a cached buffer is safe for the fabric DMA, and what it takes to make it so, was not tested.
+It does **not** show anything about a **DMA controller** writing into a cached buffer. No DMA took part. Whether a cached buffer is safe for the fabric DMA, and what it takes to make it so, is the subject of module [I08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i08-dma-cached-memory/).
 
 ## Do the same in your project
 
@@ -228,5 +228,5 @@ What not to change:
 | **In the system** | [Non-cached window](/pfdaq/explorer/#ddr-noncached) · [Cached shared region](/pfdaq/explorer/#ddr-cached-shared) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [u-dma-buf](/pfdaq/explorer/#udmabuf) · [pfdaq_cap](/pfdaq/explorer/#pfdaq-cap) |
 | **Source files** | [`yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c): `run_shm`, `arm`, `ddr_phys`, `BUF_OFF`, `DESC_OFF`, `RT_DESC_STRIDE`; [`yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-kernel/linux/files/mpfs-disco-kit-amp.dts) |
 | **Evidence** | [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1); [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Boot monitor console from power-up to all four application cores running](/pfdaq/evidence/v0.5.1/board/boot-hss.txt) (board, fabric v0.5.1); [Reserved memory, UIO devices, online CPUs and PLIC sources on the running board](/pfdaq/evidence/v0.5.1/board/device-tree-checks.txt) (board, fabric v0.5.1) |
-| **Related** | [I04 DMA stream descriptors: the rules this core really follows](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/i04-dma-stream-descriptors/); [I06 Capturing and verifying a stream](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i06-capture-and-verify/); [I07 Real-time capture with four descriptors and credits](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i07-real-time-capture/); [F02 The memory map and the three faces of DDR](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/polarfire-soc-fundamentals/f02-memory-map-ddr/); [K10 Odd frame lengths lose 2 KB chunks](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/k10-odd-frame-lengths/) |
+| **Related** | [I04 DMA stream descriptors: the rules this core really follows](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/i04-dma-stream-descriptors/); [I06 Capturing and verifying a stream](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i06-capture-and-verify/); [I07 Real-time capture with four descriptors and credits](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i07-real-time-capture/); [I08 DMA into cached memory: when you need cache maintenance](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i08-dma-cached-memory/); [F02 The memory map and the three faces of DDR](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/polarfire-soc-fundamentals/f02-memory-map-ddr/); [K10 Odd frame lengths lose 2 KB chunks](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/k10-odd-frame-lengths/) |
 | **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |

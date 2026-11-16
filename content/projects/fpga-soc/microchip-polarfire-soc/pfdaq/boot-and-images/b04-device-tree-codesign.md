@@ -7,7 +7,7 @@ weight = 40
 aliases = ["/topics/embedded-linux/boot-and-images/b04-device-tree-codesign/"]
 
 [params]
-  lab = 16
+  lab = 18
   board = "PolarFire SoC Discovery Kit"
   core = "E51 and U54"
   level = "Beginner"

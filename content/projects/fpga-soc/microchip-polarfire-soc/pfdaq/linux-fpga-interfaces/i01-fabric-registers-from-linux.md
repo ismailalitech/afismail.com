@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i01-fabric-registers-from-linux/"]
 
 [params]
-  lab = 19
+  lab = 21
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Beginner"

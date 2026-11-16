@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/fpga/soc-integration/i04-dma-stream-descriptors/"]
 
 [params]
-  lab = 11
+  lab = 13
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Intermediate"

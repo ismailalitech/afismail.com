@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/fpga/registers-clocks-timing/h01-apb-register-block/"]
 
 [params]
-  lab = 6
+  lab = 7
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Beginner"

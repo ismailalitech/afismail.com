@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/fpga/soc-integration/f03-fabric-interrupts/"]
 
 [params]
-  lab = 12
+  lab = 14
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Beginner"

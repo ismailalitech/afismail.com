@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/fpga/registers-clocks-timing/h03-clock-domain-crossing/"]
 
 [params]
-  lab = 7
+  lab = 8
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"

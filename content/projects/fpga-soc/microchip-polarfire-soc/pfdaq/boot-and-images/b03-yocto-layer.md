@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/embedded-linux/boot-and-images/b03-yocto-layer/"]
 
 [params]
-  lab = 15
+  lab = 17
   board = "PolarFire SoC Discovery Kit"
   core = "E51 and U54"
   level = "Intermediate"

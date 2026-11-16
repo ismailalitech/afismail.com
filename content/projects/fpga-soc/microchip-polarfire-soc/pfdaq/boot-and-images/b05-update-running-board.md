@@ -7,7 +7,7 @@ weight = 50
 aliases = ["/topics/embedded-linux/boot-and-images/b05-update-running-board/"]
 
 [params]
-  lab = 17
+  lab = 19
   board = "PolarFire SoC Discovery Kit"
   core = "E51 and U54"
   level = "Beginner"

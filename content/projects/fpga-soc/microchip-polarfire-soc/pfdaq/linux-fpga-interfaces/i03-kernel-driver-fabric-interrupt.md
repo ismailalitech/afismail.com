@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i03-kernel-driver-fabric-interrupt/"]
 
 [params]
-  lab = 21
+  lab = 23
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Advanced"
