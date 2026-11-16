@@ -7,7 +7,7 @@ weight = 40
 aliases = ["/topics/fpga/performance-and-reliability/p05-abort/"]
 
 [params]
-  lab = 39
+  lab = 42
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Advanced"

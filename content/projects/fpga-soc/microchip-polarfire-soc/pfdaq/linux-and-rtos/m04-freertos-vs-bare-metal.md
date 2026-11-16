@@ -7,7 +7,7 @@ weight = 16
 aliases = ["/topics/microcontrollers/linux-and-rtos/m04-freertos-vs-bare-metal/"]
 
 [params]
-  lab = 32
+  lab = 33
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Intermediate"

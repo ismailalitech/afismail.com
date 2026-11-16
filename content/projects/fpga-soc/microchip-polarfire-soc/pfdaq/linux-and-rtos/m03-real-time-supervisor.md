@@ -7,7 +7,7 @@ weight = 14
 aliases = ["/topics/microcontrollers/linux-and-rtos/m03-real-time-supervisor/"]
 
 [params]
-  lab = 31
+  lab = 32
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Intermediate"
