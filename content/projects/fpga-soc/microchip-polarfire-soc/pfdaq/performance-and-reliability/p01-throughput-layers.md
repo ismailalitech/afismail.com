@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/fpga/performance-and-reliability/p01-throughput-layers/"]
 
 [params]
-  lab = 35
+  lab = 36
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Advanced"

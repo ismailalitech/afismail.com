@@ -7,7 +7,7 @@ weight = 70
 aliases = ["/topics/fpga/performance-and-reliability/p07-deterministic-linux/"]
 
 [params]
-  lab = 40
+  lab = 41
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Advanced"
