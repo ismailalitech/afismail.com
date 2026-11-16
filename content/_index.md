@@ -15,19 +15,29 @@ title = "Embedded systems & security engineer"
   # hero_image_caption = "PolarFire SoC Discovery Kit, with the MSS UART on a logic analyser."
   # hero_image_size = [1600, 1200]
 
-  # The three areas of work. "link" and "link_text" are optional: add them when there is
-  # a service, a case study or a note to point to.
+  # The three areas of work. "projects" lists the pages on this site (their paths) that belong to the
+  # area; each is shown under the text with its own title.
   [[params.expertise]]
     title = "Firmware & RTOS"
     text = "Board bring-up, drivers and fault debugging, bare-metal or on an RTOS, on Arm Cortex-M, Cortex-A and Cortex-R, RISC-V and other cores."
-    link = "/projects/microcontrollers/arm-cortex-m/cortex-m-fault-decoder/"
-    link_text = "Example: a Cortex-M fault decoder"
+    projects = [
+      "/projects/microcontrollers/arm-cortex-m/cortex-m-fault-decoder",
+      "/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost",
+      "/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos",
+    ]
   [[params.expertise]]
     title = "FPGA & SoC"
     text = "HDL design and verification, timing closure, processor integration, and design optimisation, for example to raise bandwidth."
+    projects = [
+      "/projects/fpga-soc/microchip-polarfire-soc/pfdaq",
+    ]
   [[params.expertise]]
     title = "Secure design"
     text = "Hardware security and embedded security: side-channel attacks, secure boot, TrustZone, debug authentication and root of trust."
+    projects = [
+      "/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost",
+      "/projects/fpga-soc/microchip-polarfire-soc/pfdaq/secure-boot",
+    ]
 
   # The three steps shown at the top of the Labs page.
   [[params.steps]]
