@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/fpga/performance-and-reliability/p04-deadline-supervision/"]
 
 [params]
-  lab = 37
+  lab = 38
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Intermediate"
