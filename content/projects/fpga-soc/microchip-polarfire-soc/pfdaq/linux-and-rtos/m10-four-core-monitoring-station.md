@@ -7,7 +7,7 @@ weight = 50
 aliases = ["/topics/microcontrollers/linux-and-rtos/m10-four-core-monitoring-station/"]
 
 [params]
-  lab = 34
+  lab = 35
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Advanced"
