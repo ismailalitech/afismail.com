@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/security/secure-boot/s03-signed-boot-chain/"]
 
 [params]
-  lab = 43
+  lab = 46
   board = "None (RTL simulation)"
   core = "Development PC"
   level = "Beginner"

@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/fpga/performance-and-reliability/p03-fault-injection/"]
 
 [params]
-  lab = 37
+  lab = 40
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Intermediate"
