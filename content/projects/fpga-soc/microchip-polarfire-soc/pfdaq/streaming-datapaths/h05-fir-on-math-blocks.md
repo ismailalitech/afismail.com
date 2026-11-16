@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/fpga/streaming-datapaths/h05-fir-on-math-blocks/"]
 
 [params]
-  lab = 4
+  lab = 5
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"

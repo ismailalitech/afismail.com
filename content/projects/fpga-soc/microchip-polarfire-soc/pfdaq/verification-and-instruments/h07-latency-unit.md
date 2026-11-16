@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/fpga/verification-and-instruments/h07-latency-unit/"]
 
 [params]
-  lab = 8
+  lab = 9
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"

@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/fpga/verification-and-instruments/h08-histogram-in-ram/"]
 
 [params]
-  lab = 9
+  lab = 10
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"
