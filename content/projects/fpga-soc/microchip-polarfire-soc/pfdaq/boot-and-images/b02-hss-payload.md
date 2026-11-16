@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/embedded-linux/boot-and-images/b02-hss-payload/"]
 
 [params]
-  lab = 14
+  lab = 16
   board = "PolarFire SoC Discovery Kit"
   core = "E51 and U54"
   level = "Beginner"

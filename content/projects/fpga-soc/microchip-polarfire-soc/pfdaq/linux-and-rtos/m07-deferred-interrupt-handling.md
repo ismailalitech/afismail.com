@@ -7,7 +7,7 @@ weight = 25
 aliases = ["/topics/microcontrollers/linux-and-rtos/m07-deferred-interrupt-handling/"]
 
 [params]
-  lab = 30
+  lab = 33
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Advanced"

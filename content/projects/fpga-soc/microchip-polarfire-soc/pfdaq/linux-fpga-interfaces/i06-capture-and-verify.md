@@ -7,7 +7,7 @@ weight = 50
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i06-capture-and-verify/"]
 
 [params]
-  lab = 23
+  lab = 25
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Intermediate"

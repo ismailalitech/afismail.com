@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i02-fabric-interrupts-user-space/"]
 
 [params]
-  lab = 20
+  lab = 22
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Intermediate"

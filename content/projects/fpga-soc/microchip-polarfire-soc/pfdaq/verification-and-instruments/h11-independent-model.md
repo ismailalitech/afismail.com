@@ -7,7 +7,7 @@ weight = 30
 aliases = ["/topics/fpga/verification-and-instruments/h11-independent-model/"]
 
 [params]
-  lab = 10
+  lab = 11
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"
