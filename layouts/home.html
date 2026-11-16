@@ -28,6 +28,12 @@
       <p>{{ .text }}</p>
       {{ $linkText := .link_text }}
       {{ with .link }}<p class="expertise-link"><a href="{{ . }}">{{ $linkText }}</a></p>{{ end }}
+      {{/* The pages of this site that belong to the area, by path, shown with their own titles. */}}
+      {{ with .projects }}
+      <ul class="expertise-projects">
+        {{ range . }}{{ with site.GetPage . }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}{{ end }}
+      </ul>
+      {{ end }}
     </li>
     {{ end }}
   </ul>
