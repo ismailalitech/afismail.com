@@ -3148,3 +3148,35 @@ html.lenis {
     display: none;
   }
 }
+
+/* The pages of this site listed under each area of work on the home page */
+.expertise-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.columns .expertise-projects {
+  margin-top: 0.5rem;
+  padding-top: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.columns .expertise-projects li {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+.expertise-projects a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.expertise-projects a:hover {
+  text-decoration: underline;
+}
