@@ -7,7 +7,7 @@ weight = 85
 aliases = ["/topics/fpga/soc-integration/x02-one-burst/"]
 
 [params]
-  lab = 13
+  lab = 15
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Intermediate"

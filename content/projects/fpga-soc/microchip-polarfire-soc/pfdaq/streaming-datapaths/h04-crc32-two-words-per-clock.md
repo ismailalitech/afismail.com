@@ -7,7 +7,7 @@ weight = 20
 aliases = ["/topics/fpga/streaming-datapaths/h04-crc32-two-words-per-clock/"]
 
 [params]
-  lab = 3
+  lab = 4
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"

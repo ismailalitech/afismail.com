@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/fpga/streaming-datapaths/h02-axi4-stream/"]
 
 [params]
-  lab = 2
+  lab = 3
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Beginner"

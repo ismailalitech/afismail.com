@@ -7,7 +7,7 @@ weight = 60
 aliases = ["/topics/embedded-linux/linux-fpga-interfaces/i07-real-time-capture/"]
 
 [params]
-  lab = 24
+  lab = 26
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux)"
   level = "Advanced"

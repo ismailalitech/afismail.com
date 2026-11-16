@@ -7,7 +7,7 @@ weight = 40
 aliases = ["/topics/fpga/streaming-datapaths/h06-real-time-source/"]
 
 [params]
-  lab = 5
+  lab = 6
   board = "None (RTL simulation)"
   core = "FPGA fabric"
   level = "Intermediate"
