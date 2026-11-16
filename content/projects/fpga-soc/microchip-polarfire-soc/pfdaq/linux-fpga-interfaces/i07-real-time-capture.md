@@ -205,6 +205,7 @@ What not to change:
 ## Evidence
 
 - **Board, fabric v0.5.1:** rows `T6-rt-*` of the [raw suite record](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) and the [summary](/pfdaq/evidence/v0.5.1/board/suite-freertos.md). Single runs. The fields `timed_out`, `elapsed_s` and `delivered_mb_per_s` used above are in the raw record.
+- **Board, repeated runs:** [30 runs on an idle board](/pfdaq/evidence/v0.5.1/board/m10-stall-cap-reference.txt) and [20 runs with the PC streaming data to the board](/pfdaq/evidence/v0.5.1/board/m10-stall-cap-netload.txt), 5,000 slots at 1 ms (see M10).
 - **Simulation:** the fabric's credit and drop accounting is checked in scenarios 13, 14, 15 and 18 ([record](/pfdaq/evidence/v0.5.1/sim/stream.txt)); see H06.
 
 ## When it goes wrong
@@ -216,6 +217,7 @@ What not to change:
 | A frame lands in the wrong buffer | the program assumed the rotation advances on drops; it advances only when a frame is sent |
 | The DMA ignores a re-armed descriptor | a credit was returned before the re-arm finished, or the descriptor was written in the wrong order |
 | A run ends by timeout with a few frames missing | the shortfall described above |
+| A 1 ms run times out a few frames short while the board is busy with network traffic | a completion's UIO event was not counted, so the loop, which counts events, stays behind for the rest of the run. Measured in module [M10](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m10-four-core-monitoring-station/): 15 of 20 runs of 5,000 slots timed out under load, 0 of 30 on an idle board. Taking a frame from its descriptor (bit 2 of the configuration word, `0x9` when written) instead of from the event count does not have it |
 
 ## Trade-offs and going further
 
@@ -235,6 +237,6 @@ What not to change:
 | **Read first** | [I06 Capturing and verifying a stream](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i06-capture-and-verify/); [H06 Real-time sources: slots, credits and honest drops](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/streaming-datapaths/h06-real-time-source/) |
 | **In the system** | [Stream source](/pfdaq/explorer/#pfdaq-stream-src) · [CoreAXI4DMAController](/pfdaq/explorer/#dma) · [Non-cached window](/pfdaq/explorer/#ddr-noncached) · [pfdaq_cap](/pfdaq/explorer/#pfdaq-cap) · [UIO devices](/pfdaq/explorer/#uio) |
 | **Source files** | [`yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c`](https://github.com/ismailalitech/pfdaq/blob/main/yocto/meta-pfdaq/recipes-pfdaq/pfdaq-tools/files/pfdaq_cap.c): `run_realtime`, `arm_rt`, `uio_events`, `fence_io`, `RT_DESC_STRIDE`, `SRC_CREDIT`, `DMA_STREAM0` |
-| **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1) |
+| **Evidence** | [Board suite with FreeRTOS on hart 4, 27 of 27 functional tests](/pfdaq/evidence/v0.5.1/board/suite-freertos.md) (board, fabric v0.5.1); [Raw output of the FreeRTOS suite, one JSON object per test](/pfdaq/evidence/v0.5.1/board/suite-freertos.jsonl) (board, fabric v0.5.1); [pfdaq_cap real-time mode, 5,000 slots of 1,000 us, 4 descriptors, FIR payload, 30 runs one after the other on an idle board: all 30 passed, none timed out](/pfdaq/evidence/v0.5.1/board/m10-stall-cap-reference.txt) (board, fabric v0.5.1); [The same pfdaq_cap run repeated 20 times while the PC streamed data to the board over ssh: 15 of 20 runs timed out, 1 to 38 frames short](/pfdaq/evidence/v0.5.1/board/m10-stall-cap-netload.txt) (board, fabric v0.5.1) |
 | **Related** | [H06 Real-time sources: slots, credits and honest drops](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/streaming-datapaths/h06-real-time-source/); [I04 DMA stream descriptors: the rules this core really follows](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/i04-dma-stream-descriptors/); [I05 Buffers the DMA can write: non-cached windows and u-dma-buf](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i05-dma-buffers/); [I06 Capturing and verifying a stream](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i06-capture-and-verify/); [K04 The descriptor that was re-armed too late](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/soc-integration/k04-descriptor-rearmed-too-late/); [P01 Where 940 MB/s becomes 30: throughput layer by layer](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/performance-and-reliability/p01-throughput-layers/) |
 | **Code** | The commands on this page run from the [pfdaq repository](https://github.com/ismailalitech/pfdaq). |
