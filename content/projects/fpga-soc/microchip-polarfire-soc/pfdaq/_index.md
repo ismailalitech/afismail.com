@@ -62,6 +62,10 @@ controller over an AXI4-Stream link and raises two latency interrupts. The other
 - **Verification.** Testbenches that only record, judged by independent Python models; a board suite with 27 functional
   tests, run from a freshly written card.
 - **Measurement.** The interrupt-to-acknowledge latency at five software levels, measured by the fabric itself.
+- **Applications and studies built on it.** A [four-core monitoring station](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m10-four-core-monitoring-station/) in which one core acquires, one
+  analyses, one reports and the real-time core stops the source on a fault, recorded on the board; the cost of three
+  ways to signal another core ([M08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m08-three-ways-to-signal/)); cached memory and DMA ([I08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i08-dma-cached-memory/)); the fabric DMA against the
+  chip's own DMA ([I09](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i09-fabric-dma-vs-mss-dma/)); and a parallel verifier that raises the verified speed ([P08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/performance-and-reliability/p08-parallel-verify/)).
 
 The parts of the project, each with its notes and numbered labs, are listed at the top of this page, in the order a
 reader would work through them.
@@ -101,9 +105,11 @@ Every number is traced to a record with the command and the conditions that prod
 | Does it come up every time? | 30 of 30 warm reboots, both systems up |
 | Are injected faults caught? | Every corrupted CRC, skipped sequence number and flipped bit, in all three payload types |
 | Hardware path speed | 931 to 947 MB/s into memory (measured on an earlier fabric version) |
-| Verified path speed | 29.6 MB/s for counter payload: one Linux core copying and checking |
+| Verified path speed | 29.6 MB/s for counter payload: one Linux core copying and checking; 70.6 MB/s with three worker threads ([P08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/performance-and-reliability/p08-parallel-verify/)) |
 | Interrupt response, supervisor core | 0.5 microseconds typical, 3.1 microseconds worst seen, none missed in 600,000 |
 | Interrupt response, Linux user space | 78 microseconds typical, up to 5.1 ms |
+| Signalling the real-time core from Linux | RPMsg 0.89 ms; a polled flag in shared memory 3 microseconds; a fabric interrupt 4 microseconds ([M08](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m08-three-ways-to-signal/)) |
+| Four cores as one application | One recorded 64-second run: a trip on bad frames and a trip on a missed deadline, both caught and each reset ([M10](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m10-four-core-monitoring-station/)) |
 
 Limits, stated plainly:
 
@@ -112,5 +118,10 @@ Limits, stated plainly:
 - **Linux cannot restart the supervisor core.** It can stop it; the boot monitor rejects the restart. Recovery is a
   reboot. See [the case study](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/k11-remoteproc-restart/).
 - The ten-minute, 17.8 GB soak was run on an earlier fabric version and has not been repeated on the final one.
+- **The real-time core's memory protection is not a fence on this board.** The boot monitor leaves one locked entry
+  that allows everything, so the planned violation test is refused. See [M09](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m09-fencing-the-real-time-hart-with-pmp/).
+- **Under heavy network load the Linux capture loop can miss interrupt events.** The monitoring station's loop was
+  changed to read the descriptors instead; the proven capture tool was not, and timed out in 15 of 20 runs under that
+  load ([the stall in M10](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-and-rtos/m10-four-core-monitoring-station/)).
 - Everything was measured on one board.
 - The code is public: [github.com/ismailalitech/pfdaq](https://github.com/ismailalitech/pfdaq). The labs run from it.
