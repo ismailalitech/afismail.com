@@ -7,7 +7,7 @@ weight = 18
 aliases = ["/topics/microcontrollers/linux-and-rtos/m05-shared-memory-linux-bare-metal/"]
 
 [params]
-  lab = 33
+  lab = 34
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and U54 hart 4"
   level = "Intermediate"

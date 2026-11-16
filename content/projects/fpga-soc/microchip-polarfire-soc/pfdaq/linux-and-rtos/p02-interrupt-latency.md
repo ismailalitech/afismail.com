@@ -7,7 +7,7 @@ weight = 10
 aliases = ["/topics/microcontrollers/linux-and-rtos/p02-interrupt-latency/"]
 
 [params]
-  lab = 29
+  lab = 30
   board = "PolarFire SoC Discovery Kit"
   core = "U54 harts 1 to 4"
   level = "Advanced"

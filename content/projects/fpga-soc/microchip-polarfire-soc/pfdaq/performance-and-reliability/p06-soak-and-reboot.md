@@ -7,7 +7,7 @@ weight = 50
 aliases = ["/topics/fpga/performance-and-reliability/p06-soak-and-reboot/"]
 
 [params]
-  lab = 40
+  lab = 43
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Intermediate"

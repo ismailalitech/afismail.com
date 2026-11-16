@@ -7,7 +7,7 @@ weight = 80
 aliases = ["/topics/fpga/performance-and-reliability/p08-parallel-verify/"]
 
 [params]
-  lab = 42
+  lab = 45
   board = "PolarFire SoC Discovery Kit"
   core = "U54 (Linux) and FPGA fabric"
   level = "Advanced"
