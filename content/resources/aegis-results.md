@@ -35,6 +35,8 @@ The whole-system check is `tools/regression.sh --board`: thirteen stages, five o
 | C5 | Device that cannot attest | BOARD | an Arduino Uno through a PC relay | QUARANTINED every cycle | journal |
 | C6 | Device that disappears | BOARD | the bench unplugged | STM32 QUARANTINED, credential revoked ("No route to host"); Uno QUARANTINED | `evidence/console/disconnected-journal.txt` |
 | C7 | Mutual authentication | BOARD | `tests/board/mutual_auth_checks.py` | credentials from a foreign key, or for another ciphertext, refused with error -149; session unchanged | [case study](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/k03-anyone-could-end-a-session/) |
+| C8 | Hedged signing and KMAC256 heartbeats, deployed | BOARD and HOST | staged deployment with a backup: gateway code, then image, then policy; PC tests of both changes | same key after the new image; new image quarantined until the policy names it, then admitted with KMAC heartbeats; regression 12 of 12 before and after; the partition's code signs one message twice with two different valid signatures (PC); KMAC equal to NIST's samples on both sides | [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/); `evidence/console/hardening-journal.txt` |
+| C9 | Two chips, two keys | BOARD | a second STM32H573 with the same firmware, option bytes and boot loader | ML-DSA keys differ in 1,941 of 1,952 bytes; PSA identity identical (development provisioning); the second board refused under the first board's name, admitted with its own key | [lab 56](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a10-two-chips-two-keys/); `evidence/two-boards/` |
 | D1 | Red team: parsers and verifier | HOST | `tests/redteam/fuzz_host.py` | 3,000 mutated tokens: 0 accepted, 0 unexpected exceptions; 310 malformed frames: service still answers; 800 hostile replies: 0 admitted; downgrade and key replay refused | [lab 51](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a05-quarantine-and-red-team/) |
 | D2 | Red team: real devices | BOARD | `tests/redteam/fuzz_devices.py` | STM32: 76 malformed commands refused, a genuine quote still verifies; gateway: 240 malformed frames and a half-open client, quote valid in 72 ms | regression stage `device-redteam` |
 | E1 | Enforcement ruleset | HOST | `tests/host/test_enforcement.sh`: three network namespaces, the real ruleset and hook | 10 of 10; the first run failed 1 of 10 (an open connection survived quarantine) | [lab 53](/projects/fpga-soc/microchip-polarfire-soc/aegis/enforcement/a07-enforcement-without-a-switch/) |
@@ -60,7 +62,7 @@ The whole-system check is `tools/regression.sh --board`: thirteen stages, five o
 - **The gateway's key is software.** The chip is the part without the data-security block.
 - **Development keys on the endpoint,** in the open product state; the attestation key of TF-M is a published one. Only the ML-DSA signature is security-relevant.
 - **Trust on first use** for both enrolments.
-- **One device of each kind,** so per-chip uniqueness of the device key is not shown.
-- **Not evaluated:** side channels, fault injection, power loss during provisioning. ML-DSA signing is deterministic.
+- **Two endpoint chips,** so per-chip uniqueness of the device key is shown on two chips, not on a population.
+- **Not evaluated:** side channels, fault injection, power loss during provisioning. ML-DSA signing is hedged since lab 55; that it is hedged is shown on the PC, not observable on the board (each quote's PSA token differs anyway).
 - Latency figures are two runs per setup, with the gateway services running and no heavy network or SD traffic.
 - Everything was measured on one set of boards.

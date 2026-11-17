@@ -67,4 +67,4 @@ The STM32 test image was a separate temporary build that links the same source a
 
 ## What is not claimed
 
-Deterministic signing means the endpoint's signatures contain no fresh randomness. Side-channel resistance of these implementations on these cores was not evaluated. Passing the vectors shows the arithmetic is right; it does not show the code is constant-time.
+The endpoint signed deterministically at first, with no fresh randomness in its signatures; since [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/) it signs hedged, with 32 random bytes per signature, as FIPS 204 recommends. Side-channel resistance of these implementations on these cores was not evaluated. Passing the vectors shows the arithmetic is right; it does not show the code is constant-time.
