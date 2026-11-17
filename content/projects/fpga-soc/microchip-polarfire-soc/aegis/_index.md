@@ -75,6 +75,11 @@ One decision cycle:
 5. Both sides now hold a session key. Heartbeats under that key confirm the endpoint still holds it. If the heartbeat
    fails, the gateway provisions again at the next cycle.
 
+The fabric half of the system, as the vendor's tool shows it: the block `aegis_pqc_0` sits on the same APB bus as the
+project's other registers, next to the two peripheral blocks and the processor subsystem.
+
+[![The top-level SmartDesign canvas in Libero SoC, zoomed on the aegis_pqc block: its clock, reset and APB target, next to FIC_3_PERIPHERALS, FIC_0_PERIPHERALS and MSS_WRAPPER](/aegis/libero/libero-aegis-canvas-zoom.png)](/aegis/libero/libero-aegis-canvas-zoom.png)
+
 The parts are listed at the top of this page in the order a reader would work through them. The trust model and the
 threat list are in the project's
 [threat model](https://github.com/ismailalitech/aegis/blob/main/docs/threat-model.md).

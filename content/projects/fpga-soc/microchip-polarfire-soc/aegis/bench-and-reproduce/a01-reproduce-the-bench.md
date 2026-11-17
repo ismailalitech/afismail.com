@@ -161,6 +161,10 @@ payload partitions.
 
 ## What to check
 
+- If you built the fabric, the design flow in Libero shows green ticks on Synthesize, Place and Route and Verify Timing:
+
+[![The Libero Design Flow panel with green check marks on Implement Design, Synthesize, Place and Route and Verify Timing](/aegis/libero/libero-aegis-design-flow.png)](/aegis/libero/libero-aegis-design-flow.png)
+
 - The host regression passes on your PC before any board is touched.
 - The gateway's quote is accepted by the enrolled verifier.
 - The journal shows the STM32 admitted with a credential and a rising heartbeat, and the Uno quarantined.

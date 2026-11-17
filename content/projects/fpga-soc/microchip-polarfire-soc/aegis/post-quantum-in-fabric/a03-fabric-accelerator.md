@@ -59,6 +59,30 @@ domain. The whole design uses 36,373 logic elements (38.9 %); the accelerator ad
 flip-flops, 2 RAM blocks and 26 math blocks. Program it with FlashPro Express as in the pfdaq lab, and read the design version
 back: it should be `0x65`.
 
+What Libero shows for this build, from a copy of the finished project (nothing was run or changed):
+
+The design hierarchy: `aegis_pqc` is a user block next to the vendor's, built from `aegis_keccak` (with its round function)
+and `aegis_ntt` (with the modular multiplier, the twiddle ROM and a dual-port RAM).
+
+[![The Libero design hierarchy with aegis_pqc expanded into aegis_keccak, aegis_keccak_round, aegis_ntt, aegis_modmul, aegis_ntt_rom and aegis_ram_sdp](/aegis/libero/libero-aegis-hierarchy.png)](/aegis/libero/libero-aegis-hierarchy.png)
+
+The top-level canvas. The accelerator is the small block in the lower middle; the large blocks are the vendor's peripherals and
+the processor subsystem.
+
+[![The whole top-level SmartDesign canvas of MPFS_DISCOVERY_KIT in Libero SoC](/aegis/libero/libero-aegis-top-canvas.png)](/aegis/libero/libero-aegis-top-canvas.png)
+
+The resource report after compiling the netlist. The whole design, including the pfdaq blocks and the vendor's peripherals,
+uses 34,551 of 93,516 four-input LUTs (36.95 %), 17,151 flip-flops (18.34 %), 31 large RAM blocks (10.06 %) and 44 math blocks
+(15.07 %). The logic-element figure quoted above, 36,373 (38.9 %), is the later place-and-route count, which packs LUTs and
+flip-flops together.
+
+[![The Libero compile report Resource Usage table: 4LUT 34551 of 93516, DFF 17151 of 93516, uSRAM 49 of 876, LSRAM 31 of 308, Math 44 of 292](/aegis/libero/libero-aegis-resource-usage.png)](/aegis/libero/libero-aegis-resource-usage.png)
+
+The timing summary, maximum delay across all corners. The 125 MHz domain closes with 1.021 ns of slack and the 50 MHz domain,
+the one the accelerator is clocked from, with 2.056 ns.
+
+[![The Libero multi-corner maximum-delay timing summary: 1.021 ns worst slack at 125 MHz and 2.056 ns at 50 MHz, both in the slow_lv_ht corner](/aegis/libero/libero-aegis-timing-summary.png)](/aegis/libero/libero-aegis-timing-summary.png)
+
 ### 3. Self-test on the board
 
 `pqc_selftest 500` compares the fabric's Keccak and both NTTs against C references on 500 random inputs each:
