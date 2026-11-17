@@ -106,7 +106,7 @@ Every 500 ms it closes a *window* and sends its features to hart 4: the frame co
 
 Both directions use 64-byte messages (16 little-endian words). The first seven words of a request are the production message, so `ARM`, `STATUS` and `DISARM` mean what they mean in module M02; the production supervisor still answers its own 28-byte messages exactly as before.
 
-![The two messages between the analysis process and hart 4, as declared in pfdaq_station.h. A request has the seven words of the production message and nine more words x[0] to x[8]. An acknowledgement has nine words as in the production reply, then the event counter, the last trip reason, the trip count and 16 characters of text. FEATURES and SET_LIMITS use the x words.](../diagrams/lab-m10-message-layout.svg)
+[![The two messages between the analysis process and hart 4, as declared in pfdaq_station.h. A request has the seven words of the production message and nine more words x[0] to x[8]. An acknowledgement has nine words as in the production reply, then the event counter, the last trip reason, the trip count and 16 characters of text. FEATURES and SET_LIMITS use the x words.](/pfdaq/diagrams/lab-m10-message-layout.svg)](/pfdaq/diagrams/lab-m10-message-layout.svg)
 
 1. A request: seven words as in the production message, then nine free words.
 2. The new messages put their fields in `x[]`, by type.

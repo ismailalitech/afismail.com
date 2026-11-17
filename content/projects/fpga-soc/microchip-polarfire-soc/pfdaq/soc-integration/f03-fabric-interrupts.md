@@ -149,7 +149,7 @@ On hart 4 the handler writes `ACK` before it returns, so the line is already low
 
 Under Linux the generic UIO driver does something different, because the acknowledgement belongs to a user program the kernel knows nothing about. Its handler masks the interrupt and wakes the program; the program writes `ACK` and then asks for the interrupt to be unmasked. On this board that sequence produced **two wake-ups per event**: the line was still high when the kernel handler completed, the PLIC recorded a new request, and delivered it when the line was unmasked, although the program had acknowledged by then. `pfdaq_lat` therefore acknowledges only when the fabric's `STATUS` register says an interrupt is really pending, and counts the other wake-ups. In the board suite's run of 100,000 events it counted 99,967 empty wake-ups, and 99,998 in the run recorded for this module. Module I02 and case study K05 cover this in detail.
 
-![Interrupt routing: latency channel 0 (F2M[1], source 119) and the DMA controller (F2M[2], source 120) reach the PLIC and are enabled for Linux on harts 1 to 3; latency channel 1 (F2M[5], source 123) is enabled only for hart 4 in machine mode.](../diagrams/fabric-interrupts.svg)
+[![Interrupt routing: latency channel 0 (F2M[1], source 119) and the DMA controller (F2M[2], source 120) reach the PLIC and are enabled for Linux on harts 1 to 3; latency channel 1 (F2M[5], source 123) is enabled only for hart 4 in machine mode.](/pfdaq/diagrams/fabric-interrupts.svg)](/pfdaq/diagrams/fabric-interrupts.svg)
 
 ## Run it
 
