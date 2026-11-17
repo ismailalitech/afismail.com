@@ -71,7 +71,9 @@ they exit.
 | Interrupt and task on CPU1, SCHED_FIFO 80 | 0 and 0 | 54 microseconds | 82 to 123 microseconds | 0.36 to 0.47 ms |
 | CPU2, SCHED_FIFO 80, a busy loop on every core | 3 and 0 | 51 microseconds | 123 microseconds | 1.47 ms and 0.41 ms |
 
-An overrun is an event that arrived before the previous one had been answered.
+An overrun is an event that arrived before the previous one had been answered. The same runs, as printed:
+
+![Five setups of the Linux interrupt-latency measurement: the default, pinned at normal priority, pinned with a real-time priority on two cores, and under full CPU load](/aegis/diagrams/console-latency.svg)
 
 Moving the interrupt to another core did nothing for the spikes: the second row is as bad as the first, and in these runs worse.
 A real-time priority removed them. So the cause is **scheduling**: a normal-priority process waits for the next scheduling

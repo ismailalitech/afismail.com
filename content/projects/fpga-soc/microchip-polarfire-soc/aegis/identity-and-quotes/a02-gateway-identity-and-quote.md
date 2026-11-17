@@ -77,6 +77,11 @@ only if all of these hold:
 
 Enrolment is trust on first use: it is as trustworthy as the network at that moment.
 
+![The PC verifier asks the gateway for a quote and prints accepted, with the 3,309-byte ML-DSA-65 signature](/aegis/diagrams/console-quote.svg)
+
+The chip's refusal of the two signing services, and what it meant for the design, is a case study:
+[the chip is not an S device](/projects/fpga-soc/microchip-polarfire-soc/aegis/identity-and-quotes/k01-chip-is-not-an-s-device/).
+
 ## A good refusal
 
 After the gateway's fabric was reprogrammed with the accelerator ([lab 49](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a03-fabric-accelerator/)),

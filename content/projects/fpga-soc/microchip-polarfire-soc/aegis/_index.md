@@ -62,6 +62,8 @@ Constraints that shaped the design:
 
 ## Architecture
 
+![The system: a PC checks the gateway quote; the PolarFire gateway runs aegisd and aegis-fleet, reads the system controller and can use the fabric accelerator; the STM32 is attested over Ethernet and the Arduino Uno through a PC relay](/aegis/diagrams/system-overview.svg)
+
 One decision cycle:
 
 1. The gateway sends the endpoint a fresh 32-byte challenge.
@@ -75,14 +77,17 @@ One decision cycle:
 5. Both sides now hold a session key. Heartbeats under that key confirm the endpoint still holds it. If the heartbeat
    fails, the gateway provisions again at the next cycle.
 
+![One decision cycle: challenge, evidence, checks, then ADMITTED with an ML-KEM exchange and a session, or QUARANTINED with a reason](/aegis/diagrams/decision-cycle.svg)
+
 The fabric half of the system, as the vendor's tool shows it: the block `aegis_pqc_0` sits on the same APB bus as the
 project's other registers, next to the two peripheral blocks and the processor subsystem.
 
-[![The top-level SmartDesign canvas in Libero SoC, zoomed on the aegis_pqc block: its clock, reset and APB target, next to FIC_3_PERIPHERALS, FIC_0_PERIPHERALS and MSS_WRAPPER](/aegis/libero/libero-aegis-canvas-zoom.png)](/aegis/libero/libero-aegis-canvas-zoom.png)
+![The top-level SmartDesign canvas in Libero SoC, zoomed on the aegis_pqc block, with numbered callouts on it, FIC_3_PERIPHERALS, FIC_0_PERIPHERALS and the processor subsystem](/aegis/diagrams/libero-canvas-annotated.svg)
 
-The parts are listed at the top of this page in the order a reader would work through them. The trust model and the
-threat list are in the project's
-[threat model](https://github.com/ismailalitech/aegis/blob/main/docs/threat-model.md).
+The parts are listed at the top of this page in the order a reader would work through them: how attestation works, the
+bench, the gateway's identity, the fabric accelerator, the endpoint, enforcement and Linux timing. Each lab ends with what to
+check and where it can go wrong, and the case studies record defects that were found and fixed. The threat list is in the
+project's [threat model](https://github.com/ismailalitech/aegis/blob/main/docs/threat-model.md).
 
 ## Verification
 
@@ -93,8 +98,12 @@ Three kinds of evidence, kept apart:
   fabric.
 - **Attack harness.** 3,000 mutated tokens, 310 malformed frames to the gateway, 800 hostile endpoint replies, 76
   malformed commands to the STM32, downgrade and key-replay attempts. Two real defects were found and fixed.
+- **Enforcement rules.** Three network namespaces stand in for the gateway, an endpoint and the network; the real ruleset
+  and hook ran in them. The first run found that quarantine did not cut an open connection; fixed, 10 of 10 checks pass.
 - **Whole system.** A regression that runs the host stages and the board stages: 12 of 12 pass, and the five host
-  stages also run on every push on a clean machine in GitHub Actions.
+  stages and the enforcement test also run on every push on a clean machine in GitHub Actions.
+
+Every number is traced to a record with its method: [results and evidence](/resources/aegis-results/).
 
 ## Results and limits
 
@@ -111,8 +120,8 @@ Three kinds of evidence, kept apart:
 
 Limits, stated plainly:
 
-- **No network enforcement.** The gateway decides but does not block traffic, because one port cannot separate
-  networks. The nftables rules and the kernel support exist; the switch does not.
+- **No network enforcement on the real gateway.** It decides but does not block traffic, because one port cannot separate
+  networks. The kernel and the rules exist and the rules are tested in [namespaces](/projects/fpga-soc/microchip-polarfire-soc/aegis/enforcement/a07-enforcement-without-a-switch/); the switch does not.
 - **The gateway's key is software.** Linux file permissions protect it, and enrolment is trust on first use.
 - **Development keys on the endpoint,** in the open product state. Only the ML-DSA signature from the device key is
   security-relevant; the TF-M attestation key is a published one.

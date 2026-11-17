@@ -45,6 +45,8 @@ Only the ML-DSA signature carries security. The development keys are listed on t
 
 ## The device key
 
+![How the endpoint's keys are made: the hardware-unique key seeds the ML-DSA-65 key through AES-256 in SAES, and a second secret seeds a fresh ML-KEM-768 pair per exchange](/aegis/diagrams/key-derivation.svg)
+
 At partition start-up the secure world encrypts a fixed 32-byte label with AES-256 under the hardware-unique key (the SAES
 peripheral with the key selected from hardware) and uses the result as the seed for ML-DSA-65 key generation
 (mldsa-native, deterministic). The seed is wiped after key generation.
@@ -55,6 +57,8 @@ update, because it comes from the chip and not from the image. **Per-chip unique
 chip.
 
 ## One cycle
+
+![One decision cycle from challenge to verdict, credential and heartbeat](/aegis/diagrams/decision-cycle.svg)
 
 The gateway talks to the prover's TCP port with a line protocol:
 
@@ -115,6 +119,13 @@ issued.
   cycle.
 - **Closing the device.** Do not. The open product state and development keys are what allow recovery, and closing is
   irreversible.
+
+## Case studies from this work
+
+- [A non-secure app that faulted on its first secure call](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/k02-veneers-at-different-addresses/): the secure and non-secure images are one release.
+- [Anyone who could reach the port could end a session](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/k03-anyone-could-end-a-session/): found by writing the negative tests.
+
+The measurement and the token are explained in [measured boot and the attestation token](/projects/fpga-soc/microchip-polarfire-soc/aegis/trust-model/x03-measured-boot-and-the-token/), and the sizes and timings of the two algorithms in [ML-DSA-65 and ML-KEM-768 in numbers](/projects/fpga-soc/microchip-polarfire-soc/aegis/trust-model/x02-the-algorithms-in-numbers/).
 
 ## Limits
 

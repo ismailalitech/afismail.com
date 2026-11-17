@@ -45,7 +45,13 @@ hw/tb/run_all.sh --fast
 ```
 
 It runs the Python models' own self-tests, checks that the ROM is current, generates vectors, then runs the RTL unit test and the
-APB system test in Icarus Verilog. About 49 seconds with `--fast`. The testbenches only record; the Python models judge.
+APB system test in Icarus Verilog. About 49 seconds with `--fast`. The testbenches only record; the Python models judge. The last
+run made 380,925 APB transfers and 114,294 checks with 0 errors.
+
+One permutation, taken from that simulation (`hw/tb/make_wave.sh` rebuilds the figure from a fresh run): the CPU loads the state,
+writes 1 to the control register, and the busy signal stays high for exactly 24 clocks, 480 ns.
+
+![Waveform from the RTL simulation: the CPU writes the state words and a 1 to CTRL; k_busy then stays high for 480 ns, 24 clocks, while STATUS is polled; k_done goes high as the permutation ends](/aegis/diagrams/sim-keccak-permutation.svg)
 
 ### 2. Build and program
 
@@ -64,12 +70,16 @@ What Libero shows for this build, from a copy of the finished project (nothing w
 The design hierarchy: `aegis_pqc` is a user block next to the vendor's, built from `aegis_keccak` (with its round function)
 and `aegis_ntt` (with the modular multiplier, the twiddle ROM and a dual-port RAM).
 
-[![The Libero design hierarchy with aegis_pqc expanded into aegis_keccak, aegis_keccak_round, aegis_ntt, aegis_modmul, aegis_ntt_rom and aegis_ram_sdp](/aegis/libero/libero-aegis-hierarchy.png)](/aegis/libero/libero-aegis-hierarchy.png)
+![The Libero design hierarchy with callouts: aegis_pqc, its Keccak and NTT blocks, and the vendor blocks beside them](/aegis/diagrams/libero-hierarchy-annotated.svg)
 
 The top-level canvas. The accelerator is the small block in the lower middle; the large blocks are the vendor's peripherals and
 the processor subsystem.
 
 [![The whole top-level SmartDesign canvas of MPFS_DISCOVERY_KIT in Libero SoC](/aegis/libero/libero-aegis-top-canvas.png)](/aegis/libero/libero-aegis-top-canvas.png)
+
+Zoomed on the accelerator and its neighbours:
+
+![The zoomed canvas with numbered callouts on aegis_pqc_0, FIC_3_PERIPHERALS_0, FIC_0_PERIPHERALS_0 and MSS_WRAPPER_0](/aegis/diagrams/libero-canvas-annotated.svg)
 
 The resource report after compiling the netlist. The whole design, including the pfdaq blocks and the vendor's peripherals,
 uses 34,551 of 93,516 four-input LUTs (36.95 %), 17,151 flip-flops (18.34 %), 31 large RAM blocks (10.06 %) and 44 math blocks
