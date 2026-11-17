@@ -1,5 +1,5 @@
 +++
 title = "Post-quantum building blocks in the fabric"
-description = "A Keccak and NTT accelerator in the FPGA, checked against the NIST vectors, and an honest account of why it is not faster."
+description = "Two accelerators in the FPGA, both checked against the NIST vectors: the first correct and slower than software, and why; the second keeps the hash state in the fabric and is 1.2 to 1.5 times faster."
 weight = 30
 +++

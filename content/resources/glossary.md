@@ -180,6 +180,12 @@ an implementation must reproduce exactly.
 The permutation inside SHA-3 and SHAKE. ML-KEM and ML-DSA spend much of their time
 in it.
 
+### Sponge construction
+
+How SHA-3 and SHAKE use Keccak. Input is mixed into a 1600-bit state a block at a time ("absorbed"), with one Keccak
+permutation per block; output is read from the state a block at a time ("squeezed"), with a permutation before each
+block. SHAKE can squeeze as much output as needed from one sponge.
+
 ### NTT (number-theoretic transform)
 
 A fast way to multiply polynomials, used by ML-KEM and ML-DSA. It works like a
@@ -307,6 +313,11 @@ circuits that operate in parallel, not a sequence of instructions.
 
 The file that configures an FPGA. It can be encrypted and authenticated so that
 the design cannot be copied or modified.
+
+### DMA (direct memory access)
+
+A hardware block copies data to or from memory by itself, without the processor moving each word. The processor sets
+up the transfer and is told, or checks, when it is done.
 
 ### Timing closure
 
