@@ -52,11 +52,14 @@ so the policy has to be updated with each release. And the secure and non-secure
 | prover 0.1.0, modified for the tamper test | `b8e5a3094da5634f` | `82a5b443594853d4` |
 | prover 0.2.0 (post-quantum quote) | `ccae9f5fc9082afe` | `82a5b443594853d4` |
 | prover 0.3.0 (ML-KEM credential) | `56ec5b078c037317` | `82a5b443594853d4` |
-| prover 0.4.0 (heartbeats), **running** | `ae689ecbd090a33b` | `82a5b443594853d4` |
+| prover 0.4.0 (heartbeats) | `ae689ecbd090a33b` | `82a5b443594853d4` |
+| prover 0.5.0 (MAC address from the device key), **running** on both boards | `34637a4e23d8b127` | `82a5b443594853d4` |
+| prover 0.5.0, modified for the tamper test | `a605d95363214dd7` | `82a5b443594853d4` |
 | TF-M v2.3.0 + partition, first | `b9186d3173278df7` | `e30466f6b8470c1f` |
 | TF-M v2.3.0 + partition, with ML-KEM | `227e3c8a5c40dd66` | `e30466f6b8470c1f` |
 | TF-M v2.3.0 + partition, with mutual authentication | `380513d6dea90048` | `e30466f6b8470c1f` |
-| TF-M v2.3.0 + partition, with heartbeats, **running** | `1793b3fb1ff47218` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, with heartbeats | `1793b3fb1ff47218` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, hedged signing and KMAC heartbeats, **running** on both boards | `a5997cc3c61af12d` | `e30466f6b8470c1f` |
 
 The modified prover has the same signer as the good one, because it was signed with the same published development key. Only
 the hash tells them apart.
