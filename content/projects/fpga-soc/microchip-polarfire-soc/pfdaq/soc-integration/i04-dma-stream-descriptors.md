@@ -87,7 +87,7 @@ The order is deliberate. Byte count and destination are written first and the co
 
 The whole transfer, in the order the program does it:
 
-![Order of one DMA transfer: Linux writes the descriptor in DDR (byte count, destination, then 0xD last), writes its physical address to STREAM_0_ADDR_REG of the DMA, and only then starts the stream source; the source sends one packet to the DMA, which fetches the descriptor, writes the burst into the data buffer, clears the descriptor's ready bit and raises the interrupt on F2M[2], PLIC source 120; the blocking read on the DMA's UIO device returns and Linux checks the status and the ready bit.](../diagrams/lab-i04-arm-start-wait.svg)
+[![Order of one DMA transfer: Linux writes the descriptor in DDR (byte count, destination, then 0xD last), writes its physical address to STREAM_0_ADDR_REG of the DMA, and only then starts the stream source; the source sends one packet to the DMA, which fetches the descriptor, writes the burst into the data buffer, clears the descriptor's ready bit and raises the interrupt on F2M[2], PLIC source 120; the blocking read on the DMA's UIO device returns and Linux checks the status and the ready bit.](/pfdaq/diagrams/lab-i04-arm-start-wait.svg)](/pfdaq/diagrams/lab-i04-arm-start-wait.svg)
 
 1. Linux writes the descriptor into DDR: byte count, then destination, then the configuration word `0xD` last.
 2. Linux writes the descriptor's physical address to `STREAM_0_ADDR_REG` (`0x460`).

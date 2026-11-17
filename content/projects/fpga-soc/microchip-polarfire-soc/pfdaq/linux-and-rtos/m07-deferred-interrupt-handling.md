@@ -69,7 +69,7 @@ The semaphore is binary, created with the task at start-up. The task has the hig
 
 The working order of mode 2, from the interrupt to the next one:
 
-![Deferred interrupt handling for a level-triggered line, in the order that works. The fabric raises F2M[5]; the handler masks the source with PLIC_DisableIRQ, gives the semaphore with xSemaphoreGiveFromISR and calls portEND_SWITCHING_ISR, which runs the task at once. The task wakes, writes LAT1_ACK so the line drops and the fabric timer stops, unmasks the source with PLIC_EnableIRQ and blocks again. The handler's tail returns EXT_IRQ_KEEP_ENABLED.](../diagrams/lab-m07-defer-in-task.svg)
+[![Deferred interrupt handling for a level-triggered line, in the order that works. The fabric raises F2M[5]; the handler masks the source with PLIC_DisableIRQ, gives the semaphore with xSemaphoreGiveFromISR and calls portEND_SWITCHING_ISR, which runs the task at once. The task wakes, writes LAT1_ACK so the line drops and the fabric timer stops, unmasks the source with PLIC_EnableIRQ and blocks again. The handler's tail returns EXT_IRQ_KEEP_ENABLED.](/pfdaq/diagrams/lab-m07-defer-in-task.svg)](/pfdaq/diagrams/lab-m07-defer-in-task.svg)
 
 1. The handler masks the source first. The line is level and stays high, so an unmasked source would interrupt again at once.
 2. The handler gives the binary semaphore with the interrupt-safe call.
