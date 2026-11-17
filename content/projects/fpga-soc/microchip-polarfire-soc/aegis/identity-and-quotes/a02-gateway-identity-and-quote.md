@@ -55,8 +55,10 @@ consequence is that **the gateway cannot sign with a key the chip holds**. Its i
 a file readable only by root, and the project's documents say so.
 
 What the chip does give is a serial number, a certificate that Microchip signed for that serial number, design digests and a
-hardware random nonce. The certificate chain could not be verified on the PC, because the issuing certificate is not
-published in the documents; asking Microchip for it is an open item.
+hardware random nonce. The certificate chain could not be verified on the PC, because Microchip's issuing key is not published in the documents;
+asking Microchip for it is an open item. The chip does verify it itself: when the certificate is exported, the system
+controller checks the signature with Microchip's public key and checks the serial number and public key against the chip's
+own. On this board it reports status 0, a valid certificate consistent with the device.
 
 ## The gateway's own quote
 
