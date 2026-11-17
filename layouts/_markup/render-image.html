@@ -1,0 +1,29 @@
+{{- /* Content images (Markdown) load lazily and decode off the main thread, so figures further down a page do not
+     compete with the text and fonts at the start. Width and height are read from the file when it is a local
+     static file, so the browser reserves the space and nothing shifts when a figure arrives (.prose img scales
+     with height: auto). */ -}}
+{{- $dest := .Destination -}}
+{{- $w := "" -}}{{- $h := "" -}}
+{{- if and (hasPrefix $dest "/") (not (strings.Contains $dest "//")) -}}
+  {{- $path := printf "static%s" (index (split $dest "?") 0) -}}
+  {{- if fileExists $path -}}
+    {{- if strings.HasSuffix (lower $path) ".svg" -}}
+      {{- $tag := index (findRE `<svg[^>]*>` (os.ReadFile $path) 1) 0 | default "" -}}
+      {{- $ws := findRESubmatch `\swidth="([0-9.]+)"` $tag 1 -}}
+      {{- $hs := findRESubmatch `\sheight="([0-9.]+)"` $tag 1 -}}
+      {{- if and $ws $hs -}}
+        {{- $w = index (index $ws 0) 1 -}}{{- $h = index (index $hs 0) 1 -}}
+      {{- else -}}
+        {{- with findRESubmatch `viewBox="[0-9.-]+ [0-9.-]+ ([0-9.]+) ([0-9.]+)"` $tag 1 -}}
+          {{- $w = index (index . 0) 1 -}}{{- $h = index (index . 0) 2 -}}
+        {{- end -}}
+      {{- end -}}
+    {{- else if in (slice ".png" ".jpg" ".jpeg" ".gif" ".webp") (path.Ext (lower $path)) -}}
+      {{- with images.Config $path -}}{{- $w = .Width -}}{{- $h = .Height -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<img src="{{ $dest | safeURL }}" alt="{{ .PlainText }}"
+  {{- with .Title }} title="{{ . }}"{{ end }}
+  {{- with $w }} width="{{ . }}"{{ end }}{{ with $h }} height="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- /**/ -}}
