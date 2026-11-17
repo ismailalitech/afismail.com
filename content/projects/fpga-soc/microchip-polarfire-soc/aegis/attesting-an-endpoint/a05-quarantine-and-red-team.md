@@ -48,6 +48,8 @@ It takes about two minutes and every verdict comes from the real boards:
    (the signature is valid; the non-secure measurement is not allowed) and the credential and session key are deleted.
 4. The good image is flashed back. The gateway reports **ADMITTED** with a new credential and a new session.
 
+![An image signed with the trusted key boots, its measurement differs from the policy, and the gateway quarantines the endpoint and revokes its credential](/aegis/diagrams/tamper-detection.svg)
+
 A recorded run of the two images and the verdicts, from the gateway journal:
 
 | Time (UTC) | Event | Verdict |
@@ -58,7 +60,9 @@ A recorded run of the two images and the verdicts, from the gateway journal:
 | 14:53:57 | good image again | ADMITTED, new credential, new session |
 
 The script reads its verdicts from the gateway service's journal and uses a one-off check that never starts a second key
-exchange next to the service.
+exchange next to the service. The journal of one run, played with callouts:
+
+![The gateway journal during the demo: quarantine without a quote, admission with a session and heartbeats, quarantine on a modified measurement, admission again with a new session](/aegis/diagrams/console-demo-journal.svg)
 
 ### 2. The device that cannot attest
 
@@ -76,7 +80,10 @@ arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR
 ```
 
 If the relay is down, the verdict is the same with a different reason (`Connection refused`). That is the point: a missing proof
-is a refusal, not an error to be ignored. The sketch backup is read with avrdude first and can be written back.
+is a refusal, not an error to be ignored. The same holds for a device that disappears. With the whole bench unplugged, the gateway
+printed:
+
+![The gateway journal with the bench unplugged: the STM32 quarantined with no route to host and its credential revoked, the Uno quarantined with an empty reply](/aegis/diagrams/console-disconnected.svg) The sketch backup is read with avrdude first and can be written back.
 
 ### 3. Attack it
 
@@ -115,6 +122,9 @@ What the harness tries:
 
 A third finding came from preparing the negative tests: a new key-exchange start used to drop an established session, so anyone
 who could reach the prover's port could tear a session down. The session is now replaced only when a new exchange completes.
+
+The case study of the stalled service, found by the harness's first long run, is
+[one slow client could stall the quote service](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/k04-one-slow-client-stalled-the-service/).
 
 ## What to check
 

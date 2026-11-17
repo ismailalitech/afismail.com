@@ -146,6 +146,8 @@ tools/demo.sh                   # about 2 minutes: quote, attest, tamper, quaran
 Expected: `passed 12, failed 0`. The demo flashes a modified Non-Secure image and then the good one back, so the STM32 must be
 connected to the PC's ST-LINK.
 
+![The board regression printing twelve passing stages: five on the PC and seven on the boards](/aegis/diagrams/console-regression.svg)
+
 ## What was changed on each board, and how to undo it
 
 | Board | Change | Undo |
