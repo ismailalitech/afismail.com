@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 430" width="900" height="430" role="img" aria-labelledby="t d">
+<title id="t">Waveform from the RTL simulation of the aegis_pqc block on its APB slot. The CPU writes the last state words, writes 1 to the control register, and the busy signal then stays high for 480 nanoseconds, 24 clocks, while the status register is polled. Done goes high as it ends and the result is read back.</title><desc id="d">Waveform from the RTL simulation of the aegis_pqc block on its APB slot. The CPU writes the last state words, writes 1 to the control register, and the busy signal then stays high for 480 nanoseconds, 24 clocks, while the status register is polled. Done goes high as it ends and the result is read back.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 15.60s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 15.60s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}21.79%{opacity:1}24.79%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="430" rx="12" fill="#12171d"/>
+<rect x="0" y="0" width="900" height="336" fill="#0d1117"/>
+<line x1="140" y1="30" x2="140" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="140" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">0 ns</text>
+<line x1="240" y1="30" x2="240" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="240" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">100 ns</text>
+<line x1="340" y1="30" x2="340" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="340" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">200 ns</text>
+<line x1="440" y1="30" x2="440" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="440" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">300 ns</text>
+<line x1="540" y1="30" x2="540" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="540" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">400 ns</text>
+<line x1="640" y1="30" x2="640" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="640" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">500 ns</text>
+<line x1="740" y1="30" x2="740" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="740" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">600 ns</text>
+<line x1="840" y1="30" x2="840" y2="330" stroke="#27313d" stroke-dasharray="2 4"/><text x="840" y="22" text-anchor="middle" font-size="11" fill="#9aa8b5">700 ns</text>
+<text x="12" y="66" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">PCLK</text>
+<path d="M140,54 L140,54 L150,54 L150,74 L160,74 L160,54 L170,54 L170,74 L180,74 L180,54 L190,54 L190,74 L200,74 L200,54 L210,54 L210,74 L220,74 L220,54 L230,54 L230,74 L240,74 L240,54 L250,54 L250,74 L260,74 L260,54 L270,54 L270,74 L280,74 L280,54 L290,54 L290,74 L300,74 L300,54 L310,54 L310,74 L320,74 L320,54 L330,54 L330,74 L340,74 L340,54 L350,54 L350,74 L360,74 L360,54 L370,54 L370,74 L380,74 L380,54 L390,54 L390,74 L400,74 L400,54 L410,54 L410,74 L420,74 L420,54 L430,54 L430,74 L440,74 L440,54 L450,54 L450,74 L460,74 L460,54 L470,54 L470,74 L480,74 L480,54 L490,54 L490,74 L500,74 L500,54 L510,54 L510,74 L520,74 L520,54 L530,54 L530,74 L540,74 L540,54 L550,54 L550,74 L560,74 L560,54 L570,54 L570,74 L580,74 L580,54 L590,54 L590,74 L600,74 L600,54 L610,54 L610,74 L620,74 L620,54 L630,54 L630,74 L640,74 L640,54 L650,54 L650,74 L660,74 L660,54 L670,54 L670,74 L680,74 L680,54 L690,54 L690,74 L700,74 L700,54 L710,54 L710,74 L720,74 L720,54 L730,54 L730,74 L740,74 L740,54 L750,54 L750,74 L760,74 L760,54 L770,54 L770,74 L780,74 L780,54 L790,54 L790,74 L800,74 L800,54 L810,54 L810,74 L820,74 L820,54 L830,54 L830,74 L840,74 L840,54 L850,54 L850,74 L860,74 L860,54 L870,54 L870,74 L880,74 L880,54 L880,54" fill="none" stroke="#6b7b8c" stroke-width="2" stroke-linejoin="round"/>
+<text x="12" y="106" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">PSEL</text>
+<path d="M140,94 L140,94 L880,94" fill="none" stroke="#5aa0d6" stroke-width="2" stroke-linejoin="round"/>
+<text x="12" y="146" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">PENABLE</text>
+<path d="M140,154 L140,154 L160,154 L160,134 L180,134 L180,154 L200,154 L200,134 L220,134 L220,154 L240,154 L240,134 L260,134 L260,154 L280,154 L280,134 L300,134 L300,154 L320,154 L320,134 L340,134 L340,154 L360,154 L360,134 L380,134 L380,154 L400,154 L400,134 L420,134 L420,154 L440,154 L440,134 L460,134 L460,154 L480,154 L480,134 L500,134 L500,154 L520,154 L520,134 L540,134 L540,154 L560,154 L560,134 L580,134 L580,154 L600,154 L600,134 L620,134 L620,154 L640,154 L640,134 L660,134 L660,154 L680,154 L680,134 L700,134 L700,154 L720,154 L720,134 L740,134 L740,154 L760,154 L760,134 L780,134 L780,154 L800,154 L800,134 L820,134 L820,154 L840,154 L840,134 L860,134 L860,154 L880,154 L880,134 L880,134" fill="none" stroke="#5aa0d6" stroke-width="2" stroke-linejoin="round"/>
+<text x="12" y="186" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">PWRITE</text>
+<path d="M140,174 L140,174 L300,174 L300,194 L880,194" fill="none" stroke="#5aa0d6" stroke-width="2" stroke-linejoin="round"/>
+<text x="12" y="226" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">PADDR</text>
+<rect x="140.5" y="213" width="39" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="160" y="228" text-anchor="middle" font-size="11" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">0xEF4</text>
+<rect x="180.5" y="213" width="39" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="200" y="228" text-anchor="middle" font-size="11" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">0xEF8</text>
+<rect x="220.5" y="213" width="39" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="240" y="228" text-anchor="middle" font-size="11" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">0xEFC</text>
+<rect x="260.5" y="213" width="39" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="280" y="228" text-anchor="middle" font-size="11" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">CTRL</text>
+<rect x="300.5" y="213" width="559" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="580" y="228" text-anchor="middle" font-size="11" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">STATUS</text>
+<rect x="860.5" y="213" width="19" height="22" rx="4" fill="#1b2a3a" stroke="#5aa0d6" stroke-width="1.2"/>
+<text x="12" y="266" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">k_busy</text>
+<path d="M140,274 L140,274 L300,274 L300,254 L780,254 L780,274 L880,274" fill="none" stroke="#5fbf84" stroke-width="2" stroke-linejoin="round"/>
+<text x="12" y="306" font-size="12" fill="#e6ecf1" font-family="IBM Plex Mono, ui-monospace, monospace">k_done</text>
+<path d="M140,314 L140,314 L780,314 L780,294 L880,294" fill="none" stroke="#5fbf84" stroke-width="2" stroke-linejoin="round"/>
+<rect x="0" y="336" width="900" height="94" fill="#12171d"/>
+<g class="co" style="animation-delay:0.00s"><rect x="140" y="30" width="120" height="300" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="140" cy="30" r="11" fill="#ffd166"/><text x="140" y="34" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">1</text></g>
+<g class="co cap" style="animation-delay:0.00s">
+<rect x="0" y="336" width="900" height="94" fill="#12171d"/>
+<circle cx="24" cy="364" r="13" fill="#ffd166"/><text x="24" y="369" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">1</text>
+<text x="48" y="362" font-size="15" font-weight="bold" fill="#e6ecf1">State words in</text>
+<text x="48" y="382" font-size="13" fill="#9aa8b5">The CPU writes the state into the block one 32-bit word per APB transfer.</text>
+</g>
+<g class="co" style="animation-delay:3.40s"><rect x="260" y="30" width="40" height="300" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="260" cy="30" r="11" fill="#ffd166"/><text x="260" y="34" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">2</text></g>
+<g class="co cap" style="animation-delay:3.40s">
+<rect x="0" y="336" width="900" height="94" fill="#12171d"/>
+<circle cx="24" cy="364" r="13" fill="#ffd166"/><text x="24" y="369" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">2</text>
+<text x="48" y="362" font-size="15" font-weight="bold" fill="#e6ecf1">Start</text>
+<text x="48" y="382" font-size="13" fill="#9aa8b5">A write of 1 to CTRL starts one Keccak-f[1600] permutation.</text>
+</g>
+<g class="co" style="animation-delay:6.80s"><rect x="300" y="30" width="480" height="300" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="300" cy="30" r="11" fill="#ffd166"/><text x="300" y="34" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">3</text></g>
+<g class="co cap" style="animation-delay:6.80s">
+<rect x="0" y="336" width="900" height="94" fill="#12171d"/>
+<circle cx="24" cy="364" r="13" fill="#ffd166"/><text x="24" y="369" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">3</text>
+<text x="48" y="362" font-size="15" font-weight="bold" fill="#e6ecf1">24 clocks</text>
+<text x="48" y="382" font-size="13" fill="#9aa8b5">k_busy is high for 480 ns, 24 rounds at one per clock. STATUS is polled meanwhile.</text>
+</g>
+<g class="co" style="animation-delay:10.20s"><rect x="780" y="30" width="100" height="300" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="780" cy="30" r="11" fill="#ffd166"/><text x="780" y="34" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">4</text></g>
+<g class="co cap" style="animation-delay:10.20s">
+<rect x="0" y="336" width="900" height="94" fill="#12171d"/>
+<circle cx="24" cy="364" r="13" fill="#ffd166"/><text x="24" y="369" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">4</text>
+<text x="48" y="362" font-size="15" font-weight="bold" fill="#e6ecf1">Done</text>
+<text x="48" y="382" font-size="13" fill="#9aa8b5">k_done goes high as the permutation ends; the next transfer reads the result.</text>
+</g>
+</svg>
