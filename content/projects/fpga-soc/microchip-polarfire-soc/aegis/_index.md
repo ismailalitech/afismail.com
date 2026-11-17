@@ -54,7 +54,8 @@ Constraints that shaped the design:
   signs the TF-M attestation token and the gateway's challenge, performs the ML-KEM exchange and verifies the
   gateway's credential against a key pinned in the secure image.
 - **Fabric accelerator.** A Keccak-f[1600] round engine and an NTT unit in the FPGA, checked against C references and
-  against the NIST vectors with every Keccak permutation done in the fabric.
+  against the NIST vectors with every Keccak permutation done in the fabric; then a second version that keeps the hash
+  state in the fabric and squeezes whole blocks into memory by DMA, measured faster than software.
 - **A legacy node and a verifier.** An Arduino sketch that answers every request with a statement that it cannot
   attest, and a PC tool that checks the gateway's own quote.
 - **Red-team harness and regression.** Mutated tokens, malformed frames, hostile replies, downgrade and replay attempts,
@@ -113,8 +114,8 @@ Every number is traced to a record with its method: [results and evidence](/reso
 | Is modified firmware caught if it is validly signed and boots normally? | Yes: the image measurement differs from the policy, the endpoint is quarantined within one cycle and its credential is deleted |
 | Is a device that cannot attest refused? | Yes, on every cycle |
 | Do the algorithms match the standard? | 265 of 265 NIST vectors on each platform tested |
-| Does the fabric accelerator speed anything up? | No. It is correct, but moving data over the bus costs more than the 0.48 microseconds the permutation takes: ML-DSA-65 sign goes from 14.3 to 15.5 ms. See [the lab](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a03-fabric-accelerator/) |
-| Cost of the accelerator | About 11,800 4-input LUTs; the whole design uses 36,373 logic elements (38.9 %); timing met with 2.06 ns worst slack |
+| Does the fabric accelerator speed anything up? | The first one does not: it is correct, but moving data over the bus costs more than the 0.48 microseconds the permutation takes, and ML-DSA-65 sign goes from 14.3 to 15.5 ms ([lab 49](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a03-fabric-accelerator/)). The second does: ML-KEM-768 1.26 to 1.29 times and ML-DSA-65 1.19 to 1.54 times faster than software, with all 265 NIST vectors passing ([lab 54](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a08-sponge-accelerator/)) |
+| Cost of the accelerator | First version: the whole design uses 36,373 logic elements (38.9 %), 2.06 ns worst slack. Second: 44,191 (47.3 %), 1.33 ns worst slack; timing met in every corner for both |
 | Full re-attestation time over Ethernet | 0.30 s for the quote itself; 7.7 KB signed quote |
 | Linux user-space interrupt response | 54 microseconds mean, 0.36 to 0.47 ms worst with a real-time priority on a pinned core; up to 5 ms without it. See [the lab](/projects/fpga-soc/microchip-polarfire-soc/aegis/linux-timing/a06-linux-latency-scheduling/) |
 
