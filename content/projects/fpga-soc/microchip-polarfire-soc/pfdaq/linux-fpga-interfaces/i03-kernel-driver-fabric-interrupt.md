@@ -188,7 +188,7 @@ Recorded in the board suite, fabric v0.5.1, 100,000 events each:
 
 Compare with module [I02](/projects/fpga-soc/microchip-polarfire-soc/pfdaq/linux-fpga-interfaces/i02-fabric-interrupts-user-space/): the same interrupt answered from user space has a mean of 78.31 µs (default priority, idle). The kernel handler is about 18 times faster on average, and `empty_wakeups` is 0 because there is no second delivery to count: the line is already low when the handler returns.
 
-![Two recorded runs of pfdaq_lat on channel 0, 100,000 events each: the generic user-space path with 99,967 empty wake-ups and a mean of 78.31 microseconds, and the in-kernel acknowledge with no empty wake-ups and a mean of 4.41 microseconds; both have a maximum above one millisecond. Unused fields are shown as [...].](../diagrams/lab-i03-two-handlers.svg)
+[![Two recorded runs of pfdaq_lat on channel 0, 100,000 events each: the generic user-space path with 99,967 empty wake-ups and a mean of 78.31 microseconds, and the in-kernel acknowledge with no empty wake-ups and a mean of 4.41 microseconds; both have a maximum above one millisecond. Unused fields are shown as [...].](/pfdaq/diagrams/lab-i03-two-handlers.svg)](/pfdaq/diagrams/lab-i03-two-handlers.svg)
 
 1. `context` says who acknowledged: `linux-uio` (the program) in the first run, `linux-kernel-isr` (the handler) in the second.
 2. `empty_wakeups` is 99,967 in user space and 0 with the kernel handler.
