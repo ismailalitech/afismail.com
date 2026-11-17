@@ -126,7 +126,7 @@ Limits, stated plainly:
 - **The gateway's key is software.** Linux file permissions protect it, and enrolment is trust on first use.
 - **Development keys on the endpoint,** in the open product state. Only the ML-DSA signature from the device key is
   security-relevant; the TF-M attestation key is a published one.
-- **Per-chip uniqueness of the device key is not shown,** because there is a single STM32 board.
-- **Not evaluated:** side channels, fault injection, power loss during provisioning. ML-DSA signing is deterministic.
+- **Per-chip uniqueness of the device key is shown on two chips, not on a population** ([lab 56](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a10-two-chips-two-keys/)).
+- **Not evaluated:** side channels, fault injection, power loss during provisioning. ML-DSA signing is hedged since [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/).
 - Everything was measured on one set of boards.
 - The code is public: [github.com/ismailalitech/aegis](https://github.com/ismailalitech/aegis). The labs run from it.

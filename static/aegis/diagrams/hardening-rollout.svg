@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="900" height="380" role="img" aria-labelledby="t d">
+<title id="t">Changing a running endpoint one step at a time, each step checked before the next. A baseline regression and a backup of the STM32 come first. Then the gateway gets the new code with the policy unchanged, and the old image must stay admitted. Then the new secure image is flashed, and the gateway must quarantine it because its measurement is not in the policy. Then the policy names the new measurement and the KMAC heartbeat, and the endpoint must be admitted with a new session. A final regression closes it. If any check fails, the old image, policy and gateway code go back.</title><desc id="d">Changing a running endpoint one step at a time, each step checked before the next. A baseline regression and a backup of the STM32 come first. Then the gateway gets the new code with the policy unchanged, and the old image must stay admitted. Then the new secure image is flashed, and the gateway must quarantine it because its measurement is not in the policy. Then the policy names the new measurement and the KMAC heartbeat, and the endpoint must be admitted with a new session. A final regression closes it. If any check fails, the old image, policy and gateway code go back.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 18.90s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 18.90s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}6.88%{opacity:1}9.88%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="380" rx="12" fill="#12171d"/>
+<g id="e0">
+<path d="M210,68 L250,68" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:1.30s" d="M210,68 L250,68" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e1">
+<path d="M440,68 L480,68" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:3.90s" d="M440,68 L480,68" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e2">
+<path d="M670,68 L710,68" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:6.50s" d="M670,68 L710,68" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e3">
+<path d="M795,106 L795,190" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:9.10s" d="M795,106 L795,190" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e4">
+<path d="M710,228 L670,228" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:11.70s" d="M710,228 L670,228" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e5">
+<path d="M345,106 L345,188 L235,188 L235,270" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:14.30s" d="M345,106 L345,188 L235,188 L235,270" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+<rect x="236.7" y="166" width="106.6" height="17" rx="4" fill="#12171d" fill-opacity="0.85"/>
+<text x="290" y="178.5" text-anchor="middle" font-size="11.5" fill="#e6ecf1">any check fails</text>
+</g>
+<g id="s0">
+<rect x="20" y="30" width="190" height="76" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="115" y="55.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">0 Baseline</text>
+<text x="115" y="72.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">regression 12 of 12</text>
+<text x="115" y="89.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">backup of both slots</text>
+<rect class="hl" style="animation-delay:0.00s" x="19" y="29" width="192" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="s1">
+<rect x="250" y="30" width="190" height="76" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="345" y="55.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">1 Gateway code</text>
+<text x="345" y="72.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">policy unchanged:</text>
+<text x="345" y="89.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">old image still ADMITTED</text>
+<rect class="hl" style="animation-delay:2.60s" x="249" y="29" width="192" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="s2">
+<rect x="480" y="30" width="190" height="76" rx="9" fill="#2f2447" stroke="#b08fe0" stroke-width="1.5"/>
+<text x="575" y="55.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">2 Flash the image</text>
+<text x="575" y="72.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">same key; new measurement</text>
+<text x="575" y="89.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">must be QUARANTINED</text>
+<rect class="hl" style="animation-delay:5.20s" x="479" y="29" width="192" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="s3">
+<rect x="710" y="30" width="170" height="76" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="795" y="55.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">3 Policy</text>
+<text x="795" y="72.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">new measurement</text>
+<text x="795" y="89.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">KMAC heartbeat</text>
+<rect class="hl" style="animation-delay:7.80s" x="709" y="29" width="172" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="s4">
+<rect x="710" y="190" width="170" height="76" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="795" y="215.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">4 Admitted</text>
+<text x="795" y="232.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">new session</text>
+<text x="795" y="249.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">KMAC heartbeats verify</text>
+<rect class="hl" style="animation-delay:10.40s" x="709" y="189" width="172" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="s5">
+<rect x="480" y="190" width="190" height="76" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="575" y="224" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">5 Regression</text>
+<text x="575" y="241" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">12 of 12 again</text>
+<rect class="hl" style="animation-delay:13.00s" x="479" y="189" width="192" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="rb">
+<rect x="20" y="270" width="430" height="76" rx="9" fill="#43201f" stroke="#ef6f6c" stroke-width="1.5"/>
+<text x="235" y="295.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Rollback, if any check fails</text>
+<text x="235" y="312.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">old secure image from the backup, old policy entry,</text>
+<text x="235" y="329.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">old gateway code; restart the fleet service</text>
+<rect class="hl" style="animation-delay:15.60s" x="19" y="269" width="432" height="78" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+</svg>

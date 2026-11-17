@@ -165,6 +165,16 @@ The NIST post-quantum key-encapsulation algorithm (FIPS 203). One side
 encapsulates a fresh secret to the other's public key; only the holder of the
 private key can recover it.
 
+### Hedged signing
+
+Signing with fresh random bytes mixed into each signature, as FIPS 204 recommends for ML-DSA. The same message then gives
+a different signature each time; a deterministic signer gives the same one, which helps some fault attacks.
+
+### KMAC
+
+A message authentication code built on SHA-3 (Keccak), standardised in NIST SP 800-185. It takes a key, a message, an
+output length and a customisation string that keeps tags for different purposes apart.
+
 ### KEM (key-encapsulation mechanism)
 
 A way for two parties to agree a shared secret: one sends a ciphertext that only
