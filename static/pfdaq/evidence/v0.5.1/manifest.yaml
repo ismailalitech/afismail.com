@@ -698,7 +698,7 @@ results:
     class: board
     fabric: "0.5.1"
     date: 2026-11-16
-    command: "sh experiments/P07-deterministic-linux/p07_run.sh noisy 5 on the board; at the same time `ssh root@<board> true` from the development PC every 10 s"
+    command: "sh experiments/P07-deterministic-linux/p07_run.sh noisy 5 on the board; at the same time ssh root@<board> true from the development PC every 10 s"
     conditions: "Proven pfdaq-v051 image; five runs per condition; settings restored at the end."
   - id: p07-latency-summary
     title: "Per-condition minimum, mean and maximum of the latency runs, quiet and noisy series"
