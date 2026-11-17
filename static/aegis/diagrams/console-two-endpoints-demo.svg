@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 404" width="940" height="404" role="img" aria-labelledby="t d">
+<title id="t">two STM32 endpoints and the Arduino, during the demo</title><desc id="d">The gateway journal during the demo with both STM32 boards on the network: board 1 is quarantined when its tampered image runs and admitted again with a new session when the good image is back, while board 2 stays admitted with its heartbeat counter rising and the Arduino is quarantined every cycle because it cannot attest.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 19.00s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 19.00s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}17.89%{opacity:1}20.89%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="940" height="404" rx="12" fill="#12171d"/>
+<rect x="0" y="0" width="940" height="334" fill="#0d1117"/>
+<rect x="0" y="0" width="940" height="34" fill="#1b222c"/>
+<circle cx="20" cy="17" r="6" fill="#ef6f6c"/>
+<circle cx="38" cy="17" r="6" fill="#e6c04f"/>
+<circle cx="56" cy="17" r="6" fill="#5fbf84"/>
+<text x="470" y="22" text-anchor="middle" font-size="12" fill="#9aa8b5">two STM32 endpoints and the Arduino, during the demo</text>
+<text x="24" y="58" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">tools/demo.sh      # gateway journal for the run</tspan></text>
+<text x="24" y="78" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk ADMITTED  [credential: valid, heartbeat 8 (uptime_s=283;link=1;fw=0.5.0)]</text>
+<text x="24" y="98" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 7 (uptime_s=254;link=1;fw=0.5.0)]</text>
+<text x="24" y="118" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'</text>
+<text x="24" y="138" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk QUARANTINED component NSPE not allowed (measurement a605d9536321...) [credential: revoked]</text>
+<text x="24" y="158" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 8 (uptime_s=285;link=1;fw=0.5.0)]</text>
+<text x="24" y="178" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'</text>
+<text x="24" y="198" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk ADMITTED  [credential: issued session bb6bd9de871f...]</text>
+<text x="24" y="218" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 9 (uptime_s=317;link=1;fw=0.5.0)]</text>
+<text x="24" y="238" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'</text>
+<text x="24" y="258" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk ADMITTED  [credential: valid, heartbeat 1 (uptime_s=50;link=1;fw=0.5.0)]</text>
+<text x="24" y="278" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 10 (uptime_s=348;link=1;fw=0.5.0)]</text>
+<text x="24" y="298" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'</text>
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<g class="co" style="animation-delay:0.00s"><rect x="8" y="63" width="924" height="63" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="65" r="11" fill="#ffd166"/><text x="8" y="69" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">1</text></g>
+<g class="co cap" style="animation-delay:0.00s">
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<circle cx="24" cy="360" r="13" fill="#ffd166"/><text x="24" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">1</text>
+<text x="48" y="358" font-size="15" font-weight="bold" fill="#e6ecf1">Before</text>
+<text x="48" y="378" font-size="13" fill="#9aa8b5">Both STM32s admitted with their own sessions; the Arduino says it cannot attest.</text>
+</g>
+<g class="co" style="animation-delay:3.40s"><rect x="8" y="123" width="924" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="125" r="11" fill="#ffd166"/><text x="8" y="129" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">2</text></g>
+<g class="co cap" style="animation-delay:3.40s">
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<circle cx="24" cy="360" r="13" fill="#ffd166"/><text x="24" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">2</text>
+<text x="48" y="358" font-size="15" font-weight="bold" fill="#e6ecf1">Board 1 tampered</text>
+<text x="48" y="378" font-size="13" fill="#9aa8b5">Its non-secure image is not in the policy: quarantined, credential revoked.</text>
+</g>
+<g class="co" style="animation-delay:6.80s"><rect x="8" y="143" width="924" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="145" r="11" fill="#ffd166"/><text x="8" y="149" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">3</text></g>
+<g class="co cap" style="animation-delay:6.80s">
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<circle cx="24" cy="360" r="13" fill="#ffd166"/><text x="24" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">3</text>
+<text x="48" y="358" font-size="15" font-weight="bold" fill="#e6ecf1">Board 2 unaffected</text>
+<text x="48" y="378" font-size="13" fill="#9aa8b5">Same cycle: still admitted, heartbeat 8. Each device is judged on its own evidence.</text>
+</g>
+<g class="co" style="animation-delay:10.20s"><rect x="8" y="183" width="924" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="185" r="11" fill="#ffd166"/><text x="8" y="189" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">4</text></g>
+<g class="co cap" style="animation-delay:10.20s">
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<circle cx="24" cy="360" r="13" fill="#ffd166"/><text x="24" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">4</text>
+<text x="48" y="358" font-size="15" font-weight="bold" fill="#e6ecf1">Board 1 back</text>
+<text x="48" y="378" font-size="13" fill="#9aa8b5">The good image: admitted with a new session.</text>
+</g>
+<g class="co" style="animation-delay:13.60s"><rect x="8" y="243" width="924" height="63" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="245" r="11" fill="#ffd166"/><text x="8" y="249" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">5</text></g>
+<g class="co cap" style="animation-delay:13.60s">
+<rect x="0" y="334" width="940" height="70" fill="#12171d"/>
+<circle cx="24" cy="360" r="13" fill="#ffd166"/><text x="24" y="365" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">5</text>
+<text x="48" y="358" font-size="15" font-weight="bold" fill="#e6ecf1">Steady again</text>
+<text x="48" y="378" font-size="13" fill="#9aa8b5">Board 1 heartbeat 1, board 2 heartbeat 10, the Arduino quarantined.</text>
+</g>
+</svg>
