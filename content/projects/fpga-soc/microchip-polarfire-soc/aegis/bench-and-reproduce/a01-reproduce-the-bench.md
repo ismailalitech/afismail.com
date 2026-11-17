@@ -122,7 +122,8 @@ TCP 7444.
 
 Copy `gateway/policy/fleet.example.json` to `fleet.json` on the gateway, put in the endpoint's address, and let the service
 enrol its device key on first use (trust on first use again). The allowed measurements are the SHA-256 of each signed image;
-`tools/image_measurement.py` prints them.
+`tools/image_measurement.py` prints them; [the token article](/projects/fpga-soc/microchip-polarfire-soc/aegis/trust-model/x03-measured-boot-and-the-token/)
+shows its output for the images this bench runs, and the history of every build.
 
 Within one cycle (30 seconds) the gateway journal shows the endpoint as admitted:
 

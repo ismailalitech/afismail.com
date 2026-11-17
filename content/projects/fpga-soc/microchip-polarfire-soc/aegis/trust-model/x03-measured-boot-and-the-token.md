@@ -37,6 +37,30 @@ The token is a signed COSE structure, 515 bytes, in the PSA attestation format. 
 
 The implementation id and the boot seed are dummy values in this configuration. The lifecycle value does not match the chip's real state: the STM32 was read with a debugger and is in its open product state, which is what keeps the development keys usable and recovery possible, and also means its root of trust is weaker than a closed product's.
 
+## The values on this bench
+
+The tool run on the two images the STM32 runs. These are the exact values in the gateway's policy file:
+
+![The measurement tool prints the image hash and signer id of the secure image and of the non-secure prover; these are the values in the gateway policy, and the two images are signed by two different keys](/aegis/diagrams/console-measurements.svg)
+
+Two things show in the project's own build history. Every build of an image has a new hash, while its signer stays the same,
+so the policy has to be updated with each release. And the secure and non-secure images are signed by different keys:
+
+| Image | Hash (first 16 hex digits) | Signer (first 16) |
+|---|---|---|
+| prover 0.1.0 | `55a370e39454e694` | `82a5b443594853d4` |
+| prover 0.1.0, modified for the tamper test | `b8e5a3094da5634f` | `82a5b443594853d4` |
+| prover 0.2.0 (post-quantum quote) | `ccae9f5fc9082afe` | `82a5b443594853d4` |
+| prover 0.3.0 (ML-KEM credential) | `56ec5b078c037317` | `82a5b443594853d4` |
+| prover 0.4.0 (heartbeats), **running** | `ae689ecbd090a33b` | `82a5b443594853d4` |
+| TF-M v2.3.0 + partition, first | `b9186d3173278df7` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, with ML-KEM | `227e3c8a5c40dd66` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, with mutual authentication | `380513d6dea90048` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, with heartbeats, **running** | `1793b3fb1ff47218` | `e30466f6b8470c1f` |
+
+The modified prover has the same signer as the good one, because it was signed with the same published development key. Only
+the hash tells them apart.
+
 ## What the gateway checks
 
 Every cycle the gateway verifies all of the following:

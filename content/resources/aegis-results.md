@@ -8,7 +8,7 @@ weight = 71
   toc = true
 +++
 
-Last updated 2026-11-17. Evidence classes: **SIM** (simulation), **HOST** (a check on a PC), **BUILD** (tool output) and **BOARD** (measured on the physical boards). A result is claimed only in the class that produced it. Raw records that are small enough to publish are in [`evidence/console/`](https://github.com/ismailalitech/aegis/tree/main/evidence/console) of the repository; the figures in this page that come from Libero are screenshots, listed in [`docs/figures/`](https://github.com/ismailalitech/aegis/tree/main/docs/figures).
+Last updated 2026-11-17, repository release [v0.1.0](https://github.com/ismailalitech/aegis/releases/tag/v0.1.0). Evidence classes: **SIM** (simulation), **HOST** (a check on a PC), **BUILD** (tool output) and **BOARD** (measured on the physical boards). A result is claimed only in the class that produced it. Raw records that are small enough to publish are in [`evidence/console/`](https://github.com/ismailalitech/aegis/tree/main/evidence/console) of the repository; the figures in this page that come from Libero are screenshots, listed in [`docs/figures/`](https://github.com/ismailalitech/aegis/tree/main/docs/figures).
 
 The whole-system check is `tools/regression.sh --board`: twelve stages, five on the PC and seven on the boards. The five PC stages and the enforcement test also run on every push in GitHub Actions on a clean machine.
 

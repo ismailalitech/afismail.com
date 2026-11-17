@@ -111,6 +111,32 @@ attacker cannot reinstall a version with a known flaw.
 A signed report with which a device proves its identity and the firmware it is
 running to a remote party.
 
+### Measured boot
+
+A boot in which each stage records a hash of the next stage before starting it.
+The records can then be reported in an attestation, so a verifier sees what was
+started, not only that it was signed.
+
+### Nonce
+
+A value used once. A verifier sends a fresh random nonce and requires it to come
+back inside the signed answer, so an old answer cannot be replayed.
+
+### Trust on first use
+
+Accepting a device's key the first time it is seen and requiring the same key
+afterwards. It is only as trustworthy as the network at that first contact.
+
+### PUF (physically unclonable function)
+
+A circuit whose start-up behaviour differs from chip to chip because of
+manufacturing variation. It is used to derive keys that are never stored.
+
+### Hardware-unique key
+
+A per-chip secret that software cannot read but can use, for example to derive
+other keys through a hardware cipher. On STM32H5 it is called DHUK.
+
 ### OTP and eFuses
 
 Memory that can be written only once. Used for keys, device identity and lifecycle
@@ -120,6 +146,72 @@ state because it cannot be changed afterwards.
 
 An isolated environment that runs sensitive code and holds secrets, separate from
 the main software. On microcontrollers it is often built on TrustZone.
+
+## Post-quantum cryptography
+
+### Post-quantum cryptography
+
+Public-key algorithms designed to stay secure against a large quantum computer,
+which would break the elliptic-curve and RSA schemes in use today.
+
+### ML-DSA
+
+The NIST post-quantum signature algorithm (FIPS 204). ML-DSA-65 has a 1,952-byte
+public key and a 3,309-byte signature.
+
+### ML-KEM
+
+The NIST post-quantum key-encapsulation algorithm (FIPS 203). One side
+encapsulates a fresh secret to the other's public key; only the holder of the
+private key can recover it.
+
+### KEM (key-encapsulation mechanism)
+
+A way for two parties to agree a shared secret: one sends a ciphertext that only
+the other can turn back into the secret.
+
+### ACVP test vectors
+
+NIST's algorithm validation vectors: published inputs and expected outputs that
+an implementation must reproduce exactly.
+
+### Keccak
+
+The permutation inside SHA-3 and SHAKE. ML-KEM and ML-DSA spend much of their time
+in it.
+
+### NTT (number-theoretic transform)
+
+A fast way to multiply polynomials, used by ML-KEM and ML-DSA. It works like a
+Fourier transform over integers modulo a prime.
+
+## Zero trust and networks
+
+### Zero trust
+
+Granting access because a device or user has just proven who it is and what it
+runs, not because it is on the inside of the network.
+
+### Quarantine
+
+Keeping a device that has not passed attestation away from everything except the
+service that can attest it again.
+
+### VLAN (802.1Q)
+
+A tag on Ethernet frames that splits one physical network into separate virtual
+ones. A switch must support it for the separation to hold.
+
+### nftables
+
+The Linux packet-filtering framework. Rules in tables and chains decide whether a
+packet is accepted, dropped or logged.
+
+### Connection tracking
+
+The part of Linux packet filtering that remembers each connection, so that rules
+can refer to new and established traffic. A blanket rule that accepts every
+established packet keeps old connections alive after a policy changes.
 
 ## Attacks
 
