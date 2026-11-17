@@ -52,7 +52,7 @@ The refusals agree with the ordering code, not with the printed name. The design
 ## What is still open
 
 - Why the chip prints a name ending in S is not explained. It may be a family-level name in the tools; that was not confirmed.
-- The certificate's chain could not be verified on a PC, because the issuing certificate is not published in the documents. It would have to be requested from Microchip.
+- The certificate's chain could not be verified on a PC, because Microchip's issuing public key (MCPK) is not published in the documents; it would have to be requested from Microchip. What *was* checked is the chip's own verification: when the certificate is exported, the system controller checks its signature with MCPK, and checks that its serial number and public key match this chip's serial number and factory key, and returns a status ([Microchip security user guide](https://www.microchip.com/content/dam/mchp/documents/FPGA/ProductDocuments/UserGuides/Microchip_PolarFire_FPGA_and_PolarFire_SoC_FPGA_Security_User_Guide_VA%20(2).pdf)). On this board the read returns status 0, which the guide defines as a valid certificate consistent with the device (re-checked on 2026-11-17).
 
 ## What it means for you
 
