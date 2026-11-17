@@ -142,7 +142,9 @@ microseconds. The NTT unit is not even wired into liboqs, because moving 512 wor
 
 ## What would make it faster
 
-None of this is built; it follows from the numbers.
+It follows from the numbers. The first two are now built and measured in
+[lab 54](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a08-sponge-accelerator/): the whole sponge
+stays in the fabric and squeezed blocks go to memory by DMA, and ML-KEM and ML-DSA run 1.2 to 1.5 times faster than software.
 
 - Keep the data in the fabric across calls: a whole sponge, or a whole polynomial-matrix step, instead of one permutation.
 - Move data by DMA or over the 64-bit AXI interface instead of the APB bus.
