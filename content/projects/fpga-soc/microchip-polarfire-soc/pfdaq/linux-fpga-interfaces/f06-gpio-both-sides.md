@@ -50,7 +50,7 @@ The board's LED pins are driven by both. In the reference design each of LED1 to
 | DIP5 to DIP8 | MSS GPIO2 bits 25 to 28, as inputs, after an inverter in the fabric | nobody | `gpiochip1`, lines 25 to 28 |
 | DIP1 to DIP4 | fabric interrupt lines F2M[6] to F2M[9] (PLIC sources 124 to 127), inverted | nobody | not a GPIO line; no handler on this image |
 
-![Where the other board pins go. DIP5 to DIP8 are inputs, through an inverter, to MSS GPIO2 bits 25 to 28, so they can be read through the gpiochip device. DIP1 to DIP4 are not GPIO lines: they are interrupt inputs F2M[6] to F2M[9], PLIC sources 124 to 127, and no handler is registered for them on this image. LED8 is driven by line 9 of the first GPIO chip, with no fabric logic in between.](../diagrams/lab-f06-pins.svg)
+[![Where the other board pins go. DIP5 to DIP8 are inputs, through an inverter, to MSS GPIO2 bits 25 to 28, so they can be read through the gpiochip device. DIP1 to DIP4 are not GPIO lines: they are interrupt inputs F2M[6] to F2M[9], PLIC sources 124 to 127, and no handler is registered for them on this image. LED8 is driven by line 9 of the first GPIO chip, with no fabric logic in between.](/pfdaq/diagrams/lab-f06-pins.svg)](/pfdaq/diagrams/lab-f06-pins.svg)
 
 1. DIP5 to DIP8 are the only switches that are GPIO lines: read them through `gpiochip1`. The design inverts all eight DIP signals in the fabric, so the value a program reads is the inverse of the pin level; which position of the switch reads 1 was not tested.
 2. DIP1 to DIP4 enter the PLIC as interrupt sources 124 to 127 (the formula of module F03: source = 118 + F2M index). The run lists every interrupt that has a handler and none of 124 to 127 is among them.

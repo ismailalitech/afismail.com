@@ -159,7 +159,7 @@ Recorded, fabric v0.5.1, 4,000 slots of 1 KiB frames, PRBS payload, four descrip
 | 50 µs, **one descriptor** | 1,993 | 2,007 (50.2 %) | 2,006 | 1,993 | no | true |
 | 100 µs, payload fault at frame 10 | 1,000 of 1,000 | 0 | 0 | 1,000 | no | true |
 
-![Three recorded real-time runs of pfdaq_cap: at a 1,000 microsecond slot nothing is dropped; at 50 microseconds with four descriptors 792 slots are dropped and the run ends by timeout, so pass is false; with one descriptor 2,007 are dropped and the run passes. Fields not discussed are shown as [...].](../diagrams/lab-i07-drop-rows.svg)
+[![Three recorded real-time runs of pfdaq_cap: at a 1,000 microsecond slot nothing is dropped; at 50 microseconds with four descriptors 792 slots are dropped and the run ends by timeout, so pass is false; with one descriptor 2,007 are dropped and the run passes. Fields not discussed are shown as [...].](/pfdaq/diagrams/lab-i07-drop-rows.svg)](/pfdaq/diagrams/lab-i07-drop-rows.svg)
 
 1. At a 1,000 µs slot: 4,000 sent, 0 dropped, 4,000 verified, and the run passes.
 2. At 50 µs with four descriptors: 3,208 sent plus 792 dropped is 4,000, and `seq_gaps` (788) does not exceed the drops.

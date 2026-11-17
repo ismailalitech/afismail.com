@@ -169,7 +169,7 @@ Each fault type was injected into each payload mode, 20 bursts of 1,024 frames:
 
 The counts were the same for counter, PRBS and FIR. The payload row has `bad_crc` equal to `bad_payload` because the fabric computes the CRC over the *intended* payload, so a flipped bit is caught twice. The tool knows that and expects exactly those counts; a run passes only when the counters equal what was injected.
 
-![Three recorded fault-injection runs with the counter payload: a CRC fault injected four times gives bad_crc 4, a sequence fault injected five times gives bad_seq 5, and a payload fault injected twice gives bad_payload 2 and bad_crc 2. Fields not discussed are shown as [...].](../diagrams/lab-i06-fault-counts.svg)
+[![Three recorded fault-injection runs with the counter payload: a CRC fault injected four times gives bad_crc 4, a sequence fault injected five times gives bad_seq 5, and a payload fault injected twice gives bad_payload 2 and bad_crc 2. Fields not discussed are shown as [...].](/pfdaq/diagrams/lab-i06-fault-counts.svg)](/pfdaq/diagrams/lab-i06-fault-counts.svg)
 
 1. A corrupted CRC every fifth burst: 4 faults injected, `bad_crc` 4, and no other counter moves.
 2. A skipped sequence number every fourth burst: 5 injected, `bad_seq` 5.
@@ -188,7 +188,7 @@ Take the reciprocals and add the two software stages: copy and verify run one af
 
 The fabric side is far faster. The shortest `start_to_irq` in the counter run is 1.218 ms, for the first burst, which has no earlier burst to verify first; 1,048,576 bytes in 1.218 ms is 861 MB/s, and that figure includes the register writes and the wake-up. The mean in the same run is 34.3 ms, because from the second burst on the loop spends its time verifying the previous burst before it waits for the next one. The software, not the DMA, sets the pace.
 
-![Two recorded burst runs of pfdaq_cap, 32 bursts of 1 MiB: the counter payload reaches 29.60 MB/s end to end with a copy rate of 70.5 MB/s and a verify rate of 55.4 MB/s; the FIR payload reaches 8.70 MB/s because its verify rate is 10.2 MB/s. Fields not discussed are shown as [...].](../diagrams/lab-i06-where-the-speed-goes.svg)
+[![Two recorded burst runs of pfdaq_cap, 32 bursts of 1 MiB: the counter payload reaches 29.60 MB/s end to end with a copy rate of 70.5 MB/s and a verify rate of 55.4 MB/s; the FIR payload reaches 8.70 MB/s because its verify rate is 10.2 MB/s. Fields not discussed are shown as [...].](/pfdaq/diagrams/lab-i06-where-the-speed-goes.svg)](/pfdaq/diagrams/lab-i06-where-the-speed-goes.svg)
 
 1. 32 bursts of 1 MiB, 33,554,432 bytes, and every error counter is 0.
 2. The shortest `start_to_irq_s` is 1.218 ms (the first burst); the mean is 34.325 ms.
