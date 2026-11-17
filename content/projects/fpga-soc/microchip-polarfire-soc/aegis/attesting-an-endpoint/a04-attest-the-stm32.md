@@ -53,8 +53,8 @@ peripheral with the key selected from hardware) and uses the result as the seed 
 
 Checks done on the board: the same public key on three boots; a key that differs from the ones an all-zero, an all-ones or a
 label-only seed would give, which is consistent with the hidden key being used; and the same key before and after an image
-update, because it comes from the chip and not from the image. **Per-chip uniqueness is not shown**, because there is only one
-chip.
+update, because it comes from the chip and not from the image. A second chip with the same firmware has a different key:
+[lab 56](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a10-two-chips-two-keys/).
 
 ## One cycle
 
@@ -95,8 +95,9 @@ After an admission with no valid credential, the gateway runs an ML-KEM-768 exch
 4. It decapsulates, wipes the decapsulation key, and keeps the session key in secure RAM. It returns a confirmation tag, and
    the gateway checks it.
 
-Heartbeats follow every cycle: a counter and a hash over the session key, a fresh nonce, the counter and a short status string
-(uptime, link, firmware version). The gateway uses them to check that the endpoint still holds the session; if one fails, it
+Heartbeats follow every cycle: a counter and a tag, keyed with the session key, over a fresh nonce, the counter and a short
+status string (uptime, link, firmware version). The tag is KMAC256 since [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/); it was first a SHA3-256
+construction. The gateway uses them to check that the endpoint still holds the session; if one fails, it
 provisions again. After a reboot the endpoint has lost its session in secure RAM, so the next heartbeat fails and a new session is
 issued.
 
@@ -130,5 +131,5 @@ The measurement and the token are explained in [measured boot and the attestatio
 ## Limits
 
 Development keys on the endpoint and the attestation key; trust on first use; no isolation between secure partitions
-(TF-M isolation level 1); deterministic ML-DSA signing; no side-channel testing. The details are in the project's
+(TF-M isolation level 1); no side-channel testing. ML-DSA signing is hedged since [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/); it was deterministic before. The details are in the project's
 [threat model](https://github.com/ismailalitech/aegis/blob/main/docs/threat-model.md).
