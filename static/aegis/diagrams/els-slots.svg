@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 340" width="900" height="340" role="img" aria-labelledby="t d">
+<title id="t">The twenty ELS key slots of the RW612 and why the first version reset the chip. A 256-bit key takes two consecutive slots: a base slot and the next one. The boot ROM leaves the die master key in slots 0 and 1 and other keys in slots 2, 3, 6 and 7. The first version asked ELS for a 256-bit key with base slot 19, the last one: there is no slot 20, ELS raised a fault, and the chip reset every time. The fix looks for an even base slot whose pair is free, from the top: slots 18 and 19.</title><desc id="d">The twenty ELS key slots of the RW612 and why the first version reset the chip. A 256-bit key takes two consecutive slots: a base slot and the next one. The boot ROM leaves the die master key in slots 0 and 1 and other keys in slots 2, 3, 6 and 7. The first version asked ELS for a 256-bit key with base slot 19, the last one: there is no slot 20, ELS raised a fault, and the chip reset every time. The fix looks for an even base slot whose pair is free, from the top: slots 18 and 19.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 18.90s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 18.90s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}6.88%{opacity:1}9.88%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="340" rx="12" fill="#12171d"/>
+<g id="e0">
+<path d="M837,90 L837,105 L819.2,105 L819.2,120" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:9.10s" d="M837,90 L837,105 L819.2,105 L819.2,120" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e1">
+<path d="M795,250 L795,265 L800,265 L800,280" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:14.30s" d="M795,250 L795,265 L800,265 L800,280" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="a0">
+<rect x="20" y="50" width="38" height="40" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="39" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">0</text>
+<rect class="hl" style="animation-delay:0.00s" x="19" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a1">
+<rect x="62" y="50" width="38" height="40" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="81" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">1</text>
+<rect class="hl" style="animation-delay:1.30s" x="61" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a2">
+<rect x="104" y="50" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="123" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">2</text>
+<rect class="hl" style="animation-delay:2.60s" x="103" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a3">
+<rect x="146" y="50" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="165" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">3</text>
+<rect class="hl" style="animation-delay:3.90s" x="145" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a4">
+<rect x="188" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="207" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">4</text>
+</g>
+<g id="a5">
+<rect x="230" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="249" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">5</text>
+</g>
+<g id="a6">
+<rect x="272" y="50" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="291" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">6</text>
+<rect class="hl" style="animation-delay:5.20s" x="271" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a7">
+<rect x="314" y="50" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="333" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">7</text>
+<rect class="hl" style="animation-delay:6.50s" x="313" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="a8">
+<rect x="356" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="375" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">8</text>
+</g>
+<g id="a9">
+<rect x="398" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="417" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">9</text>
+</g>
+<g id="a10">
+<rect x="440" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="459" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">10</text>
+</g>
+<g id="a11">
+<rect x="482" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="501" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">11</text>
+</g>
+<g id="a12">
+<rect x="524" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="543" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">12</text>
+</g>
+<g id="a13">
+<rect x="566" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="585" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">13</text>
+</g>
+<g id="a14">
+<rect x="608" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="627" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">14</text>
+</g>
+<g id="a15">
+<rect x="650" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="669" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">15</text>
+</g>
+<g id="a16">
+<rect x="692" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="711" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">16</text>
+</g>
+<g id="a17">
+<rect x="734" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="753" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">17</text>
+</g>
+<g id="a18">
+<rect x="776" y="50" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="795" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">18</text>
+</g>
+<g id="a19">
+<rect x="818" y="50" width="38" height="40" rx="9" fill="#43201f" stroke="#ef6f6c" stroke-width="1.5"/>
+<text x="837" y="74.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">19</text>
+<rect class="hl" style="animation-delay:7.80s" x="817" y="49" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="f1">
+<rect x="560" y="120" width="320" height="50" rx="9" fill="#43201f" stroke="#ef6f6c" stroke-width="1.5"/>
+<text x="720" y="141" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">First version: base slot 19</text>
+<text x="720" y="158" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">no slot 20: ELS fault, the chip resets</text>
+<rect class="hl" style="animation-delay:10.40s" x="559" y="119" width="322" height="52" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="b0">
+<rect x="20" y="210" width="38" height="40" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="39" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">0</text>
+</g>
+<g id="b1">
+<rect x="62" y="210" width="38" height="40" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="81" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">1</text>
+</g>
+<g id="b2">
+<rect x="104" y="210" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="123" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">2</text>
+</g>
+<g id="b3">
+<rect x="146" y="210" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="165" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">3</text>
+</g>
+<g id="b4">
+<rect x="188" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="207" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">4</text>
+</g>
+<g id="b5">
+<rect x="230" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="249" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">5</text>
+</g>
+<g id="b6">
+<rect x="272" y="210" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="291" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">6</text>
+</g>
+<g id="b7">
+<rect x="314" y="210" width="38" height="40" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="333" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">7</text>
+</g>
+<g id="b8">
+<rect x="356" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="375" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">8</text>
+</g>
+<g id="b9">
+<rect x="398" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="417" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">9</text>
+</g>
+<g id="b10">
+<rect x="440" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="459" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">10</text>
+</g>
+<g id="b11">
+<rect x="482" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="501" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">11</text>
+</g>
+<g id="b12">
+<rect x="524" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="543" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">12</text>
+</g>
+<g id="b13">
+<rect x="566" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="585" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">13</text>
+</g>
+<g id="b14">
+<rect x="608" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="627" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">14</text>
+</g>
+<g id="b15">
+<rect x="650" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="669" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">15</text>
+</g>
+<g id="b16">
+<rect x="692" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="711" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">16</text>
+</g>
+<g id="b17">
+<rect x="734" y="210" width="38" height="40" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="753" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">17</text>
+</g>
+<g id="b18">
+<rect x="776" y="210" width="38" height="40" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="795" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">18</text>
+<rect class="hl" style="animation-delay:11.70s" x="775" y="209" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="b19">
+<rect x="818" y="210" width="38" height="40" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="837" y="234.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">19</text>
+<rect class="hl" style="animation-delay:13.00s" x="817" y="209" width="40" height="42" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="f2">
+<rect x="560" y="280" width="320" height="50" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="720" y="301" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Fix: an even base with a free pair</text>
+<text x="720" y="318" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">slots 18-19; deleted after the two HMACs</text>
+<rect class="hl" style="animation-delay:15.60s" x="559" y="279" width="322" height="52" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<text x="20" y="32" text-anchor="start" font-size="12" fill="#ef6f6c" font-weight="bold">first version</text>
+<text x="20" y="192" text-anchor="start" font-size="12" fill="#4fd1a5" font-weight="bold">after the fix</text>
+<text x="560" y="32" text-anchor="start" font-size="12" fill="#c0a95f">die key</text>
+<text x="630" y="32" text-anchor="start" font-size="12" fill="#5aa0d6">ROM keys</text>
+<text x="712" y="32" text-anchor="start" font-size="12" fill="#9aa8b5">free</text>
+<text x="20" y="150" text-anchor="start" font-size="12" fill="#9aa8b5">A 256-bit key takes a base slot and the next one.</text>
+</svg>

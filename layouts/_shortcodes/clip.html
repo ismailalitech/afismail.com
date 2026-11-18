@@ -1,0 +1,13 @@
+{{- /* A screen recording kept on this site: the browser's own player, a poster frame first, nothing loaded and
+     nothing moving until play is pressed (so it costs nothing on page load and respects reduced motion).
+     Works with scripts off. Parameters: src (MP4), poster, width, height, label (what the recording shows),
+     caption. */ -}}
+<figure class="clip">
+  <video controls preload="none" playsinline poster="{{ .Get "poster" }}" width="{{ .Get "width" }}" height="{{ .Get "height" }}" aria-label="{{ .Get "label" }}">
+    <source src="{{ .Get "src" }}" type="video/mp4">
+    <a href="{{ .Get "src" }}">Download the recording (MP4)</a>
+  </video>
+  {{- with .Get "caption" }}
+  <figcaption>{{ . }}</figcaption>
+  {{- end }}
+</figure>
