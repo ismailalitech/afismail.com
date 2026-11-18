@@ -34,7 +34,7 @@ what it does not protect.
 |---|---|---|
 | PolarFire SoC Discovery Kit | The gateway: decides admission, issues credentials | Linux on three cores for the services, FPGA fabric for an accelerator, a fourth core for a real-time supervisor |
 | STM32H573I-DK | An attested endpoint | TrustZone, a hardware-unique key, and Ethernet; runs TF-M v2.3.0 |
-| NXP FRDM-RW612 | An attested endpoint from a second vendor | A die key in its EdgeLock Secure Subsystem, and Ethernet; runs Zephyr. Its firmware measures itself, so its verdict says device-key trust |
+| NXP FRDM-RW612 | An attested endpoint from a second vendor | A die key in its EdgeLock Secure Subsystem, and Ethernet. First a Zephyr prover that measures itself (device-key trust); then TF-M with the prover in a TrustZone secure partition, hardened and reviewed (trustzone trust) |
 | Arduino Uno R3 | A device that cannot attest | No keys, no measured boot, no network: it must be refused |
 
 Constraints that shaped the design:
