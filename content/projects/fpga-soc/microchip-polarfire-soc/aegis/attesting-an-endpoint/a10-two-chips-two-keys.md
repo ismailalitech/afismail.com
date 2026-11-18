@@ -60,14 +60,15 @@ All 34 fields are then equal to the first board's.
 # TF-M's boot loader, copied from the first board's backup: 0x0C010000, 96 KiB
 STM32_Programmer_CLI -c port=SWD sn=<board 2> mode=UR -w bl2.bin 0x0C010000 -v
 STM32_Programmer_CLI -c port=SWD sn=<board 2> mode=UR -w tfm-s-v2.3.0-aegis-pq-hb-hedged-kmac.hex -v
-STM32_Programmer_CLI -c port=SWD sn=<board 2> mode=UR -w prover-ns-0.4.0-hb.hex -v
+STM32_Programmer_CLI -c port=SWD sn=<board 2> mode=UR -w prover-ns-0.5.0-mac.hex -v
 STM32_Programmer_CLI -c port=SWD sn=<board 2> mode=HOTPLUG -hardRst
 ```
 
 Copy only code. The other regions below the secure image (the boot loader's counters, TF-M's provisioning data, its
 counters and its encrypted storage) stay erased, so the new chip provisions itself on its first boot. Storage encrypted
 on one chip would be unreadable on another. On the console, the boot loader provisions the board, checks both images and
-starts them, and the prover reports `AEGIS-PROVER 0.4.0 ready`.
+starts them, and the prover reports `AEGIS-PROVER 0.5.0 ready` and a MAC address taken from the device key. (The
+first run of this lab used prover 0.4.0, whose fixed MAC address is the problem described below.)
 
 ### 4. Compare the two boards
 
@@ -89,10 +90,31 @@ TCP port.
 This closes threat T14 of the project's threat model on two chips. It is not a statement about every chip: it rests on
 ST's statement that the DHUK is unique per device, and on two samples.
 
+## Both boards on the network
+
+Cabling the second board as well showed one more thing a single board hides: prover 0.4.0 used a fixed MAC address,
+because reading the chip's unique ID from the non-secure side had stopped the image. Two boards then share one address,
+which confuses the switch and the DHCP server.
+
+Prover 0.5.0 takes the MAC from the chip's ML-DSA-65 public key: `02:ae` and the key's first four bytes. The key comes
+from the hardware-unique key, so every chip gets its own address from the same image (here `02:ae:f7:7a:c3:a0` and
+`02:ae:64:d4:42:ba`), and the DHCP hostname ends with the last two bytes. If the key cannot be read, the console says
+the fixed address is in use.
+
+With both boards on 0.5.0 the gateway's policy has two STM32 entries, each with its own pinned key. Both are admitted
+with their own sessions, and the demo of
+[lab 51](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a05-quarantine-and-red-team/) shows the
+point of judging each device on its own evidence: board 1's tampered image is quarantined while board 2 stays admitted.
+
+![The gateway journal during the demo with both boards on the network: board 1 quarantined when its tampered image runs and admitted again with a new session, board 2 admitted throughout with its heartbeat rising, the Arduino quarantined every cycle](/aegis/diagrams/console-two-endpoints-demo.svg)
+
+The full board regression gives 13 of 13 with both boards and the Arduino on the network.
+
 ## What to check
 
 - The option-byte listings of the two boards are identical.
-- The second board prints `AEGIS-PROVER 0.4.0 ready` after its first boot.
+- The second board prints `AEGIS-PROVER 0.5.0 ready` after its first boot, with a MAC address different from the first
+  board's.
 - The two `PQKEY` answers differ; the two PSA instance IDs are equal; the impersonation check refuses.
 
 ## Where it can go wrong
@@ -102,5 +124,7 @@ ST's statement that the DHUK is unique per device, and on two samples.
   handed over; read it under reset, as the backup does.
 - **Copying the first board's storage.** Its protected and internal storage are encrypted with the first chip's keys. Leave
   them erased and let the second chip provision its own.
+- **The same MAC address on two boards.** A prover that uses a fixed address works with one board and fails with two.
+  Give each board its own (prover 0.5.0 derives it from the device key).
 - **Write protection.** On its first boot the boot loader switches on write protection for its own area; it prints a line
   about it. A later rewrite of the boot loader needs that lifted first.
