@@ -201,6 +201,9 @@ measurement, and only because this firmware reports its own hash honestly.
 
 ## What would make it stronger
 
+Done in [lab 58](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a12-trustzone-on-the-rw612/):
+the prover moved into a TF-M secure partition, with the peripherals closed that would have undermined it.
+
 Move the prover into the TrustZone secure side (TF-M exists for the RW612 in NXP's Zephyr tree) and let a measured boot
 stage hand the secure side the image hash, so a modified non-secure image could neither use the key freely nor report
 a false measurement. With secure boot fused on, the ROM would also check that first stage. Neither is done here: no fuse
