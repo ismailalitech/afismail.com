@@ -30,6 +30,9 @@ from empty boards. Two steps depend on earlier work and are marked.
   build reuses the dependencies fetched by the TF-M work in
   [the TF-M real-time cost project](/projects/microcontrollers/arm-cortex-m/tfm-realtime-cost/); you need that workspace
   or the same TF-M v2.3.0 sources and an Arm GNU toolchain.
+- **Optional, a second endpoint:** another STM32H573I-DK, set up as in
+  [lab 56](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a10-two-chips-two-keys/). With two
+  ST-LINKs connected, set `STM32_SN` in `bench.env` so the scripts program the right board.
 - **Legacy node:** an Arduino Uno R3 and a USB cable.
 - **Network:** the gateway and the STM32 on the same Ethernet segment with DHCP. The Uno is connected to the PC by USB.
 - **Host:** Ubuntu 24.04 on x86-64, Libero SoC 2026.1 with a licence if you build the fabric, Python 3.12. Plan for
