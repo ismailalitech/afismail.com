@@ -45,7 +45,11 @@ Not every endpoint can make the same claims, so the gateway's verdict says which
 key in the secure side and its boot loader measures the images. The NXP RW612
 ([lab 57](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a11-a-key-from-the-chip-on-the-rw612/))
 derives its key inside its EdgeLock Secure Subsystem, so the key proves the chip, but its firmware measures itself: the
-verdict says `device-key trust`. A Linux board whose key is a file would be labelled `software trust`.
+verdict says `device-key trust`. With TF-M
+([lab 58](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a12-trustzone-on-the-rw612/)), the
+same chip keeps the key and both measurements in a secure partition the network firmware cannot reach, and the verdict
+says `trustzone trust`; the gateway pins that profile, because the chip's key is the same under either firmware. A Linux
+board whose key is a file would be labelled `software trust`.
 
 ![Three kinds of endpoint: who holds the key, who measures the firmware, and the label the gateway puts on the verdict](/aegis/diagrams/endpoint-trust-levels.svg)
 
