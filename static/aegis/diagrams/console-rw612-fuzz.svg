@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 424" width="980" height="424" role="img" aria-labelledby="t d">
+<title id="t">fuzzing the partition's protocol code</title><desc id="d">The fuzz runs on the PC. On the reviewed code, every worker stopped within seconds: a refused PQKEMINIT had left the older exchange pending with the wrong key in it. After the fix, eight workers ran for 30 minutes each: about a million executions with the sanitizers on, and no crash, sanitizer report or disagreement with the model.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 15.60s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 15.60s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}21.79%{opacity:1}24.79%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="980" height="424" rx="12" fill="#12171d"/>
+<rect x="0" y="0" width="980" height="354" fill="#0d1117"/>
+<rect x="0" y="0" width="980" height="34" fill="#1b222c"/>
+<circle cx="20" cy="17" r="6" fill="#ef6f6c"/>
+<circle cx="38" cy="17" r="6" fill="#e6c04f"/>
+<circle cx="56" cy="17" r="6" fill="#5fbf84"/>
+<text x="490" y="22" text-anchor="middle" font-size="12" fill="#9aa8b5">fuzzing the partition's protocol code</text>
+<text x="24" y="58" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">tests/fuzz/run.sh 60 4        # aegis_proto.c as reviewed (0.2.0)</tspan></text>
+<text x="24" y="78" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">ORACLE: PQKEMFIN without an exchange: ERR cred other-key</text>
+<text x="24" y="98" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">tests/fuzz/run.sh 1800 8      # 0.2.1, the fix</tspan></text>
+<text x="24" y="118" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#126326 DONE   cov: 317 ft: 1351 corp: 332/34Kb</text>
+<text x="24" y="138" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#153781 DONE   cov: 317 ft: 1351 corp: 331/34Kb</text>
+<text x="24" y="158" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#101385 DONE   cov: 317 ft: 1350 corp: 334/36Kb</text>
+<text x="24" y="178" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#138015 DONE   cov: 317 ft: 1351 corp: 332/34Kb</text>
+<text x="24" y="198" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#104632 DONE   cov: 317 ft: 1350 corp: 333/35Kb</text>
+<text x="24" y="218" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#148827 DONE   cov: 317 ft: 1351 corp: 336/34Kb</text>
+<text x="24" y="238" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#149758 DONE   cov: 317 ft: 1350 corp: 333/34Kb</text>
+<text x="24" y="258" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">#126791 DONE   cov: 317 ft: 1350 corp: 335/35Kb</text>
+<text x="24" y="278" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">total executions: 1049515; crashes, sanitizer reports, oracle failures, timeouts, out-of-memory: 0</text>
+<text x="24" y="298" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">tests/fuzz/coverage.sh &lt;corpus&gt;</tspan></text>
+<text x="24" y="318" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">aegis_proto.c: functions 100.00 %, lines 94.68 %, branches 89.76 %</text>
+<rect x="0" y="354" width="980" height="70" fill="#12171d"/>
+<g class="co" style="animation-delay:0.00s"><rect x="8" y="63" width="964" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="65" r="11" fill="#ffd166"/><text x="8" y="69" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">1</text></g>
+<g class="co cap" style="animation-delay:0.00s">
+<rect x="0" y="354" width="980" height="70" fill="#12171d"/>
+<circle cx="24" cy="380" r="13" fill="#ffd166"/><text x="24" y="385" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">1</text>
+<text x="48" y="378" font-size="15" font-weight="bold" fill="#e6ecf1">Before the fix</text>
+<text x="48" y="398" font-size="13" fill="#9aa8b5">The model expected no pending exchange; the device still had one.</text>
+</g>
+<g class="co" style="animation-delay:3.40s"><rect x="8" y="103" width="964" height="163" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="105" r="11" fill="#ffd166"/><text x="8" y="109" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">2</text></g>
+<g class="co cap" style="animation-delay:3.40s">
+<rect x="0" y="354" width="980" height="70" fill="#12171d"/>
+<circle cx="24" cy="380" r="13" fill="#ffd166"/><text x="24" y="385" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">2</text>
+<text x="48" y="378" font-size="15" font-weight="bold" fill="#e6ecf1">8 workers, 30 min</text>
+<text x="48" y="398" font-size="13" fill="#9aa8b5">Executions per worker, coverage and corpus size.</text>
+</g>
+<g class="co" style="animation-delay:6.80s"><rect x="8" y="263" width="964" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="265" r="11" fill="#ffd166"/><text x="8" y="269" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">3</text></g>
+<g class="co cap" style="animation-delay:6.80s">
+<rect x="0" y="354" width="980" height="70" fill="#12171d"/>
+<circle cx="24" cy="380" r="13" fill="#ffd166"/><text x="24" y="385" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">3</text>
+<text x="48" y="378" font-size="15" font-weight="bold" fill="#e6ecf1">Result</text>
+<text x="48" y="398" font-size="13" fill="#9aa8b5">About a million executions, nothing found.</text>
+</g>
+<g class="co" style="animation-delay:10.20s"><rect x="8" y="303" width="964" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="305" r="11" fill="#ffd166"/><text x="8" y="309" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">4</text></g>
+<g class="co cap" style="animation-delay:10.20s">
+<rect x="0" y="354" width="980" height="70" fill="#12171d"/>
+<circle cx="24" cy="380" r="13" fill="#ffd166"/><text x="24" y="385" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">4</text>
+<text x="48" y="378" font-size="15" font-weight="bold" fill="#e6ecf1">Reached</text>
+<text x="48" y="398" font-size="13" fill="#9aa8b5">The 20 missed lines are listed in the evidence, each with its reason.</text>
+</g>
+</svg>

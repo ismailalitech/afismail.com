@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 464" width="900" height="464" role="img" aria-labelledby="t d">
+<title id="t">non-secure reads of protected peripherals</title><desc id="d">A test build of the non-secure prover reads one register of a peripheral at start-up. Under NXP rules the fuse controller and FlexSPI read fine. Under the Aegis rules every protected block faults: the chip restarts and the read never returns. The ENET register the prover needs still reads.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 19.00s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 19.00s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}17.89%{opacity:1}20.89%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="464" rx="12" fill="#12171d"/>
+<rect x="0" y="0" width="900" height="394" fill="#0d1117"/>
+<rect x="0" y="0" width="900" height="34" fill="#1b222c"/>
+<circle cx="20" cy="17" r="6" fill="#ef6f6c"/>
+<circle cx="38" cy="17" r="6" fill="#e6c04f"/>
+<circle cx="56" cy="17" r="6" fill="#5fbf84"/>
+<text x="450" y="22" text-anchor="middle" font-size="12" fill="#9aa8b5">non-secure reads of protected peripherals</text>
+<text x="24" y="58" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">endpoints/rw612/tfm/probe.sh &lt;out&gt; NAME=0xADDR ...   # summarised from the console of each run</tspan></text>
+<text x="24" y="78" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">NXP rules:   OCOTP          read-ok=1  aegis-probe: read ok, value 0x    2000</text>
+<text x="24" y="98" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">NXP rules:   FLEXSPI        read-ok=1  aegis-probe: read ok, value 0xffff8010</text>
+<text x="24" y="118" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: OCOTP          boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="138" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: FLEXSPI        boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="158" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: CACHE64_CTRL0  boots=8 probe-attempts=7 read-ok=0</text>
+<text x="24" y="178" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: TRNG           boots=8 probe-attempts=7 read-ok=0</text>
+<text x="24" y="198" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: RSTCTL0        boots=3 probe-attempts=2 read-ok=0</text>
+<text x="24" y="218" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: CLKCTL0        boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="238" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: SYSCTL0        boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="258" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: MCI_IO_MUX     boots=3 probe-attempts=2 read-ok=0</text>
+<text x="24" y="278" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: SOCCTRL        boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="298" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: SOC_OTP_CTRL   boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="318" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: PMU            boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="338" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: SYSCTL2        boots=7 probe-attempts=6 read-ok=0</text>
+<text x="24" y="358" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">Aegis rules: ENET_EIR       boots=1 probe-attempts=1 read-ok=1</text>
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<g class="co" style="animation-delay:0.00s"><rect x="8" y="63" width="884" height="43" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="65" r="11" fill="#ffd166"/><text x="8" y="69" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">1</text></g>
+<g class="co cap" style="animation-delay:0.00s">
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<circle cx="24" cy="420" r="13" fill="#ffd166"/><text x="24" y="425" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">1</text>
+<text x="48" y="418" font-size="15" font-weight="bold" fill="#e6ecf1">NXP rules</text>
+<text x="48" y="438" font-size="13" fill="#9aa8b5">Non-secure code reads the fuse controller and the flash controller.</text>
+</g>
+<g class="co" style="animation-delay:3.40s"><rect x="8" y="103" width="884" height="83" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="105" r="11" fill="#ffd166"/><text x="8" y="109" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">2</text></g>
+<g class="co cap" style="animation-delay:3.40s">
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<circle cx="24" cy="420" r="13" fill="#ffd166"/><text x="24" y="425" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">2</text>
+<text x="48" y="418" font-size="15" font-weight="bold" fill="#e6ecf1">Aegis rules</text>
+<text x="48" y="438" font-size="13" fill="#9aa8b5">Fuses, flash controller, flash cache and TRNG: a fault on every attempt.</text>
+</g>
+<g class="co" style="animation-delay:6.80s"><rect x="8" y="183" width="884" height="63" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="185" r="11" fill="#ffd166"/><text x="8" y="189" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">3</text></g>
+<g class="co cap" style="animation-delay:6.80s">
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<circle cx="24" cy="420" r="13" fill="#ffd166"/><text x="24" y="425" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">3</text>
+<text x="48" y="418" font-size="15" font-weight="bold" fill="#e6ecf1">Reset, clock, system</text>
+<text x="48" y="438" font-size="13" fill="#9aa8b5">They hold the ELS reset and clock: secure only.</text>
+</g>
+<g class="co" style="animation-delay:10.20s"><rect x="8" y="243" width="884" height="103" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="245" r="11" fill="#ffd166"/><text x="8" y="249" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">4</text></g>
+<g class="co cap" style="animation-delay:10.20s">
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<circle cx="24" cy="420" r="13" fill="#ffd166"/><text x="24" y="425" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">4</text>
+<text x="48" y="418" font-size="15" font-weight="bold" fill="#e6ecf1">After the review</text>
+<text x="48" y="438" font-size="13" fill="#9aa8b5">The pin mux, SOC_TOP (with the SoC OTP controller), PMU and SYSCTL2 too.</text>
+</g>
+<g class="co" style="animation-delay:13.60s"><rect x="8" y="343" width="884" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="345" r="11" fill="#ffd166"/><text x="8" y="349" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">5</text></g>
+<g class="co cap" style="animation-delay:13.60s">
+<rect x="0" y="394" width="900" height="70" fill="#12171d"/>
+<circle cx="24" cy="420" r="13" fill="#ffd166"/><text x="24" y="425" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">5</text>
+<text x="48" y="418" font-size="15" font-weight="bold" fill="#e6ecf1">Control</text>
+<text x="48" y="438" font-size="13" fill="#9aa8b5">The ENET register the prover needs still reads.</text>
+</g>
+</svg>
