@@ -7,12 +7,12 @@ weight = 20
 
 [params]
   project = true
-  platform = "Microchip PolarFire SoC and STMicroelectronics STM32H5"
+  platform = "Microchip PolarFire SoC, STMicroelectronics STM32H5 and NXP RW612"
   problem = "A network usually trusts a device because it is plugged in. A device should earn access by proving what it is and what firmware it runs, and keep proving it, with signatures that a future quantum computer cannot forge."
   role = "Designed and built the complete system: the gateway services, the fabric accelerator and its tests, the secure partition on the endpoint, the attestation and provisioning protocol, the red-team harness and the regression."
   result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 12 of 12 regression stages pass."
-  hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, STM32H573I-DK as an attested endpoint, Arduino Uno R3 as a device that cannot attest"
-  tools = "Libero SoC 2026.1, TF-M v2.3.0, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
+  hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK and an NXP FRDM-RW612 as attested endpoints, Arduino Uno R3 as a device that cannot attest"
+  tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
   guide = "/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/a01-reproduce-the-bench/"
   toc = true
 +++
@@ -34,6 +34,7 @@ what it does not protect.
 |---|---|---|
 | PolarFire SoC Discovery Kit | The gateway: decides admission, issues credentials | Linux on three cores for the services, FPGA fabric for an accelerator, a fourth core for a real-time supervisor |
 | STM32H573I-DK | An attested endpoint | TrustZone, a hardware-unique key, and Ethernet; runs TF-M v2.3.0 |
+| NXP FRDM-RW612 | An attested endpoint from a second vendor | A die key in its EdgeLock Secure Subsystem, and Ethernet; runs Zephyr. Its firmware measures itself, so its verdict says device-key trust |
 | Arduino Uno R3 | A device that cannot attest | No keys, no measured boot, no network: it must be refused |
 
 Constraints that shaped the design:
@@ -56,6 +57,9 @@ Constraints that shaped the design:
 - **Fabric accelerator.** A Keccak-f[1600] round engine and an NTT unit in the FPGA, checked against C references and
   against the NIST vectors with every Keccak permutation done in the fabric; then a second version that keeps the hash
   state in the fabric and squeezes whole blocks into memory by DMA, measured faster than software.
+- **A second chip family.** A Zephyr prover for the NXP RW612 that derives its ML-DSA-65 key from the die key inside
+  the chip's EdgeLock Secure Subsystem and speaks the same protocol; its protocol code is tested on the PC against the
+  gateway's own code.
 - **A legacy node and a verifier.** An Arduino sketch that answers every request with a statement that it cannot
   attest, and a PC tool that checks the gateway's own quote.
 - **Red-team harness and regression.** Mutated tokens, malformed frames, hostile replies, downgrade and replay attempts,
