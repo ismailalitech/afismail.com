@@ -39,6 +39,16 @@ There are two directions of proof.
 
 The gateway's column is weaker, and the project says so. The chip is the part without the data-security block, so there is no key held in hardware for the gateway. See [the chip is not an S device](/projects/fpga-soc/microchip-polarfire-soc/aegis/identity-and-quotes/k01-chip-is-not-an-s-device/).
 
+## Three kinds of endpoint
+
+Not every endpoint can make the same claims, so the gateway's verdict says which kind it judged. The STM32 keeps its
+key in the secure side and its boot loader measures the images. The NXP RW612
+([lab 57](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a11-a-key-from-the-chip-on-the-rw612/))
+derives its key inside its EdgeLock Secure Subsystem, so the key proves the chip, but its firmware measures itself: the
+verdict says `device-key trust`. A Linux board whose key is a file would be labelled `software trust`.
+
+![Three kinds of endpoint: who holds the key, who measures the firmware, and the label the gateway puts on the verdict](/aegis/diagrams/endpoint-trust-levels.svg)
+
 ## What attestation does not prove
 
 - **That the software is correct.** It proves the software is the software the policy names. A policy that allows a vulnerable image allows it.

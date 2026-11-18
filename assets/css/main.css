@@ -2100,6 +2100,24 @@ figcaption {
   font-weight: 600;
 }
 
+/* A screen recording kept on this site (shortcode clip): the browser's own player, a poster first */
+.clip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 1.5rem 0;
+}
+
+.clip video {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--code-bg);
+}
+
 /* A video: a play button first, and the YouTube player only after it is pressed */
 .video {
   max-width: 50rem;
