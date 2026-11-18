@@ -179,7 +179,51 @@ a test on the PC. Seven findings survived; five were rejected with reasons. The 
   session. It does now, and the device checks it; the STM32 endpoints accept the longer credential unchanged.
 
 The memory-safety reviewer found no defect in the partition's request handling or in the protocol code running on
-non-secure input.
+non-secure input. That was a reading of the code, so the next step tests it.
+
+## Fuzz it
+
+`tests/fuzz/run.sh` builds the protocol code into a libFuzzer harness with AddressSanitizer and
+UndefinedBehaviorSanitizer, and calls it exactly as the partition does: up to 14,600 raw request bytes, a reply
+buffer of exactly the partition's size. Random lines alone stop at the gateway's signature, so the harness also plays
+the gateway. It holds the pinned gateway key, answers the device's ML-KEM key and signs credentials whose body the
+fuzzer changes (fields left out or wrong, text added, a newline inside, the signature or ciphertext damaged). It also
+checks every answer against a model of the protocol, not just for crashes:
+
+- a credential is accepted if and only if it is valid for the pending exchange, checked by the harness independently;
+- a raw line is never accepted as a credential;
+- the confirmation tag, the session id and every heartbeat tag are what the gateway computes;
+- every quote and KEM key is signed by the device key.
+
+On the reviewed code, every worker stopped within seconds. A `PQKEMINIT` refused after the ML-KEM key was made (the
+random generator failing at the signature) left the older exchange marked pending, with the new key and nonce in it;
+see [a refused key exchange that left half of one behind](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one/).
+After the fix, eight workers ran for 30 minutes each.
+
+![Fuzzing on the PC: on the reviewed code the model check fails at once; after the fix, eight workers run 30 minutes, about a million executions with nothing found, and the corpus reaches all functions and 94.68 % of the lines of the protocol code](/aegis/diagrams/console-rw612-fuzz.svg)
+
+The corpus reaches every function and 94.7 % of the lines. Each of the 20 lines it misses is the single-image path,
+which TF-M does not use, or an error return the crypto library never takes. The evidence file lists every one of them
+with its reason. CI now runs the fuzzer for two minutes on every push, starting with the input that found the bug.
+
+### The partition's stack
+
+ML-DSA signing uses a lot of stack, and at isolation level 2 the Aegis partition shares privileged memory with TF-M's
+other services. TF-M sets the stack limit register, so an overflow faults rather than writing into a neighbour, but
+the margin was unknown. The partition now fills its 32 KB stack with a pattern at start-up and reports the high-water
+mark in every heartbeat:
+
+```text
+frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 2 (requests=8;stack=19368/32768;fw=rw612-tfm-0.2.1)]
+```
+
+19,368 bytes after the key derivation in ELS, quotes, ML-KEM exchanges and heartbeats: 59 %, 13 KB to spare.
+
+### Upgrading the board
+
+The fix and the stack report changed only the secure image; the non-secure image came out byte-identical. So only
+`SPE` changed: the new value went into the gateway policy before flashing, and the old one came out once the board was
+admitted again. The only gap was the one gateway cycle during which the board was being flashed and did not answer.
 
 ## What it shows
 
@@ -192,6 +236,9 @@ non-secure input.
 | Single-image prover with the same key, profile pinned | refused (PC test) |
 | Non-secure reads of the 12 protected blocks probed | a fault every time; ENET still reads |
 | Security review | 1 critical, 3 medium and 3 low findings confirmed and fixed; 5 rejected with reasons |
+| Fuzzing, before the fix | one more low finding, in seconds |
+| Fuzzing, after the fix | 1,049,515 executions with ASan and UBSan, nothing found; 94.7 % of the lines reached |
+| Secure partition stack | 19,368 of 32,768 bytes at most |
 | Host tests | 62 passed |
 
 ## What it does not do
