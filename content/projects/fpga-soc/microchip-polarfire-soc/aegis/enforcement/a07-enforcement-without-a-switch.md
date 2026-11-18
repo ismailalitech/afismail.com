@@ -61,6 +61,12 @@ It ends with `passed N, failed M`. The sequence:
 4. Quarantined again: new TCP and ping **blocked**, the quote port still **allowed**.
 5. Re-admit: TCP **allowed** again.
 
+Since 18 November it also checks the direction the gateway itself uses: the gateway must reach the endpoint's prover
+while the endpoint is not admitted and while it is quarantined, and the endpoint must still not reach other gateway
+ports. Those checks found a second defect; see
+[the ruleset that let no endpoint in](/projects/fpga-soc/microchip-polarfire-soc/aegis/enforcement/k10-the-ruleset-that-let-no-endpoint-in/).
+The test now passes 13 of 13.
+
 ## The first run found a defect
 
 | Check | Result |
@@ -103,7 +109,7 @@ The test also runs in GitHub Actions on every push, so the property is checked o
 
 - It shows that the ruleset implements its policy: blocked until admitted, cut when quarantined, the quote port always reachable.
 - It does **not** show that the real gateway is in a position to enforce. The Discovery Kit has one Ethernet port. The processor's USB controller is not routed to a connector, and the USB-C port goes to the debug chip, so a second network port cannot be added with an adapter.
-- Real separation therefore needs a managed switch with 802.1Q VLANs: one VLAN per endpoint, the gateway as the only router between them. Without one, a routed subnet is possible, but a compromised endpoint on the same Ethernet segment as other devices can bypass it.
+- Real separation therefore needs a switch with 802.1Q VLANs, with the gateway as the endpoints' only router. That design is tested in [lab 59](/projects/fpga-soc/microchip-polarfire-soc/aegis/enforcement/a08-one-port-and-a-vlan-switch/). Without one, a routed subnet is possible, but a compromised endpoint on the same Ethernet segment as other devices can bypass it.
 - The gateway's kernel must have packet filtering. The one the board runs does; see [the kernel install](/projects/fpga-soc/microchip-polarfire-soc/aegis/enforcement/k05-a-kernel-install-that-replaced-lib/).
 
 ## What to check
