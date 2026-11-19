@@ -83,3 +83,8 @@ line it does not reach is a failure the PC stand-ins never produce or the crypto
 listed with its reason. One stop on the way was the model's mistake, not the board's. The STM32's heartbeat counter
 runs from boot across sessions, where the RW612's restarts with each session; the gateway accepts both. Both harnesses
 run in CI on every push, starting with the inputs that found the bug.
+
+Board 1 was not connected on 18 November and kept the previous image. It got the fixed one on 19 November, with a
+backup and the gateway in the loop
+([lab 64](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side/)):
+both STM32 boards now run it.

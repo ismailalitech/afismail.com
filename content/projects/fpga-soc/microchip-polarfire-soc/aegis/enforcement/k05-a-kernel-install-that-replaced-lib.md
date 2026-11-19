@@ -47,3 +47,11 @@ The installer now extracts under `/usr` when `/lib` is a symlink.
 - On a merged-`/usr` system, never extract an archive that contains a `lib/` entry over `/`. Extract under `/usr`, or check with `ls -ld /lib` first.
 - Keep the old kernel and modules as files you can restore from, and keep the installer's undo as a script, not as a note.
 - Make the first install with someone at the board. A kernel that fails to boot cannot be fixed over the network.
+
+## It happened again, on the Zynq
+
+The same tar default later caught the Zynq UltraScale+ endpoint, when its own kernel's modules were unpacked
+into `/` on Debian. This time no new program could start, because the loader is found through `/lib`. It was repaired
+from the serial console by running `mv` and `ln` through the loader itself, and the modules now go in with
+`tar --keep-directory-symlink`
+([lab 61](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator/)).
