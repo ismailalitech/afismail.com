@@ -89,6 +89,22 @@ kernel. With TrustZone, each world can have its own MPU.
 Two levels of access inside each security state. Unprivileged code cannot change
 system registers or reach memory that the MPU reserves for privileged code.
 
+### TF-M (Trusted Firmware-M)
+
+Arm's open-source secure firmware for Armv8-M. It runs in the Secure state and
+offers services such as cryptography, storage and attestation to Non-secure code.
+
+### Secure partition
+
+A unit of code and data that TF-M runs in the Secure state. Non-secure code reaches
+it only through defined calls, and each partition has its own stack.
+
+### TF-A (Trusted Firmware-A) and BL31
+
+Arm's open-source secure firmware for Cortex-A processors. BL31 is the part that
+stays resident at the highest exception level, EL3, and switches between the
+normal world and the TrustZone secure world.
+
 ## Boot and trust
 
 ### Root of trust
@@ -101,6 +117,11 @@ verified from it.
 
 Checking the signature of each firmware stage before running it, so that only
 code approved by the device maker executes.
+
+### MCUboot
+
+An open-source secure boot loader for microcontrollers. It checks the signature of
+each image before starting it. TF-M uses it as its first stage, BL2.
 
 ### Chain of trust
 
@@ -116,6 +137,18 @@ attacker cannot reinstall a version with a known flaw.
 
 A signed report with which a device proves its identity and the firmware it is
 running to a remote party.
+
+### Attestation quote
+
+The answer to an attestation request: the device's measurements and the verifier's
+nonce, signed with the device's key. The verifier checks the signature, the nonce
+and each measurement against what its policy allows.
+
+### PSA attestation token
+
+The attestation report defined by Arm's Platform Security Architecture, produced by
+TF-M. It is a signed list of claims, such as the instance ID and a hash of each
+image the boot loader started.
 
 ### Measured boot
 
@@ -138,20 +171,69 @@ afterwards. It is only as trustworthy as the network at that first contact.
 A circuit whose start-up behaviour differs from chip to chip because of
 manufacturing variation. It is used to derive keys that are never stored.
 
+### Helper data
+
+Data stored next to a PUF that lets the chip rebuild the same key from the PUF's
+slightly noisy start-up values. On its own it does not reveal the key.
+
+### Black key and red key
+
+A red key is a key in the clear. A black key is the same key encrypted under a key
+only the chip can recover, for example from its PUF, so it can be stored in a boot
+image or in fuses without exposing it.
+
 ### Hardware-unique key
 
 A per-chip secret that software cannot read but can use, for example to derive
 other keys through a hardware cipher. On STM32H5 it is called DHUK.
+
+### Device key
+
+A key that belongs to one chip, stored in it or derived from a chip secret such as a
+PUF or a hardware-unique key. Another chip with the same firmware has a different
+one. On the Zynq UltraScale+ the AES key that decrypts the boot image is also called
+the device key.
 
 ### OTP and eFuses
 
 Memory that can be written only once. Used for keys, device identity and lifecycle
 state because it cannot be changed afterwards.
 
+### CSU (configuration and security unit)
+
+The block of the AMD Zynq UltraScale+ that runs the boot ROM and holds the AES and
+SHA-3 engines and the PUF. It decrypts and checks the boot image.
+
+### Boot header
+
+The start of a Zynq UltraScale+ boot image. The boot ROM reads it first: it says
+whether the image is encrypted and authenticated, and it can hold the PUF helper
+data and a black key.
+
+### FSBL (first stage boot loader)
+
+The first program the Zynq UltraScale+ boot ROM loads from the boot image. It sets
+up the chip and loads the PMU firmware, the bitstream and the next software stages.
+
+### PMU firmware
+
+Firmware for the platform management unit of the Zynq UltraScale+, a small separate
+processor that handles power, resets and error monitoring for the rest of the chip.
+
 ### TEE (Trusted Execution Environment)
 
 An isolated environment that runs sensitive code and holds secrets, separate from
 the main software. On microcontrollers it is often built on TrustZone.
+
+### OP-TEE
+
+An open-source TEE for Cortex-A processors. It runs in the TrustZone secure world
+beside Linux and runs trusted applications on request.
+
+### Trusted application (TA)
+
+A program that runs inside a TEE such as OP-TEE. Software in the normal world can
+call it but cannot read its memory or its keys.
 
 ## Post-quantum cryptography
 
@@ -219,6 +301,18 @@ runs, not because it is on the inside of the network.
 Keeping a device that has not passed attestation away from everything except the
 service that can attest it again.
 
+### Heartbeat
+
+A check, repeated every cycle, that an admitted device is still there and still
+holds its session key. It is usually a MAC over a counter and a fresh nonce. A
+missing or wrong heartbeat ends trust in the session.
+
+### Credential lifetime (TTL)
+
+How long a credential may be used after it is issued; TTL (time to live) is the time
+left. A device that counts the lifetime on its own secure clock ends the session
+itself, even when the issuer can no longer reach it.
+
 ### VLAN (802.1Q)
 
 A tag on Ethernet frames that splits one physical network into separate virtual
@@ -280,6 +374,17 @@ levels differ between vendors.
 Unlocking debug access only for someone who proves they hold the right credential,
 instead of leaving the port permanently open or closed.
 
+### XMPU and XPPU
+
+The memory and peripheral protection units of the Zynq UltraScale+. They check each
+bus access against the processor or device that made it, so Linux can be kept out
+of a TEE's memory or away from the security unit.
+
+### STRICT_DEVMEM
+
+A Linux kernel option (`CONFIG_STRICT_DEVMEM`) that limits what `/dev/mem` can
+reach. Without it, a root process can read and write physical memory directly.
+
 ## RTOS
 
 ### RTOS (real-time operating system)
@@ -296,6 +401,11 @@ Cortex-M it usually happens in the PendSV exception.
 
 A task using more stack than it was given, which corrupts whatever lies beyond it.
 Armv8-M Mainline adds stack limit registers that raise a fault instead.
+
+### High-water mark
+
+The most stack a task or partition has used since start-up. It is found by filling
+the stack with a known pattern and looking for the deepest byte that changed.
 
 ### Mutex and semaphore
 
