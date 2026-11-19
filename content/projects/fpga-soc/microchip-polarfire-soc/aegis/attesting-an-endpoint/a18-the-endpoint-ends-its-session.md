@@ -148,6 +148,8 @@ two `ttl` values; C, a heartbeat and a session query after the end; D, an attest
 | C: session query after the end | `ERR pq -140` | `ERR pq -140` | `ERR pq expired` |
 | D: attestation after the end | a token | a token | a token |
 
+![expiry_check.py on the gateway for STM32 board 2, STM32 board 1 and the RW612, each with a 32-second credential: ttl in the heartbeat falls from 34 to 18 (17 on the RW612); the STM32 secure RTC runs at 0.941 s per gateway second and the RW612 secure SysTick at 1.0; after the end the heartbeat and the session query get -140 on the STM32s and ERR pq expired on the RW612, and attestation still answers on all three](/aegis/diagrams/console-endpoint-expiry.svg)
+
 With the service running again, its first cycle reads "issued session ..." for the endpoint.
 
 ### 4. What the clock rates say

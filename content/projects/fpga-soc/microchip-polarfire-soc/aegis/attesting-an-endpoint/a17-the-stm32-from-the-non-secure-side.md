@@ -141,6 +141,8 @@ after the prover change:
 09:05:11 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=80;link=1;fw=0.6.0;sstack=19088/26624)]
 ```
 
+![The gateway journal for the two STM32 boards after the secure image with the stack mark: with the old non-secure prover 0.5.0 the heartbeats carry no stack mark; with prover 0.6.0 every heartbeat ends with sstack=19088/26624, the secure partition's stack high-water mark under the session's KMAC, on board 2 and then on board 1](/aegis/diagrams/console-stm32-sstack.svg)
+
 `19088/26624` is the depth read over SWD in section 3, now reported by the partition itself on every cycle, on both
 boards. Before the boards, the partition's new code was fuzzed: 42,769 executions with no crash and no model failure,
 and three planted bugs caught.
