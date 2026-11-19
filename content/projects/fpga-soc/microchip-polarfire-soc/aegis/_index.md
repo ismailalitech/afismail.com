@@ -122,8 +122,8 @@ Three kinds of evidence, kept apart:
 - **Enforcement rules.** Three network namespaces stand in for the gateway, an endpoint and the network; the real ruleset
   and hook ran in them. The first run found that quarantine did not cut an open connection, and a later one that the rules dropped
   replies to the gateway's own connections; both fixed, 13 of 13 checks pass. The one-port VLAN design: 16 of 16.
-- **Whole system.** A regression that runs the host stages and the board stages: 13 of 13 pass, and the five host
-  stages and the enforcement test also run on every push on a clean machine in GitHub Actions.
+- **Whole system.** A regression that runs the host stages and the board stages: 13 of 13 pass, 14 of 14 with the
+  optional stage that lets each endpoint's session run out. The five host stages and the enforcement test also run on every push on a clean machine in GitHub Actions.
 
 Every number is traced to a record with its method: [results and evidence](/resources/aegis-results/).
 

@@ -98,7 +98,9 @@ Let systemd drive the board's hardware watchdog, so that a hung gateway resets i
 image it is off by default. A drop-in `/etc/systemd/system.conf.d/aegis-watchdog.conf` with `RuntimeWatchdogSec=20s`
 and `RebootWatchdogSec=25s` under `[Manager]` turns it on. A second file, `/etc/sysctl.d/90-aegis-lockup.conf`, turns
 a soft lock-up or an oops into a panic that prints its reason on the kernel console and reboots after 10 s; record
-that console on the PC with `tools/console_logger.py`. See
+that console on the PC with `tools/console_logger.py`. On the same PC, `tools/bench_watch.py --gateway <gateway>`
+asks the gateway every 2 minutes, over read-only SSH, whether it answers, whether `aegis-fleet` runs and whether each
+endpoint was admitted in the last 10 minutes, and logs each change. See
 [a gateway that hung for seven hours](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours/).
 
 Optional: build and program the fabric accelerator
@@ -155,13 +157,20 @@ shows the Uno quarantined every cycle, with the reason that it cannot attest.
 
 ```sh
 tools/regression.sh --board     # 13 stages: 5 on the PC, 8 on the boards
+tools/regression.sh --board --with-expiry   # 14: adds endpoint-expiry, about 3 minutes more
 tools/demo.sh                   # about 2 minutes: quote, attest, tamper, quarantine, restore, admit
 ```
 
-Expected: `passed 13, failed 0`. Three of the board stages run the fabric accelerators (`fabric-selftest`,
-`fabric-acvp`, `fabric-sponge-acvp`), and the script stops at the first stage that fails. Without the accelerators
-programmed it stops at `fabric-selftest`, before the fleet and device stages have run. The demo flashes a modified
-Non-Secure image and then the good one back, so the STM32 must be connected to the PC's ST-LINK.
+Expected: `passed 13, failed 0`, or `passed 14, failed 0` with `--with-expiry`. Three of the board stages run the
+fabric accelerators (`fabric-selftest`, `fabric-acvp`, `fabric-sponge-acvp`). The script runs every stage, even after
+one fails, and exits non-zero if any failed; those three need the accelerators in the fabric. The demo flashes a
+modified Non-Secure image and then the good one back, so the STM32 must be connected to the PC's ST-LINK.
+
+The fourteenth stage, `endpoint-expiry`, is off by default because it stops `aegis-fleet` for about 3 minutes. It
+runs `tests/board/expiry_check.py` on the gateway for each endpoint that holds a session, starts the service again
+however the stage ends (a failure or Ctrl-C included, and a 15-minute timer on the gateway in case the PC goes away),
+and passes only when those endpoints are ADMITTED again
+([lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/)).
 
 ![The board regression from before the stage for the second accelerator was added, printing twelve passing stages: five on the PC and seven on the boards](/aegis/diagrams/console-regression.svg)
 
