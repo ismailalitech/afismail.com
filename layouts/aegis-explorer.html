@@ -1,0 +1,142 @@
+{{- /* The Aegis architecture explorer: one standalone page, drawn in the browser from
+     static/aegis/architecture.yaml. The same data is printed below as text, so the page is complete
+     without scripts. A "learn" entry that is not a page stops the build. */ -}}
+{{- $raw := os.ReadFile "static/aegis/architecture.yaml" -}}
+{{- $d := resources.FromString "aegis-explorer/architecture.yaml" $raw | transform.Unmarshal -}}
+{{- $base := "/projects/fpga-soc/microchip-polarfire-soc/aegis/" -}}
+{{- $project := site.GetPage $base -}}
+{{- $repo := $d.baseline.repo -}}
+{{- $keys := slice -}}
+{{- range $d.nodes }}{{ with .learn }}{{ $keys = $keys | append . }}{{ end }}{{ end -}}
+{{- range $d.edges }}{{ with .learn }}{{ $keys = $keys | append . }}{{ end }}{{ end -}}
+{{- $pages := dict -}}
+{{- range uniq $keys -}}
+  {{- $p := site.GetPage (print $base .) -}}
+  {{- if not $p }}{{ errorf "aegis explorer: %q is not a page under %s" . $base }}{{ end -}}
+  {{- $pages = merge $pages (dict . (dict "title" $p.Title "lab" ($p.Params.lab | default 0) "url" $p.RelPermalink)) -}}
+{{- end -}}
+{{- $byId := dict -}}
+{{- range $d.nodes }}{{ $byId = merge $byId (dict .id .) }}{{ end -}}
+{{- range $d.edges -}}
+  {{- if not (and (index $byId .from) (index $byId .to)) }}{{ errorf "aegis explorer: edge %q names an unknown node" .id }}{{ end -}}
+{{- end -}}
+{{- $data := dict "arch" $d "pages" $pages "project" $project.RelPermalink -}}
+{{- $css := resources.Get "aegis-explorer/explorer.css" -}}
+{{- $js := resources.Get "aegis-explorer/explorer.js" -}}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .Title }} · {{ site.Title }}</title>
+<meta name="description" content="{{ .Description }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16171a" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t)}}catch(e){}</script>
+<style>{{ $css.Content | safeCSS }}</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="brand" href="{{ "/" | relURL }}">{{ site.Title }}</a>
+  <div class="links">
+    <a href="{{ $project.RelPermalink }}">Back to the project</a>
+    <a href="{{ "/resources/aegis-explorer/" | relURL }}">About this explorer</a>
+    <button class="icon-button js-only" type="button" id="theme-toggle" aria-pressed="false" hidden><svg aria-hidden="true" viewBox="0 0 20 20" width="18" height="18"><circle cx="10" cy="10" r="7.25" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.75a7.25 7.25 0 0 0 0 14.5z" fill="currentColor"/></svg><span class="visually-hidden">Dark theme</span></button>
+  </div>
+</div>
+<header>
+  <h1>{{ .Title }}</h1>
+  <p class="sub">The post-quantum attestation gateway and its endpoints as built on {{ $d.baseline.date | time.Format "2 January 2006" }}. Select a component or a connection to see what it does and which labs explain it, play a walk through the protocol, or replay what the gateway recorded.</p>
+</header>
+<noscript><p class="note">The interactive map needs JavaScript. Everything on it is listed below as text.</p></noscript>
+<div class="bar js-only" hidden>
+  <div class="tabs" role="group" aria-label="View">
+    {{- range $d.views }}<button type="button" data-view="{{ .id }}" aria-pressed="false">{{ .title }}</button>{{ end -}}
+    <button type="button" data-view="replay" aria-pressed="false">Fleet replay</button>
+  </div>
+  <div class="walk" role="group" aria-label="Walks through the system">
+    <label for="walk-select">Walk</label>
+    <select id="walk-select"><option value="">None</option>{{ range $d.walks }}<option value="{{ .id }}">{{ .title }}</option>{{ end }}</select>
+    <button type="button" id="walk-prev">Previous</button>
+    <button type="button" id="walk-next">Next</button>
+    <button type="button" id="walk-play" aria-pressed="false">Play</button>
+    <button type="button" id="walk-stop">Stop</button>
+  </div>
+</div>
+<div class="main js-only" id="map" hidden>
+  <div class="stage" id="stage">
+    <p class="scroll-hint">The map is wider than the screen: scroll it sideways.</p>
+    <div id="diagrams"></div>
+    <div class="legend" id="legend" aria-label="Line styles"></div>
+  </div>
+  <aside id="panel" aria-live="polite"></aside>
+</div>
+<section class="replay js-only" id="replay" hidden aria-labelledby="replay-title">
+  <div class="replay-head">
+    <h2 id="replay-title">Fleet replay</h2>
+    <p class="note">Not live. These are verdict lines from the gateway's journal, recorded on the bench and kept in the repository's <code>evidence/</code> files. Each step replays one line and updates that device's row.</p>
+  </div>
+  <div class="replay-controls" role="group" aria-label="Replay controls">
+    <label for="rec-select">Recording</label>
+    <select id="rec-select">{{ range $d.replay.recordings }}<option value="{{ .id }}">{{ .title }}</option>{{ end }}</select>
+    <button type="button" id="rec-prev">Previous</button>
+    <button type="button" id="rec-next">Next</button>
+    <button type="button" id="rec-play" aria-pressed="false">Play</button>
+    <button type="button" id="rec-reset">Start again</button>
+  </div>
+  <div class="scrub"><label for="rec-pos">Line</label><input type="range" id="rec-pos" min="0" max="1" value="0" step="1"><output id="rec-count" for="rec-pos"></output></div>
+  <div class="replay-grid">
+    <div class="table-wrap"><table class="fleet" id="fleet-table">
+      <caption class="visually-hidden">State of each device after the current line</caption>
+      <thead><tr><th scope="col">Device</th><th scope="col">Kind</th><th scope="col">Trust</th><th scope="col">Last verdict</th><th scope="col">Heartbeat</th><th scope="col">Stack</th><th scope="col">ttl</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+    <div class="line-box" id="line-box" aria-live="polite"></div>
+  </div>
+  <p class="note">Columns: <b>Kind</b> is the endpoint's kind in the gateway's policy. <b>Trust</b> is the label the gateway prints with the verdict; it prints one only for the kinds whose quote is a plain claims map, so an STM32 line (kind aegis-pq) has none. <b>Heartbeat</b> is the counter of the current session, <b>Stack</b> the secure partition's stack high-water mark (sstack= on the STM32, stack= on the RW612) and <b>ttl</b> the seconds the session has left on the endpoint's own clock, each as the last heartbeat reported it.</p>
+</section>
+
+<details class="as-text" id="as-text" open>
+  <summary>Everything on the map, as text</summary>
+  <div class="as-text-body">
+  <h2>Components</h2>
+  {{- range $d.nodes }}{{ if not .parent }}
+  {{- $top := . }}
+  <h3 id="t-{{ .id }}">{{ .title }}</h3>
+  {{ partial "aegis-explorer-node.html" (dict "n" . "pages" $pages "repo" $repo) }}
+  {{- $kids := where $d.nodes "parent" .id }}
+  {{- if $kids }}
+  <ul class="kids">
+    {{- range $kids }}<li id="t-{{ .id }}"><strong>{{ .title }}</strong>. {{ partial "aegis-explorer-node.html" (dict "n" . "pages" $pages "repo" $repo) }}</li>{{ end }}
+  </ul>
+  {{- end }}
+  {{- end }}{{ end }}
+  <h2>Connections</h2>
+  <ul>
+    {{- range $d.edges }}
+    <li><strong>{{ (index $byId .from).title }} to {{ (index $byId .to).title }}</strong> ({{ index $d.edge_kinds .kind }}): {{ .label }}{{ with .detail }}. {{ . }}{{ end }}</li>
+    {{- end }}
+  </ul>
+  <h2>Walks</h2>
+  {{- range $d.walks }}
+  <h3 id="t-{{ .id }}">{{ .title }}</h3>
+  <ol>{{ range .steps }}<li>{{ .say }}</li>{{ end }}</ol>
+  {{- end }}
+  <h2>Fleet replay recordings</h2>
+  {{- range $d.replay.recordings }}
+  <h3>{{ .title }}</h3>
+  {{- range .parts }}
+  <p class="src"><a href="{{ $repo }}/blob/main/{{ .source }}"><code>{{ .source }}</code></a>, {{ .date }}</p>
+  <pre>{{ range .lines }}{{ if reflect.IsMap . }}{{ .line }}{{ else }}{{ . }}{{ end }}
+{{ end }}</pre>
+  {{- end }}
+  {{- end }}
+  </div>
+</details>
+<footer>Every fact on this page comes from one data file, <a href="{{ "/aegis/architecture.yaml" | relURL }}">architecture.yaml</a>, written from the <a href="{{ $repo }}">Aegis repository</a>'s documents and evidence. Each component names its sources there and the labs that explain it.</footer>
+<script id="data" type="application/json">{{ $data | jsonify | safeJS }}</script>
+<script>{{ $js.Content | safeJS }}</script>
+</body>
+</html>
