@@ -94,6 +94,11 @@ restricted permissions, because this chip does not hold it in hardware. `aegisd`
 gateway's quote; `aegis-fleet` runs the decision cycle. **Never unload the `mpfs-generic-service` kernel module**: it has no
 remove path and the board becomes unreachable. To remove it, reboot.
 
+Let systemd drive the board's hardware watchdog, so that a hung gateway resets itself instead of going quiet. On this
+image it is off by default. A drop-in `/etc/systemd/system.conf.d/aegis-watchdog.conf` with `RuntimeWatchdogSec=20s`
+and `RebootWatchdogSec=25s` under `[Manager]` turns it on; see
+[a gateway that hung for seven hours](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours/).
+
 Optional: build and program the fabric accelerator
 ([lab 49](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a03-fabric-accelerator/)) with
 `hw/libero/build.sh 101`. Without it the services use software Keccak.
@@ -159,6 +164,7 @@ connected to the PC's ST-LINK.
 | PolarFire | `/root/aegis/`, `/var/lib/aegis/`, two systemd units | remove the folders, `install.sh remove`, reboot |
 | PolarFire | the fabric (only if you programmed the accelerator) | program the pfdaq fabric job again |
 | PolarFire | a kernel with nf_tables, bridge and VLAN support in the boot partition | the bundle's `rollback.sh`, then reboot |
+| PolarFire | the watchdog drop-in in `/etc/systemd/system.conf.d/` | delete it, `systemctl daemon-reexec` |
 | STM32 | the secure and non-secure firmware slots | `restore_from_backup.sh` |
 | Uno | the sketch in flash | write back the saved hex with avrdude |
 

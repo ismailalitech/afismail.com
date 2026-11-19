@@ -7,12 +7,12 @@ weight = 20
 
 [params]
   project = true
-  platform = "Microchip PolarFire SoC, STMicroelectronics STM32H5 and NXP RW612"
+  platform = "Microchip PolarFire SoC, STMicroelectronics STM32H5, NXP RW612 and AMD Zynq UltraScale+"
   problem = "A network usually trusts a device because it is plugged in. A device should earn access by proving what it is and what firmware it runs, and keep proving it, with signatures that a future quantum computer cannot forge."
   role = "Designed and built the complete system: the gateway services, the fabric accelerator and its tests, the secure partition on the endpoint, the attestation and provisioning protocol, the red-team harness and the regression."
-  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 12 of 12 regression stages pass."
-  hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK and an NXP FRDM-RW612 as attested endpoints, Arduino Uno R3 as a device that cannot attest"
-  tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
+  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 13 of 13 regression stages pass."
+  hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK, an NXP FRDM-RW612 and a Trenz TE0807 (Zynq UltraScale+ XCZU4EG) on a TEBF0808 carrier as attested endpoints, Arduino Uno R3 as a device that cannot attest"
+  tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, Vivado and Vitis 2025.2, TF-A, OP-TEE 4.7, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
   guide = "/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/a01-reproduce-the-bench/"
   toc = true
 +++
@@ -35,6 +35,7 @@ what it does not protect.
 | PolarFire SoC Discovery Kit | The gateway: decides admission, issues credentials | Linux on three cores for the services, FPGA fabric for an accelerator, a fourth core for a real-time supervisor |
 | STM32H573I-DK | An attested endpoint | TrustZone, a hardware-unique key, and Ethernet; runs TF-M v2.3.0 |
 | NXP FRDM-RW612 | An attested endpoint from a second vendor | A die key in its EdgeLock Secure Subsystem, and Ethernet. First a Zephyr prover that measures itself (device-key trust); then TF-M with the prover in a TrustZone secure partition, hardened and reviewed (trustzone trust) |
+| Trenz TE0807 (XCZU4EG) on a TEBF0808 | An attested Linux endpoint | A PUF, the CSU's AES and SHA-3, and Cortex-A53s with TrustZone. First a Linux prover (software trust); then OP-TEE holding the key (trustzone-devkey); then a key bound to the chip's PUF without fuses, with measurements from the boot chain (trustzone trust) |
 | Arduino Uno R3 | A device that cannot attest | No keys, no measured boot, no network: it must be refused |
 
 Constraints that shaped the design:
@@ -60,6 +61,9 @@ Constraints that shaped the design:
 - **A second chip family.** A Zephyr prover for the NXP RW612 that derives its ML-DSA-65 key from the die key inside
   the chip's EdgeLock Secure Subsystem and speaks the same protocol; its protocol code is tested on the PC against the
   gateway's own code.
+- **A Linux endpoint with a key from the PUF.** On a Zynq UltraScale+: a boot chain and kernel built from source, the
+  accelerator in the PL, the protocol as an OP-TEE trusted application, and an FSBL hook that derives the key under a
+  device key only this chip's PUF recovers, with no eFUSE written.
 - **A legacy node and a verifier.** An Arduino sketch that answers every request with a statement that it cannot
   attest, and a PC tool that checks the gateway's own quote.
 - **Red-team harness and regression.** Mutated tokens, malformed frames, hostile replies, downgrade and replay attempts,
@@ -67,7 +71,7 @@ Constraints that shaped the design:
 
 ## Architecture
 
-![The system: a PC checks the gateway quote; the PolarFire gateway runs aegisd and aegis-fleet, reads the system controller and can use the fabric accelerator; two STM32s and an NXP RW612 are attested over Ethernet, the Arduino Uno through a PC relay](/aegis/diagrams/system-overview.svg)
+![The system: a PC checks the gateway quote; the PolarFire gateway runs aegisd and aegis-fleet, reads the system controller and can use the fabric accelerator; an NXP RW612, two STM32s and a Zynq UltraScale+ are attested over Ethernet, the Arduino Uno through a PC relay](/aegis/diagrams/system-overview.svg)
 
 One decision cycle:
 
@@ -90,7 +94,8 @@ project's other registers, next to the two peripheral blocks and the processor s
 ![The top-level SmartDesign canvas in Libero SoC, zoomed on the aegis_pqc block, with numbered callouts on it, FIC_3_PERIPHERALS, FIC_0_PERIPHERALS and the processor subsystem](/aegis/diagrams/libero-canvas-annotated.svg)
 
 The parts are listed at the top of this page in the order a reader would work through them: how attestation works, the
-bench, the gateway's identity, the fabric accelerator, the endpoint, enforcement and Linux timing. Each lab ends with what to
+bench, the gateway's identity, the fabric accelerator, the endpoints, the Zynq UltraScale+ endpoint, enforcement and
+Linux timing. Each lab ends with what to
 check and where it can go wrong, and the case studies record defects that were found and fixed. The threat list is in the
 project's [threat model](https://github.com/ismailalitech/aegis/blob/main/docs/threat-model.md).
 
@@ -104,8 +109,9 @@ Three kinds of evidence, kept apart:
 - **Attack harness.** 3,000 mutated tokens, 310 malformed frames to the gateway, 800 hostile endpoint replies, 76
   malformed commands to the STM32, downgrade and key-replay attempts. Two real defects were found and fixed.
 - **Enforcement rules.** Three network namespaces stand in for the gateway, an endpoint and the network; the real ruleset
-  and hook ran in them. The first run found that quarantine did not cut an open connection; fixed, 10 of 10 checks pass.
-- **Whole system.** A regression that runs the host stages and the board stages: 12 of 12 pass, and the five host
+  and hook ran in them. The first run found that quarantine did not cut an open connection, and a later one that the rules dropped
+  replies to the gateway's own connections; both fixed, 13 of 13 checks pass. The one-port VLAN design: 16 of 16.
+- **Whole system.** A regression that runs the host stages and the board stages: 13 of 13 pass, and the five host
   stages and the enforcement test also run on every push on a clean machine in GitHub Actions.
 
 Every number is traced to a record with its method: [results and evidence](/resources/aegis-results/).
@@ -120,6 +126,7 @@ Every number is traced to a record with its method: [results and evidence](/reso
 | Do the algorithms match the standard? | 265 of 265 NIST vectors on each platform tested |
 | Does the fabric accelerator speed anything up? | The first one does not: it is correct, but moving data over the bus costs more than the 0.48 microseconds the permutation takes, and ML-DSA-65 sign goes from 14.3 to 15.5 ms ([lab 49](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a03-fabric-accelerator/)). The second does: ML-KEM-768 1.26 to 1.29 times and ML-DSA-65 1.19 to 1.54 times faster than software, with all 265 NIST vectors passing ([lab 54](/projects/fpga-soc/microchip-polarfire-soc/aegis/post-quantum-in-fabric/a08-sponge-accelerator/)) |
 | Cost of the accelerator | First version: the whole design uses 36,373 logic elements (38.9 %), 2.06 ns worst slack. Second: 44,191 (47.3 %), 1.33 ns worst slack; timing met in every corner for both |
+| Can a Linux board hold a key bound to its chip without writing a fuse? | Yes, on the Zynq UltraScale+: the PUF in boot-header mode, the key derived in the FSBL and used only by OP-TEE; the same key after a power cycle, the eFUSE cache unchanged. Phase C, which keeps Linux away from the device key, is not done ([lab 63](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/a16-a-key-from-the-puf/)) |
 | Full re-attestation time over Ethernet | 0.30 s for the quote itself; 7.7 KB signed quote |
 | Linux user-space interrupt response | 54 microseconds mean, 0.36 to 0.47 ms worst with a real-time priority on a pinned core; up to 5 ms without it. See [the lab](/projects/fpga-soc/microchip-polarfire-soc/aegis/linux-timing/a06-linux-latency-scheduling/) |
 
@@ -130,6 +137,10 @@ Limits, stated plainly:
 - **The gateway's key is software.** Linux file permissions protect it, and enrolment is trust on first use.
 - **Development keys on the endpoint,** in the open product state. Only the ML-DSA signature from the device key is
   security-relevant; the TF-M attestation key is a published one.
+- **The Zynq UltraScale+ key is partly tested.** The red key that the PUF protects is on the build PC; without fuses
+  the boot ROM does not check who signed the image; Linux is not yet kept away from the device key; the kernel is not
+  measured; OP-TEE's random numbers come from a timer-seeded software generator
+  ([lab 63](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/a16-a-key-from-the-puf/)).
 - **Per-chip uniqueness of the device key is shown on two chips, not on a population** ([lab 56](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a10-two-chips-two-keys/)).
 - **Not evaluated:** side channels, fault injection, power loss during provisioning. ML-DSA signing is hedged since [lab 55](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a09-harden-a-running-endpoint/).
 - Everything was measured on one set of boards.

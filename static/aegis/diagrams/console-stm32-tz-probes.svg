@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 344" width="1120" height="344" role="img" aria-labelledby="t d">
+<title id="t">the STM32 from the non-secure side</title><desc id="d">Results of probe.sh on STM32 board 2. The secure partition's key derivation run from the non-secure side is refused and the SAES illegal-access flag is set. Reads of secure flash and secure SRAM through the secure aliases fault, and the chip resets; reads through non-secure aliases of secure SRAM, SAES and the RNG return zero and set their flags. A word of the non-secure code reads as expected.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 15.60s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 15.60s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}21.79%{opacity:1}24.79%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="1120" height="344" rx="12" fill="#12171d"/>
+<rect x="0" y="0" width="1120" height="274" fill="#0d1117"/>
+<rect x="0" y="0" width="1120" height="34" fill="#1b222c"/>
+<circle cx="20" cy="17" r="6" fill="#ef6f6c"/>
+<circle cx="38" cy="17" r="6" fill="#e6c04f"/>
+<circle cx="56" cy="17" r="6" fill="#5fbf84"/>
+<text x="560" y="22" text-anchor="middle" font-size="12" fill="#9aa8b5">the STM32 from the non-secure side</text>
+<text x="24" y="58" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" xml:space="preserve"><tspan fill="#5fbf84">$ </tspan><tspan fill="#e6ecf1">endpoints/stm32h573/probe.sh &lt;out&gt; --saes, then NAME=0xADDR ...   # summary lines</tspan></text>
+<text x="24" y="78" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">SAES-DHUK: refused (aegis-saes: init=0 encrypt=1 sr=0x00000000); TZIC SR1-4: 00000000 00000000 00080000 00000004</text>
+<text x="24" y="98" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">NS_FLASH 0x08088000: no read (fault: 23 attempts, 23 boots); TZIC SR1-4: 00000000 00000000 00000000 00000000</text>
+<text x="24" y="118" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">S_FLASH_S 0x0C038000: no read (fault: 23 attempts, 23 boots); TZIC SR1-4: 00000000 00000000 00000000 00000000</text>
+<text x="24" y="138" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">S_FLASH_NS 0x08038000: no read (fault: 23 attempts, 23 boots); TZIC SR1-4: 00000000 00000000 00000000 00000000</text>
+<text x="24" y="158" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">S_SRAM_S 0x30032E00: no read (fault: 23 attempts, 23 boots); TZIC SR1-4: 00000000 00000000 00000000 00000000</text>
+<text x="24" y="178" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">S_SRAM_NS 0x20032E00: no read (read as zero; secure value 0x30032E09); TZIC SR1-4: 00000000 00000000 00000000 01000004</text>
+<text x="24" y="198" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">SAES 0x420C0C00: no read (read as zero; secure value 0x00000000); TZIC SR1-4: 00000000 00000000 00080000 00000004</text>
+<text x="24" y="218" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">RNG 0x420C0800: no read (read as zero; secure value 0x00000000); TZIC SR1-4: 00000000 00000000 00040000 00000004</text>
+<text x="24" y="238" font-family="IBM Plex Mono, ui-monospace, Menlo, Consolas, monospace" font-size="13" fill="#b9c4cf" xml:space="preserve">NS_CODE 0x08088400: control, readable as expected: 0x20022800 (the same word over SWD); TZIC SR1-4: 00000000 00000000 00000000 00000004</text>
+<rect x="0" y="274" width="1120" height="70" fill="#12171d"/>
+<g class="co" style="animation-delay:0.00s"><rect x="8" y="63" width="1104" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="65" r="11" fill="#ffd166"/><text x="8" y="69" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">1</text></g>
+<g class="co cap" style="animation-delay:0.00s">
+<rect x="0" y="274" width="1120" height="70" fill="#12171d"/>
+<circle cx="24" cy="300" r="13" fill="#ffd166"/><text x="24" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">1</text>
+<text x="48" y="298" font-size="15" font-weight="bold" fill="#e6ecf1">DHUK from the non-secure side</text>
+<text x="48" y="318" font-size="13" fill="#9aa8b5">SAES refuses; TZIC SR3 bit 19 is its illegal-access flag.</text>
+</g>
+<g class="co" style="animation-delay:3.40s"><rect x="8" y="83" width="1104" height="83" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="85" r="11" fill="#ffd166"/><text x="8" y="89" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">2</text></g>
+<g class="co cap" style="animation-delay:3.40s">
+<rect x="0" y="274" width="1120" height="70" fill="#12171d"/>
+<circle cx="24" cy="300" r="13" fill="#ffd166"/><text x="24" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">2</text>
+<text x="48" y="298" font-size="15" font-weight="bold" fill="#e6ecf1">Fault</text>
+<text x="48" y="318" font-size="13" fill="#9aa8b5">The read never returns; TF-M resets the chip, 23 times in 40 s.</text>
+</g>
+<g class="co" style="animation-delay:6.80s"><rect x="8" y="163" width="1104" height="63" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="165" r="11" fill="#ffd166"/><text x="8" y="169" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">3</text></g>
+<g class="co cap" style="animation-delay:6.80s">
+<rect x="0" y="274" width="1120" height="70" fill="#12171d"/>
+<circle cx="24" cy="300" r="13" fill="#ffd166"/><text x="24" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">3</text>
+<text x="48" y="298" font-size="15" font-weight="bold" fill="#e6ecf1">Read as zero</text>
+<text x="48" y="318" font-size="13" fill="#9aa8b5">The GTZC returns zero and flags SRAM1, SAES or the RNG.</text>
+</g>
+<g class="co" style="animation-delay:10.20s"><rect x="8" y="223" width="1104" height="23" rx="4" fill="#ffd166" fill-opacity="0.13" stroke="#ffd166" stroke-width="2.5"/>
+<circle cx="8" cy="225" r="11" fill="#ffd166"/><text x="8" y="229" text-anchor="middle" font-size="12" font-weight="bold" fill="#12171d">4</text></g>
+<g class="co cap" style="animation-delay:10.20s">
+<rect x="0" y="274" width="1120" height="70" fill="#12171d"/>
+<circle cx="24" cy="300" r="13" fill="#ffd166"/><text x="24" y="305" text-anchor="middle" font-size="14" font-weight="bold" fill="#12171d">4</text>
+<text x="48" y="298" font-size="15" font-weight="bold" fill="#e6ecf1">Control</text>
+<text x="48" y="318" font-size="13" fill="#9aa8b5">A word of the non-secure code: the same value as over SWD.</text>
+</g>
+</svg>
