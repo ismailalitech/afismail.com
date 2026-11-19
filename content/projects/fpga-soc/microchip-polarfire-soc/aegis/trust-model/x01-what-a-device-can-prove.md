@@ -49,7 +49,10 @@ verdict says `device-key trust`. With TF-M
 ([lab 58](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a12-trustzone-on-the-rw612/)), the
 same chip keeps the key and both measurements in a secure partition the network firmware cannot reach, and the verdict
 says `trustzone trust`; the gateway pins that profile, because the chip's key is the same under either firmware. A Linux
-board whose key is a file would be labelled `software trust`.
+board whose key is a file is labelled `software trust`. The Zynq UltraScale+ endpoint went through the labels in order
+([labs 60 to 63](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/)): `software trust` with a
+Linux prover, `trustzone-devkey` once OP-TEE held a key that every chip shares, and `trustzone` once that key came from
+the chip's PUF and the boot chain took the measurements.
 
 ![Three kinds of endpoint: who holds the key, who measures the firmware, and the label the gateway puts on the verdict](/aegis/diagrams/endpoint-trust-levels.svg)
 
