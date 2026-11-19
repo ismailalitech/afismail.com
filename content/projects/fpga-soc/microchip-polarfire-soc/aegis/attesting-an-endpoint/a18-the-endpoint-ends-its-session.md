@@ -152,6 +152,20 @@ two `ttl` values; C, a heartbeat and a session query after the end; D, an attest
 
 With the service running again, its first cycle reads "issued session ..." for the endpoint.
 
+The board regression can do the same as its fourteenth stage, `endpoint-expiry`, which is off by default:
+
+```sh
+tools/regression.sh --board --with-expiry
+```
+
+The stage stops `aegis-fleet`, runs `expiry_check.py` on the gateway for each endpoint that holds a session, and
+starts the service again however the stage ends, a failure or Ctrl-C included. A 15-minute timer on the gateway starts
+it too, in case the PC or the link goes away first. The stage passes only when every check passes and those endpoints
+are ADMITTED again in the gateway's journal. On 19 November the regression gave 14 of 14, with the same `ttl` values
+and replies as the table above, and all three endpoints were admitted with a new session in the first cycle after.
+The Zynq UltraScale+ and the Arduino were not connected; a quarantined endpoint holds no session, so the stage leaves
+it out.
+
 ### 4. What the clock rates say
 
 The STM32's RTC runs on an RC oscillator, and on both boards it counted 0.941 s for each second of the gateway's clock:
@@ -168,6 +182,7 @@ margin. It does lengthen the endpoint's own limit: an hour's credential ends on 
 | A 32 s credential, after its end | heartbeat and session query refused on all three endpoints |
 | Attestation after the end | answers on all three |
 | Clock rates | STM32 RTC on the LSI 0.941 on both boards; RW612 secure SysTick 1.000 |
+| The regression with `--with-expiry` | 14 of 14; all three endpoints admitted again with a new session |
 | PC tests | 70 passed: accepted a second before the end, refused at it, the session gone; no clock; a clock running backwards; credentials without a lifetime; the gateway provisioning again |
 | Fuzzing | both partitions against a model that holds the clock, with clock moves and clock faults: 236,698 executions, nothing found |
 
@@ -189,7 +204,7 @@ margin. It does lengthen the endpoint's own limit: an hour's credential ends on 
 ## Where it can go wrong
 
 - **Running the check with the fleet service on.** The service provisions a new session in the middle of it. Stop
-  `aegis-fleet` first and start it again afterwards.
+  `aegis-fleet` first and start it again afterwards, or let the regression's `endpoint-expiry` stage do both.
 - **A gateway with a lifetime over one day, or without the two fields.** Every exchange is refused with
   `ERR cred validity`: the endpoint is admitted, and the journal says "provisioning failed". The gateway's tests check
   its lifetime against the endpoints' limit.
@@ -206,3 +221,5 @@ The design and the per-board clock choices are in the project's
 [`docs/endpoint-expiry.md`](https://github.com/ismailalitech/aegis/blob/main/docs/endpoint-expiry.md), and the bench
 record is
 [`evidence/endpoint-expiry/bench.txt`](https://github.com/ismailalitech/aegis/blob/main/evidence/endpoint-expiry/bench.txt).
+The regression run with the stage is
+[`evidence/console/regression-14of14-20261119.txt`](https://github.com/ismailalitech/aegis/blob/main/evidence/console/regression-14of14-20261119.txt).
