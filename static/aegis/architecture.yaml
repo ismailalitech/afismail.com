@@ -1,0 +1,739 @@
+# Aegis system architecture: the single source for the architecture explorer at /aegis/explorer/.
+# Hugo reads this file when the site is built (layouts/aegis-explorer.html): it draws nothing itself, it hands
+# the data to the page and prints the same content as text for readers without JavaScript.
+#
+# Every fact comes from the Aegis repository (https://github.com/ismailalitech/aegis): docs/architecture.md,
+# docs/threat-model.md, docs/zynqmp-key-design.md, docs/endpoint-expiry.md, endpoints/*/README.md and evidence/,
+# as of 19 November 2026. Each component and connection names the files behind it ("sources") and the labs that
+# explain it ("learn", paths under /projects/fpga-soc/microchip-polarfire-soc/aegis/; the build fails on a
+# missing page).
+schema: 1
+baseline:
+  date: "2026-11-19"
+  state: Release v0.2.0 and the main branch after it, 19 November 2026
+  repo: https://github.com/ismailalitech/aegis
+
+node_kinds:
+  group: Board
+  host: PC tool
+  service: Gateway service
+  file: Data on the gateway
+  hw: Hardware
+  nonsecure: Non-secure software
+  secure: Secure-world software
+  boot: Boot stage
+  network: Network
+  legacy: Device that cannot attest
+
+edge_kinds:
+  quote: Gateway quote
+  attest: Attestation (PQCHAL, PQTOKEN)
+  kem: ML-KEM provisioning (PQKEMINIT, PQKEMFIN)
+  hb: KMAC heartbeat (PQHB)
+  world: Call between worlds
+  boot: Boot hand-over
+  key: Key material
+  measure: Measurement
+  enforce: Enforcement hook
+  serial: Serial line
+  uses: Uses or reads
+
+nodes:
+  # ---------------------------------------------------------------- the bench PC
+  - id: pc
+    title: PC on the bench
+    kind: group
+    summary: On the same LAN as the gateway and the endpoints. Checks the gateway's own quote and relays requests to the Arduino Uno.
+    sources: [host/]
+  - id: verifier
+    title: Gateway verifier
+    label: aegis_verify.py
+    sub: checks the gateway's quote
+    kind: host
+    parent: pc
+    summary: Sends a fresh nonce to the gateway and checks the ML-DSA-65 quote that comes back - the signature, the nonce and the platform measurements.
+    facts: {result: "accepted, 3,309-byte signature, 0.039 s", port: "TCP 7443"}
+    sources: [host/aegis_verify.py, evidence/console/quote-accepted.json]
+    learn: [identity-and-quotes/a02-gateway-identity-and-quote]
+
+  # ---------------------------------------------------------------- the gateway
+  - id: gateway
+    title: PolarFire SoC Discovery Kit (the gateway)
+    kind: group
+    summary: Decides which endpoints may be trusted, from evidence the endpoints' secure hardware produces, and gives admitted endpoints a credential and a session key established with ML-KEM. Linux on U54 harts 1 to 3 runs the services.
+    facts: {chip: "MPFS095T, the non-S part", network: "one Ethernet port: it decides, it is not yet in the traffic path", regression: "13 of 13 stages on the boards"}
+    sources: [docs/architecture.md, evidence/console/regression-13of13.txt]
+    learn: [identity-and-quotes/k01-chip-is-not-an-s-device, bench-and-reproduce/a01-reproduce-the-bench, bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours]
+  - id: aegisd
+    title: aegisd
+    sub: identity and quote
+    kind: service
+    parent: gateway
+    summary: The gateway's identity, bound to the chip's serial number, the Microchip device certificate and the design info. Answers quotes with live platform measurements.
+    facts: {port: "TCP 7443, length-prefixed JSON", label: aegis-quote-v1, limits: "a thread per connection, 8 at most, 3 s timeout"}
+    sources: [gateway/aegisd/aegisd.py, docs/threat-model.md]
+    learn: [identity-and-quotes/a02-gateway-identity-and-quote, attesting-an-endpoint/k04-one-slow-client-stalled-the-service]
+  - id: sysctrl
+    title: System controller
+    sub: serial, certificate, digests, nonce
+    kind: hw
+    parent: gateway
+    summary: A hard block that starts before the processors. Through a read-only whitelist of services it gives the serial number, a certificate Microchip signed for it, design digests and a nonce from the chip's SRAM start-up states.
+    facts: {serial: "16 bytes", certificate: "976-byte X.509; status 0, valid and consistent with the device", nonce: "32 bytes"}
+    sources: [gateway/sysserv/aegis_sysserv.py, docs/threat-model.md]
+    learn: [identity-and-quotes/a02-gateway-identity-and-quote, identity-and-quotes/k01-chip-is-not-an-s-device]
+  - id: gw-key
+    title: Gateway identity key
+    sub: ML-DSA-65, held in software
+    kind: file
+    parent: gateway
+    summary: Signs the gateway's quotes and the endpoints' credentials. A software key, protected by Linux file permissions only - the MPFS095T (non-S) has no key-holding data-security services. Its public half is pinned in each endpoint's secure image at build time.
+    facts: {file: "/var/lib/aegis/identity.sk, mode 0600", at_the_endpoint: "pinned in the secure image (gateway_pk.h)"}
+    sources: [docs/threat-model.md, endpoints/rw612/README.md]
+    learn: [identity-and-quotes/a02-gateway-identity-and-quote, identity-and-quotes/k01-chip-is-not-an-s-device]
+  - id: policy
+    title: Policy
+    label: fleet.json
+    sub: keys, measurements, profiles
+    kind: file
+    parent: gateway
+    summary: The endpoints, their enrolled ML-DSA-65 keys, the allowed measurements and the pinned claims profiles. Edited by the operator and reloaded by aegis-fleet every cycle. Enrolment is trust on first use; enroll-pq keeps an existing pin unless told --force.
+    facts: {pins: "a re-enrolment keeps existing pins (T19)", profiles: "pinned where one chip key could serve two firmwares (T18)"}
+    sources: [gateway/policy/fleet.example.json, docs/threat-model.md]
+    learn: [attesting-an-endpoint/a05-quarantine-and-red-team, attesting-an-endpoint/a10-two-chips-two-keys]
+  - id: fleet
+    title: aegis-fleet
+    sub: attest, decide, provision, every 30 s
+    kind: service
+    parent: gateway
+    summary: Every 30 s it attests each endpoint, admits or quarantines it with a reason, issues or revokes ML-KEM credentials and checks heartbeats. The verdict names the trust behind it.
+    facts: {cycle: "30 s", credential: "one hour, renewed five minutes before it expires", trust_labels: "trustzone, trustzone-devkey, device-key, software"}
+    sources: [gateway/aegisd/fleet.py, docs/architecture.md]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a05-quarantine-and-red-team, attesting-an-endpoint/a09-harden-a-running-endpoint, trust-model/x01-what-a-device-can-prove]
+  - id: fabric
+    title: Fabric accelerator
+    sub: SHA-3 sponge and NTT, version 2
+    kind: hw
+    parent: gateway
+    summary: On FIC3, APB slot 14. Keeps the SHA-3 sponge in the fabric, squeezes blocks by DMA into DDR, and runs the FIPS 203/204 NTT. A performance block, not a security mechanism; the gateway's services do not enable it.
+    facts: {speed: "ML-KEM-768 1.26 to 1.29 times, ML-DSA-65 1.19 to 1.54 times faster than software", vectors: "265 of 265 NIST cases", cost: "44,191 logic elements (47.3 %), worst slack 1.329 ns at 125 MHz"}
+    sources: [docs/accelerator-v2.md, hw/rtl/, evidence/accel-v2/]
+    learn: [post-quantum-in-fabric/a03-fabric-accelerator, post-quantum-in-fabric/a08-sponge-accelerator]
+  - id: enforce
+    title: Enforcement hook
+    sub: aegis-enforce.sh and nftables
+    kind: service
+    parent: gateway
+    summary: Run with the endpoint's name and verdict after every decision. It adds the endpoint's address to the nftables set @admitted or removes it. Tested in network namespaces; on the bench the gateway is not yet in the traffic path, so today it decides and records.
+    facts: {namespaces: "13 of 13 checks", one_port_vlan_design: "16 of 16 checks", needs: "a switch with 802.1Q VLANs"}
+    sources: [gateway/enforce/aegis-enforce.sh, gateway/enforce/aegis.nft, docs/vlan-enforcement.md, evidence/console/enforcement.txt]
+    learn: [enforcement/a07-enforcement-without-a-switch, enforcement/a08-one-port-and-a-vlan-switch, enforcement/k10-the-ruleset-that-let-no-endpoint-in, enforcement/k05-a-kernel-install-that-replaced-lib]
+  - id: lan
+    title: Bench LAN
+    sub: TCP 7443 and 7444
+    kind: network
+    summary: Every request travels over TCP, one request per connection, hex lines on the endpoint side. The threat model's network attacker can read, drop, replay, modify and inject traffic here, and connect to any open port.
+    facts: {gateway: "TCP 7443", endpoints: "TCP 7444"}
+    sources: [docs/threat-model.md]
+    learn: [trust-model/x01-what-a-device-can-prove]
+
+  # ---------------------------------------------------------------- STM32H573
+  - id: stm32
+    title: STM32H573I-DK, boards 1 and 2
+    kind: group
+    stack: 2
+    summary: Two boards with the same firmware, option bytes and boot loader. TF-M v2.3.0 with the Aegis partition in the secure world, in product state Open with TF-M's published development keys. The gateway knows them as stm32h573-dk and stm32h573-dk-2 (kind aegis-pq).
+    facts: {tfm: "v2.3.0, isolation level 1", two_chips: "ML-DSA keys differ in 1,941 of 1,952 bytes", psa_identity: "the same on both (development provisioning)"}
+    sources: [docs/second-board.md, evidence/two-boards/]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a10-two-chips-two-keys, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side]
+  - id: stm32-ns
+    title: STM32 non-secure prover
+    label: Non-secure prover
+    sub: lwIP, TCP 7444, no keys
+    kind: nonsecure
+    parent: stm32
+    summary: Ethernet (lwIP, LAN8742A) and the line protocol. Holds no keys. Passes each request to the secure partition with psa_call, and gives it the status text (uptime, link, firmware) that a heartbeat carries.
+    facts: {version: "0.6.0"}
+    sources: [endpoints/stm32h573/prover-ns/]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/k02-veneers-at-different-addresses]
+  - id: stm32-s
+    title: STM32 Aegis PQ partition
+    label: Aegis PQ partition
+    sub: TF-M secure partition
+    kind: secure
+    parent: stm32
+    summary: The device key, quotes, ML-KEM provisioning, mutual authentication and KMAC heartbeats. Derives its ML-DSA-65 key from the DHUK at start-up and checks every credential against the gateway key pinned in its image. Ends a session on its own secure clock.
+    facts: {stack: "19088 of 26624 bytes used (sstack= in every heartbeat)", fuzzing: "892,774 executions, 0 crashes or model failures", session_end: "lifetime plus a sixteenth, then ERR pq -140"}
+    sources: [endpoints/stm32h573/tfm-aegis-partition/aegis_pq_attest.c, evidence/stm32-sstack/heartbeat-sstack.txt, evidence/stm32-kemfix/fuzzing.txt, evidence/endpoint-expiry/bench.txt]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a09-harden-a-running-endpoint, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side, attesting-an-endpoint/k03-anyone-could-end-a-session, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]
+  - id: stm32-ias
+    title: Initial Attestation service
+    label: Initial Attestation
+    sub: PSA token, signed ES256
+    kind: secure
+    parent: stm32
+    summary: TF-M's own service. Gives the partition the PSA token (COSE_Sign1) with the challenge, the instance ID and the boot measurements of SPE and NSPE with their signer IDs. Its ES256 key is TF-M's published development key; only the ML-DSA signature from the device key counts.
+    sources: [docs/threat-model.md, docs/architecture.md]
+    learn: [trust-model/x03-measured-boot-and-the-token, attesting-an-endpoint/a04-attest-the-stm32]
+  - id: stm32-bl2
+    title: TF-M BL2 (MCUboot)
+    sub: verifies and measures the images
+    kind: boot
+    parent: stm32
+    summary: Verifies the signatures of the secure and non-secure images (EC-P256) and records their measurements, which the PSA token then carries. On this bench the images are signed with TF-M's published development keys.
+    facts: {signer: "TF-M development keys", product_state: "Open"}
+    sources: [docs/threat-model.md]
+    learn: [trust-model/x03-measured-boot-and-the-token, attesting-an-endpoint/a04-attest-the-stm32]
+  - id: stm32-saes
+    title: SAES with the DHUK
+    sub: the chip's hardware-unique key
+    kind: hw
+    parent: stm32
+    summary: At partition start-up the secure world encrypts a fixed 32-byte label with AES-256 in SAES under the hardware-unique key. The result seeds ML-DSA-65 key generation and is then wiped. The GTZC makes SAES secure-only.
+    facts: {probe: "the derivation run from the non-secure side is refused (TZIC SR3 bit 19, SAES)", second_chip: "same firmware, different key"}
+    sources: [evidence/stm32-tz/tz-probes.txt, docs/second-board.md]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a10-two-chips-two-keys, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side]
+  - id: stm32-rtc
+    title: RTC on the LSI
+    sub: the secure session clock
+    kind: hw
+    parent: stm32
+    summary: The clock that ends a session on the endpoint. The RTC runs on the internal 32 kHz RC oscillator as a 32-bit counter at 250 Hz; the partition makes it secure and privileged at each start and checks the settings at every reading.
+    facts: {rate_on_the_bench: "0.941 s per gateway second, on both boards", wraps: "every 198 days"}
+    sources: [docs/endpoint-expiry.md, evidence/endpoint-expiry/bench.txt]
+
+  # ---------------------------------------------------------------- RW612
+  - id: rw612
+    title: NXP FRDM-RW612
+    kind: group
+    summary: A Cortex-M33 at 260 MHz with TrustZone and the EdgeLock Secure Subsystem (ELS). NXP's TF-M v2.1.4 with the Aegis prover in a secure partition; the non-secure image only carries the network. Known to the gateway as frdm-rw612, kind aegis-device. No secure boot is fused.
+    facts: {tfm_regression: "164 of 164 tests, 16 of 16 suites", isolation: "TF-M level 2", protected_blocks: "12, each faults on a non-secure read"}
+    sources: [endpoints/rw612/README.md, endpoints/rw612/tfm/README.md, evidence/rw612-tfm/tfm-regression-164.txt, evidence/rw612-tfm/hardening-probes.txt]
+    learn: [attesting-an-endpoint/a11-a-key-from-the-chip-on-the-rw612, attesting-an-endpoint/a12-trustzone-on-the-rw612]
+  - id: rw612-ns
+    title: RW612 non-secure network prover
+    label: Non-secure prover
+    sub: lwIP, TCP 7444, no key
+    kind: nonsecure
+    parent: rw612
+    summary: Passes each line to the Aegis partition with psa_call, one line in and one out. It never holds the key, the seed or the session, and it cannot reach ELS.
+    facts: {version: "0.2.0"}
+    sources: [endpoints/rw612/tfm/prover_ns/, evidence/rw612-tfm/trustzone-prover.txt]
+    learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]
+  - id: rw612-pq
+    title: RW612 aegis_pq partition
+    label: aegis_pq partition
+    sub: PSA-RoT, SID 0xAE10
+    kind: secure
+    parent: rw612
+    summary: Runs the protocol code (aegis_proto.c) on every line. Before the non-secure image runs it hashes the whole secure (SPE) and non-secure (NSPE) flash partitions; at the first request it derives the ML-DSA-65 key from ELS.
+    facts: {measures: "SHA-256 of SPE 0x18001000-0x1809FFFF and NSPE 0x180A0000-0x1839FFFF", profile: aegis-rw612-tfm-v1, stack: "19368 of 32768 bytes (0.2.1), 19384 of 32768 (0.2.2)", fuzzing: "1,049,515 executions, 0 crashes or model failures"}
+    sources: [endpoints/rw612/tfm/aegis_pq/aegis_pq.c, endpoints/rw612/prover/src/aegis_proto.c, evidence/rw612-tfm/upgrade-0.2.1.txt, evidence/rw612-tfm/fuzzing.txt]
+    learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612, attesting-an-endpoint/k07-els-before-tf-m-set-it-up, attesting-an-endpoint/k08-a-range-erase-that-left-an-old-image, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]
+  - id: rw612-els
+    title: ELS and the die key
+    sub: from the PUF, CKDF only
+    kind: hw
+    parent: rw612
+    summary: The die master key sits in ELS slots 0 and 1, loaded by the boot ROM from the PUF; software can never read it. CKDF from it, then HMAC-SHA256 with a fixed label, gives the ML-DSA-65 seed; the intermediate key is deleted. TF-M makes ELS reachable by secure privileged code only.
+    facts: {key: "sha256(pk) starts dddd6ba1, the same as the single-image prover's: bound to the chip, not the firmware"}
+    sources: [endpoints/rw612/README.md, endpoints/rw612/tfm/README.md]
+    learn: [attesting-an-endpoint/a11-a-key-from-the-chip-on-the-rw612, attesting-an-endpoint/k06-an-els-key-in-the-last-slot, attesting-an-endpoint/k07-els-before-tf-m-set-it-up]
+  - id: rw612-systick
+    title: Secure SysTick
+    sub: the secure session clock
+    kind: hw
+    parent: rw612
+    summary: The clock that ends a session. The secure SysTick counts the SysTick function clock (main clock / 256, about 1 MHz). Its registers are banked per security state and its clock settings are secure-only. A heartbeat says which clock runs, clk=ref, or clk=cpu in the fallback.
+    facts: {rate_on_the_bench: "1.000 s per gateway second (clk=ref)"}
+    sources: [docs/endpoint-expiry.md, evidence/endpoint-expiry/bench.txt]
+
+  # ---------------------------------------------------------------- Zynq UltraScale+
+  - id: zynqmp
+    title: Trenz TE0807, Zynq UltraScale+ XCZU4EG
+    label: Zynq UltraScale+ (TE0807)
+    kind: group
+    summary: On a TEBF0808 carrier. A boot chain built from source, OP-TEE holding the key since 18 November 2026, and since 19 November a key bound to the chip's PUF, without writing a fuse. Known to the gateway as zynqmp-te0808, kind aegis-tee, trust label trustzone.
+    facts: {idcode: "04721093 (XCZU4EG)", trust_over_time: "software, then trustzone-devkey, then trustzone", not_yet: "phase C: keeping Linux away from the device key and OP-TEE's memory"}
+    sources: [endpoints/zynqmp/README.md, docs/zynqmp-key-design.md, evidence/zynqmp/]
+    learn: [zynq-ultrascale-endpoint/a13-a-linux-board-with-software-trust, zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf]
+  - id: zq-bridge
+    title: Linux bridge
+    sub: TCP 7444 to /dev/tee0
+    kind: nonsecure
+    parent: zynqmp
+    summary: One line in, one line out, between TCP 7444 and the trusted application through /dev/tee0. Linux holds no key and takes no measurement. Before OP-TEE, a Linux prover with its key in a file ran here (software trust).
+    sources: [endpoints/zynqmp/optee/bridge/, evidence/zynqmp/optee-phase-a.txt]
+    learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a13-a-linux-board-with-software-trust]
+  - id: zq-ta
+    title: Aegis trusted application
+    label: Aegis TA
+    sub: in OP-TEE
+    kind: secure
+    parent: zynqmp
+    summary: The RW612's protocol code in OP-TEE. Its ML-DSA-65 key derives from the hardware unique key; its quotes carry the boot chain's measurements; it runs the ML-KEM exchange and the KMAC heartbeats. Built into BOOT.BIN, not loaded from Linux.
+    facts: {profile: aegis-zynqmp-optee-v1, key: "sha256 c02f156d..., the same after a power cycle", measurements: "7: PMUFW, FSBL, PL, TFA, TFA.1, TEE, UBOOT", session_end: "built, not yet deployed on this board"}
+    sources: [endpoints/zynqmp/optee/ta/, evidence/zynqmp/puf-phase-b.txt, evidence/endpoint-expiry/bench.txt]
+    learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf]
+  - id: zq-optee
+    title: OP-TEE 4.7
+    sub: secure memory from 0x6000_0000
+    kind: secure
+    parent: zynqmp
+    summary: A platform hook reads the FSBL's hand-off page once, wipes it and keeps the seed as the hardware unique key (HUK); every key derives from it. The device tree withholds 0x6000_0000-0x7FFF_FFFF from Linux.
+    facts: {random_numbers: "a software generator seeded from a timer (open, phase C)", memory_guard: "the device tree only, until the XMPU guards it (phase C)"}
+    sources: [docs/zynqmp-key-design.md, endpoints/zynqmp/optee/os-patches/, evidence/zynqmp/optee-phase-a.txt]
+    learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf, zynq-ultrascale-endpoint/k11-tee-elf-without-its-init-data]
+  - id: zq-tfa
+    title: TF-A BL31
+    sub: xilinx-v2025.2, SPD=opteed
+    kind: secure
+    parent: zynqmp
+    summary: TF-A v2.12 built with SPD=opteed. Starts OP-TEE as BL32, then the normal world.
+    sources: [endpoints/zynqmp/README.md, evidence/zynqmp/optee-phase-a.txt]
+    learn: [zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/a15-optee-holds-the-key]
+  - id: zq-fsbl
+    title: FSBL with the Aegis hook
+    sub: Vitis 2025.2, encrypted
+    kind: boot
+    parent: zynqmp
+    summary: Decrypted by the boot ROM with the device key. Loads the PMU firmware, the bitstream, TF-A, OP-TEE and U-Boot, hashing each with the CSU's SHA3-384. Its hook then derives a seed with AES-256-GCM under the device key, writes it with the measurement list to a hand-off page in OP-TEE's memory, and clears the AES and KUP key registers.
+    facts: {seed: "AES-256-GCM(device key, fixed IV, \"aegis-zynqmp-mldsa65-seed-v1\")", console: "AEGIS: hand-off flags=0x7 meas=7"}
+    sources: [endpoints/zynqmp/fsbl/, docs/zynqmp-key-design.md, evidence/zynqmp/puf-phase-b.txt]
+    learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf, zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator]
+  - id: zq-pmufw
+    title: PMU firmware
+    sub: measured as PMUFW
+    kind: boot
+    parent: zynqmp
+    summary: Vitis 2025.2 zynqmp_pmufw, loaded and measured by the boot chain. By default it serves AES with the device key to Linux; building it with those calls secure-only is phase C.
+    facts: {measured: "129888 bytes, as stored (encrypted)"}
+    sources: [docs/zynqmp-key-design.md, evidence/zynqmp/puf-phase-b.txt]
+    learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf]
+  - id: zq-pl
+    title: PL bitstream
+    sub: the Aegis accelerator, measured as PL
+    kind: hw
+    parent: zynqmp
+    summary: The Aegis accelerator in the PL at 100 MHz, registers at 0x8000_0000, DMA into DDR. It passes its self-test, and is not faster than the A53 in software at this interface.
+    facts: {measured: "7797692 bytes", self_test: "500 iterations each, 0 mismatches", timing: "WNS +3.159 ns"}
+    sources: [evidence/zynqmp/pl-accelerator.txt, evidence/zynqmp/puf-phase-b.txt]
+    learn: [zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator]
+  - id: zq-puf
+    title: PUF and boot ROM
+    sub: black key to device key
+    kind: hw
+    parent: zynqmp
+    summary: The PUF is registered in boot-header mode - the helper data and the black key (a key we chose, encrypted under the PUF's key-encryption key) live in the boot header, not in eFUSEs. At power-on the boot ROM regenerates the KEK, decrypts the black key into the AES engine's device key and decrypts the FSBL. Another chip regenerates another KEK and gets a wrong key.
+    facts: {efuses: "44 eFUSE cache registers identical before and after", boot: "Secure Boot: authenticated, encrypted", limit: "RSA_EN not fused: the boot ROM does not check who signed the image"}
+    sources: [evidence/zynqmp/puf-phase-b.txt, docs/zynqmp-key-design.md]
+    learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf, zynq-ultrascale-endpoint/k13-a-factory-bit-stopped-the-puf-guard, zynq-ultrascale-endpoint/k14-bootgen-2025-2-fails-on-rsa-keys]
+  - id: zq-uboot
+    title: U-Boot
+    sub: xilinx-v2025.2, no environment
+    kind: nonsecure
+    parent: zynqmp
+    summary: Boots boot.scr from the SD card. Keeps no environment and has the eMMC and QSPI disabled, so it writes neither.
+    sources: [endpoints/zynqmp/README.md, evidence/zynqmp/boot-chain.txt]
+    learn: [zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator]
+  - id: zq-linux
+    title: Linux 6.12
+    sub: Debian 12, not measured yet
+    kind: nonsecure
+    parent: zynqmp
+    summary: linux-xlnx xilinx-v2025.2 with OP-TEE support. The kernel that U-Boot loads is not yet among the measurements - OP-TEE takes and wipes the hand-off page before U-Boot runs.
+    sources: [docs/zynqmp-key-design.md, evidence/zynqmp/boot-chain.txt]
+    learn: [zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/k12-a-jtag-boot-after-linux-stalled]
+
+  # ---------------------------------------------------------------- the legacy node
+  - id: legacy
+    title: Arduino Uno R3 on a PC relay
+    label: Arduino Uno on a relay
+    kind: group
+    summary: A device that cannot attest - no keys, no measured boot, no network. The gateway reaches it through a relay on the PC and must refuse it on every cycle.
+    sources: [endpoints/arduino-uno/legacy_sensor/legacy_sensor.ino, host/serial_bridge.py]
+    learn: [attesting-an-endpoint/a05-quarantine-and-red-team]
+  - id: relay
+    title: Serial relay
+    sub: serial_bridge.py on the PC
+    kind: host
+    parent: legacy
+    summary: The gateway connects to the PC on TCP 7444 as it would to a device; the relay forwards one request line to the board's serial port and returns the reply. It adds no trust.
+    sources: [host/serial_bridge.py]
+    learn: [attesting-an-endpoint/a05-quarantine-and-red-team]
+  - id: uno
+    title: Arduino Uno R3
+    sub: no keys, no measured boot
+    kind: legacy
+    parent: legacy
+    summary: Answers every request line with a statement that it cannot attest. Quarantined on every cycle.
+    facts: {reply: "LEGACY-SENSOR uno v1 cannot attest; request was: ...", policy_kind: psa}
+    sources: [endpoints/arduino-uno/legacy_sensor/legacy_sensor.ino, gateway/policy/fleet.example.json, evidence/console/two-endpoints-demo.txt]
+    learn: [attesting-an-endpoint/a05-quarantine-and-red-team]
+
+edges:
+  # the gateway and the PC
+  - {id: quote, from: verifier, to: aegisd, kind: quote, label: "quote request: nonce to ML-DSA-65 quote", detail: "Length-prefixed JSON on TCP 7443. The body holds the nonce, the identity hash and the measurements (design info, usercode, security locks, design digests, aegisd code hash, kernel, boot id); the signature is ML-DSA-65 with the label aegis-quote-v1.", learn: [identity-and-quotes/a02-gateway-identity-and-quote]}
+  - {id: sysserv, from: aegisd, to: sysctrl, kind: uses, label: "read-only whitelist of system services", detail: "Serial number, device certificate, design digests and the nonce. The kernel module is never unloaded (a kernel hazard)."}
+  - {id: key-quote, from: gw-key, to: aegisd, kind: key, label: "signs the gateway's quotes"}
+  - {id: key-cred, from: gw-key, to: fleet, kind: key, label: "signs the endpoints' credentials", detail: "A credential names SHA3-256 of the ML-KEM ciphertext, SHA3-256 of the endpoint's encapsulation key, the endpoint's key and its validity (issued, expires)."}
+  - {id: fleet-policy, from: fleet, to: policy, kind: uses, label: "reloads the policy every cycle"}
+  - {id: fleet-fabric, from: fleet, to: fabric, kind: uses, label: "optional SHA-3 provider for liboqs, which the services do not switch on", detail: "AEGIS_PQC_SPONGE=hw selects the fabric; aegisd and aegis-fleet run in software."}
+  - {id: fleet-enforce, from: fleet, to: enforce, kind: enforce, label: "endpoint name and verdict after every decision", learn: [enforcement/a07-enforcement-without-a-switch]}
+  - {id: enforce-lan, from: enforce, to: lan, kind: enforce, label: "the @admitted set, not yet in the traffic path", detail: "With a switch carrying 802.1Q VLANs the gateway would sit between the endpoints and the network; the design is tested in network namespaces (16 of 16).", learn: [enforcement/a08-one-port-and-a-vlan-switch]}
+
+  # the protocol to each endpoint
+  - {id: stm32-chal, from: fleet, to: stm32-ns, kind: attest, label: "PQCHAL nonce, answered by PQTOKEN", detail: "The claims are the TF-M PSA token, signed with ML-DSA-65 by the device key over aegis-endpoint-quote-v1, a zero byte and the token.", learn: [attesting-an-endpoint/a04-attest-the-stm32]}
+  - {id: stm32-kem, from: fleet, to: stm32-ns, kind: kem, label: "PQKEMINIT and PQKEMFIN, answered by PQKEMEK and PQKEMOK", learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/k03-anyone-could-end-a-session, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]}
+  - {id: stm32-hb, from: fleet, to: stm32-ns, kind: hb, label: "PQHB nonce, answered with status, counter and KMAC", detail: "Status ends with ;sstack=19088/26624 and ;ttl= the seconds left.", learn: [attesting-an-endpoint/a09-harden-a-running-endpoint]}
+  - {id: rw612-chal, from: fleet, to: rw612-ns, kind: attest, label: "PQCHAL nonce, answered by PQTOKEN", detail: "CBOR claims with PSA claim numbers: profile aegis-rw612-tfm-v1, the challenge, the instance ID, and the SPE and NSPE components.", learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]}
+  - {id: rw612-kem, from: fleet, to: rw612-ns, kind: kem, label: "PQKEMINIT and PQKEMFIN, answered by PQKEMEK and PQKEMOK", learn: [attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]}
+  - {id: rw612-hb, from: fleet, to: rw612-ns, kind: hb, label: "PQHB nonce, answered with status, counter and KMAC", detail: "The partition writes stack=, clk= and ttl= into its own status.", learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]}
+  - {id: zq-chal, from: fleet, to: zq-bridge, kind: attest, label: "PQCHAL nonce, answered by PQTOKEN", detail: "Profile aegis-zynqmp-optee-v1, with the seven measurements the boot chain took.", learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf]}
+  - {id: zq-kem, from: fleet, to: zq-bridge, kind: kem, label: "PQKEMINIT and PQKEMFIN, answered by PQKEMEK and PQKEMOK", learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key]}
+  - {id: zq-hb, from: fleet, to: zq-bridge, kind: hb, label: "PQHB nonce, answered with status, counter and KMAC", learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key]}
+  - {id: uno-chal, from: fleet, to: relay, kind: attest, label: "token request", detail: "The Uno answers with a statement that it cannot attest, so the gateway finds no token: QUARANTINED.", learn: [attesting-an-endpoint/a05-quarantine-and-red-team]}
+  - {id: uno-serial, from: relay, to: uno, kind: serial, label: "one request line over USB serial"}
+
+  # between the worlds
+  - {id: stm32-call, from: stm32-ns, to: stm32-s, kind: world, label: "psa_call", detail: "Non-secure code can ask for quotes, provisioning and heartbeats, and never reads a key.", learn: [attesting-an-endpoint/k02-veneers-at-different-addresses, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side]}
+  - {id: rw612-call, from: rw612-ns, to: rw612-pq, kind: world, label: "psa_call, one line in and one out", learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]}
+  - {id: zq-call, from: zq-bridge, to: zq-ta, kind: world, label: "TEE call through /dev/tee0", learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key]}
+
+  # inside the STM32
+  - {id: stm32-key, from: stm32-saes, to: stm32-s, kind: key, label: "AES-256 of a fixed label under the DHUK: the ML-DSA-65 seed", learn: [attesting-an-endpoint/a04-attest-the-stm32]}
+  - {id: stm32-clock, from: stm32-rtc, to: stm32-s, kind: uses, label: "session clock, read at every request"}
+  - {id: stm32-token, from: stm32-s, to: stm32-ias, kind: world, label: "psa_call: the PSA token with the challenge", learn: [trust-model/x03-measured-boot-and-the-token]}
+  - {id: stm32-meas, from: stm32-bl2, to: stm32-ias, kind: measure, label: "boot records: SPE and NSPE with signer IDs", learn: [trust-model/x03-measured-boot-and-the-token]}
+
+  # inside the RW612
+  - {id: rw612-key, from: rw612-els, to: rw612-pq, kind: key, label: "CKDF and HMAC: the ML-DSA-65 seed, at the first request", learn: [attesting-an-endpoint/a11-a-key-from-the-chip-on-the-rw612]}
+  - {id: rw612-clock, from: rw612-systick, to: rw612-pq, kind: uses, label: "session clock, read at every request"}
+  - {id: rw612-meas, from: rw612-pq, to: rw612-ns, kind: measure, label: "SHA-256 of the whole non-secure partition, before it runs", detail: "The partition hashes its own secure partition (SPE) the same way.", learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]}
+
+  # inside the Zynq UltraScale+
+  - {id: zq-decrypt, from: zq-puf, to: zq-fsbl, kind: boot, label: "the device key decrypts the FSBL", learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf]}
+  - {id: zq-load-pmu, from: zq-fsbl, to: zq-pmufw, kind: boot, label: "loads and hashes it (PMUFW)"}
+  - {id: zq-load-pl, from: zq-fsbl, to: zq-pl, kind: boot, label: "loads and hashes the bitstream (PL)"}
+  - {id: zq-load-tfa, from: zq-fsbl, to: zq-tfa, kind: boot, label: "loads and hashes TF-A, OP-TEE and U-Boot, then hands over to BL31"}
+  - {id: zq-handoff, from: zq-fsbl, to: zq-optee, kind: key, label: "seed and seven measurements in the hand-off page", learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf]}
+  - {id: zq-bl32, from: zq-tfa, to: zq-optee, kind: boot, label: "starts OP-TEE as BL32"}
+  - {id: zq-huk, from: zq-optee, to: zq-ta, kind: key, label: "hardware unique key: the TA's ML-DSA-65 key derives from it", learn: [zynq-ultrascale-endpoint/a16-a-key-from-the-puf]}
+  - {id: zq-normal, from: zq-tfa, to: zq-uboot, kind: boot, label: "the normal world: U-Boot"}
+  - {id: zq-kernel, from: zq-uboot, to: zq-linux, kind: boot, label: "loads Linux 6.12, not measured yet"}
+  - {id: zq-runs, from: zq-linux, to: zq-bridge, kind: uses, label: "runs the bridge"}
+
+# Drawing positions. Boxes are [x, y, width, height] in the view's coordinates. An edge is drawn in a view when
+# both its ends are; "via" bends it through the points given, "off" shifts it sideways (pixels).
+views:
+  - id: system
+    title: System and protocols
+    width: 1000
+    height: 700
+    bands:
+      - {title: PC on the bench, x: 10, y: 14, w: 330, h: 112}
+      - {title: "PolarFire SoC Discovery Kit: the gateway", x: 10, y: 140, w: 980, h: 240}
+      - {title: Bench LAN, x: 10, y: 394, w: 980, h: 56}
+      - {title: Endpoints, x: 10, y: 464, w: 980, h: 226}
+    nodes:
+      verifier: [40, 46, 270, 56]
+      sysctrl: [40, 170, 200, 56]
+      aegisd: [270, 170, 200, 56]
+      gw-key: [500, 170, 200, 56]
+      policy: [730, 170, 230, 56]
+      fabric: [40, 290, 200, 56]
+      fleet: [270, 290, 430, 56]
+      enforce: [730, 290, 230, 56]
+      lan: [760, 406, 200, 34]
+      stm32: [20, 486, 230, 194]
+      stm32-ns: [34, 522, 202, 54]
+      stm32-s: [34, 604, 202, 60]
+      rw612: [270, 486, 230, 194]
+      rw612-ns: [284, 522, 202, 54]
+      rw612-pq: [284, 604, 202, 60]
+      zynqmp: [520, 486, 230, 194]
+      zq-bridge: [534, 522, 202, 54]
+      zq-ta: [534, 604, 202, 60]
+      legacy: [770, 486, 210, 194]
+      relay: [784, 522, 182, 54]
+      uno: [784, 604, 182, 60]
+    edges:
+      stm32-chal: {off: -9}
+      stm32-hb: {off: 9}
+      rw612-chal: {off: -9}
+      rw612-hb: {off: 9}
+      zq-chal: {off: -9}
+      zq-hb: {off: 9}
+      rw612-call: {off: 8}
+      rw612-meas: {off: 8}
+  - id: anchors
+    title: Inside the endpoints
+    width: 1000
+    height: 640
+    bands:
+      - {title: Hardware roots, x: 10, y: 10, w: 228, h: 622}
+      - {title: Boot and measurement, x: 246, y: 10, w: 216, h: 622}
+      - {title: Secure world, x: 470, y: 10, w: 270, h: 622}
+      - {title: Non-secure world, x: 748, y: 10, w: 242, h: 622}
+    lanes: [stm32, rw612, zynqmp]
+    nodes:
+      stm32: [20, 40, 960, 172]
+      stm32-saes: [30, 72, 196, 52]
+      stm32-rtc: [30, 140, 196, 52]
+      stm32-bl2: [256, 140, 196, 52]
+      stm32-s: [482, 72, 246, 52]
+      stm32-ias: [482, 140, 246, 52]
+      stm32-ns: [760, 72, 210, 52]
+      rw612: [20, 224, 960, 172]
+      rw612-els: [30, 256, 196, 52]
+      rw612-systick: [30, 324, 196, 52]
+      rw612-pq: [482, 256, 246, 52]
+      rw612-ns: [760, 256, 210, 52]
+      zynqmp: [20, 408, 960, 224]
+      zq-pl: [256, 440, 196, 52]
+      zq-puf: [30, 506, 196, 52]
+      zq-fsbl: [256, 506, 196, 52]
+      zq-pmufw: [256, 572, 196, 52]
+      zq-ta: [482, 440, 246, 52]
+      zq-optee: [482, 506, 246, 52]
+      zq-tfa: [482, 572, 246, 52]
+      zq-bridge: [760, 440, 210, 52]
+      zq-linux: [760, 506, 210, 52]
+      zq-uboot: [760, 572, 210, 52]
+    edges:
+      stm32-key: {off: -8}
+      stm32-clock: {via: [[241, 166], [241, 114], [470, 114]]}
+      rw612-clock: {via: [[241, 350], [241, 298], [470, 298]]}
+      rw612-call: {off: 8}
+      rw612-meas: {off: 8}
+    notes:
+      - {x: 354, y: 324, lines: ["No boot stage measures here:", "the partition hashes both", "images before the non-secure", "one runs"]}
+      - {x: 128, y: 452, lines: ["PUF helper data and black key", "in the boot header, no eFUSE"]}
+
+# Walks: each step names an edge (played from its start to its end, or back) or a node, and says what happens.
+walks:
+  - id: attestation
+    title: One attestation cycle, from nonce to verdict
+    steps:
+      - {edge: fleet-policy, say: "aegis-fleet starts a cycle, every 30 s, and reloads the policy: the endpoints, their enrolled keys, the allowed measurements and the pinned profiles."}
+      - {edge: stm32-chal, say: "It sends the STM32 a fresh 32-byte nonce: PQCHAL and the nonce in hex, one request per TCP connection."}
+      - {edge: stm32-call, say: "The non-secure prover holds no key. It passes the request to the Aegis partition with psa_call."}
+      - {edge: stm32-token, say: "The partition asks TF-M's Initial Attestation service for the PSA token with the nonce as challenge."}
+      - {edge: stm32-meas, say: "The token carries what BL2 recorded at boot: the measurements of the secure and non-secure images with their signer IDs."}
+      - {edge: stm32-key, say: "The partition signs aegis-endpoint-quote-v1, a zero byte and the token with its ML-DSA-65 key, made at start-up from the DHUK. The signature is hedged: fresh randomness every time."}
+      - {edge: stm32-chal, back: true, say: "PQTOKEN goes back: on the bench a 515-byte token and a 3,309-byte signature, 0.30 s for the quote."}
+      - {edge: fleet-policy, say: "The gateway checks the signature against the enrolled key, the nonce against the one it sent, and every measurement against the policy. Any mismatch is QUARANTINED, with the reason in the journal."}
+      - {edge: fleet-enforce, say: "The verdict goes to the enforcement hook, which adds the address to the @admitted set or removes it."}
+      - {edge: enforce-lan, say: "On the bench the gateway is not yet in the traffic path: it decides and records. With a VLAN switch the same rules would block a quarantined endpoint."}
+  - id: provisioning
+    title: ML-KEM provisioning with mutual authentication
+    steps:
+      - {edge: stm32-kem, say: "Only after ADMITTED, and only without a valid credential: PQKEMINIT and a nonce. A new PQKEMINIT cancels any exchange still pending."}
+      - {edge: stm32-call, say: "The prover passes it to the partition."}
+      - {node: stm32-s, say: "The partition makes a fresh ML-KEM-768 encapsulation key for this exchange and signs it, with the nonce, using its device key."}
+      - {edge: stm32-kem, back: true, say: "PQKEMEK returns the key and the signature. The gateway checks them against the enrolled key, so a key swapped on the way is refused (T6)."}
+      - {edge: key-cred, say: "The gateway encapsulates to that key and signs a credential with its own ML-DSA-65 key. The credential names SHA3-256 of the ciphertext, SHA3-256 of the encapsulation key, the endpoint's key, and when it was issued and expires."}
+      - {edge: stm32-kem, say: "PQKEMFIN carries the ciphertext and the credential. The one captured on board 2 was 10,073 bytes."}
+      - {edge: stm32-call, say: "The prover passes it on; it cannot change anything without breaking a signature."}
+      - {node: stm32-s, say: "The partition checks the credential against the gateway key pinned in its secure image, and that it names this ciphertext and this key. Then it decapsulates. A credential from a foreign key, or one for another exchange, gets error -149 and the session stays as it was."}
+      - {edge: stm32-kem, back: true, say: "PQKEMOK and a key-confirmation tag. Both sides now keep session = SHA3-256(\"aegis-session-v1\" || K || nonce || SHA3(ct)); the key never leaves either side. The credential lasts an hour and is renewed five minutes before it expires."}
+  - id: heartbeat
+    title: A heartbeat under the session key
+    steps:
+      - {edge: stm32-hb, say: "Every cycle while the credential is valid: PQHB and a fresh nonce."}
+      - {edge: stm32-call, say: "The prover passes the request with its status text: uptime, link and firmware version."}
+      - {edge: stm32-clock, say: "The partition reads its secure clock first. The session is younger than its lifetime plus a sixteenth, so it goes on; the seconds left become ttl."}
+      - {node: stm32-s, say: "It appends ;sstack=19088/26624 (its stack high-water mark) and ;ttl= to the status, raises its counter, and computes KMAC256(session, nonce || counter || status, 256, \"aegis-hb-v2\")."}
+      - {edge: stm32-hb, back: true, say: "The reply: status, counter and MAC. One from the bench: heartbeat 27 (uptime_s=992;link=1;fw=0.6.0;sstack=19088/26624;ttl=3005)."}
+      - {node: fleet, say: "The gateway recomputes the MAC with its copy of the session key and needs the counter to have risen. A failure leads to a new provisioning."}
+  - id: tamper
+    title: A tampered image quarantined, its credential revoked
+    steps:
+      - {edge: rw612-meas, say: "The RW612 was flashed with a non-secure image changed by one byte of its banner. At start-up, before that image runs, the partition hashes the whole non-secure partition: NSPE is now dea2a3b37159..."}
+      - {edge: rw612-chal, say: "The next cycle sends PQCHAL with a fresh nonce."}
+      - {edge: rw612-call, say: "The non-secure prover passes it to the partition. It cannot change the measurement: the partition took it before the prover ran."}
+      - {edge: rw612-chal, back: true, say: "The quote is signed validly with the chip's key and carries NSPE dea2a3b37159..."}
+      - {edge: fleet-policy, say: "That value is not in the policy. The journal: 06:36:21 frdm-rw612 QUARANTINED (trustzone trust) component NSPE not allowed (measurement dea2a3b37159...) [credential: revoked]"}
+      - {edge: fleet-enforce, say: "Quarantine deletes the credential and the session key on the gateway, and the hook removes the endpoint from @admitted."}
+      - {edge: rw612-chal, say: "With the good image flashed back: 06:38:17 frdm-rw612 ADMITTED (trustzone trust) [credential: issued session 0a3caec39a2c...], a new session."}
+  - id: expiry
+    title: A credential that expires on the endpoint
+    steps:
+      - {edge: stm32-kem, say: "A check on the gateway (tests/board/expiry_check.py, with aegis-fleet stopped) provisions STM32 board 2 with a credential that lasts 32 s."}
+      - {edge: stm32-clock, say: "The partition takes the lifetime from the signed credential (expires minus issued) and starts its own clock at the accepted PQKEMFIN. With a sixteenth added, the session ends 34 s later."}
+      - {edge: stm32-hb, say: "A heartbeat at once: uptime_s=108;link=1;fw=0.6.0;sstack=19088/26624;ttl=34."}
+      - {edge: stm32-hb, back: true, say: "Half-way: ttl=18. From the two values, the endpoint's clock runs at 0.941 s per gateway second, inside the margin a sixteenth gives."}
+      - {edge: stm32-clock, say: "After the end, the first request reads the clock, finds the session too old, and wipes the session key and the credential hash."}
+      - {edge: stm32-hb, say: "PQHB and PQSESSION now answer ERR pq -140 (the RW612 says ERR pq expired). Without the gateway, the endpoint has ended the session itself."}
+      - {edge: stm32-chal, say: "Attestation needs no session: PQCHAL is still answered with PQTOKEN, and the gateway provisions a new session at its next cycle."}
+  - id: zynq-boot
+    title: The Zynq UltraScale+ secure boot, from the PUF to the TA's key
+    steps:
+      - {edge: zq-decrypt, say: "At power-on the boot ROM regenerates the PUF's key-encryption key from the helper data in the boot header, decrypts the black key into the device key, and decrypts the FSBL with it. The console says: Secure Boot: authenticated, encrypted."}
+      - {edge: zq-load-pmu, say: "The FSBL loads the PMU firmware and hashes it with the CSU's SHA3-384 (PMUFW, 129888 bytes as stored)."}
+      - {edge: zq-load-pl, say: "It loads the bitstream with the Aegis accelerator and hashes it (PL, 7797692 bytes)."}
+      - {edge: zq-load-tfa, say: "It loads and hashes TF-A, OP-TEE and U-Boot: seven measurements with its own."}
+      - {edge: zq-handoff, say: "Before the hand-over its hook derives seed = AES-256-GCM(device key, fixed IV, \"aegis-zynqmp-mldsa65-seed-v1\"), writes the seed and the measurement list to a page in OP-TEE's memory, and clears the AES and KUP key registers. Console: AEGIS: hand-off flags=0x7 meas=7."}
+      - {edge: zq-bl32, say: "TF-A's BL31 starts OP-TEE 4.7 as BL32."}
+      - {edge: zq-huk, say: "OP-TEE reads the hand-off page once, wipes it and keeps the seed as the hardware unique key. The TA derives its ML-DSA-65 key from it. Console: Aegis TA: key ready, profile aegis-zynqmp-optee-v1 ... 7 measurements."}
+      - {edge: zq-normal, say: "Only then the normal world: U-Boot."}
+      - {edge: zq-kernel, say: "U-Boot loads Linux 6.12. The kernel is not among the measurements yet."}
+      - {edge: zq-call, say: "Linux's bridge carries the gateway's lines to the TA. Its key, sha256 c02f156d..., is the same after a power cycle, and the gateway admits the board: 06:30:35 zynqmp-te0808 ADMITTED (trustzone trust)."}
+  - id: gateway-quote
+    title: The gateway proves itself to the PC
+    steps:
+      - {edge: quote, say: "The PC's verifier sends a fresh nonce to aegisd on TCP 7443."}
+      - {edge: sysserv, say: "aegisd reads live platform state through the system controller's read-only services: design info, usercode, security locks and design digests. It adds its own code hash, the kernel and the boot id."}
+      - {edge: key-quote, say: "It signs the body with the gateway's ML-DSA-65 key, label aegis-quote-v1."}
+      - {edge: quote, back: true, say: "The PC checks the signature, the nonce and the measurements. Recorded: accepted, a 3,309-byte signature, 0.039 s."}
+
+# The fleet replay: verdict lines from the gateway's journal, as recorded in evidence/ (already masked: no LAN
+# address, no MAC address). The explorer replays them one line at a time; nothing here is live.
+replay:
+  devices:
+    stm32h573-dk: {node: stm32, board: STM32H573I-DK board 1, kind: aegis-pq}
+    stm32h573-dk-2: {node: stm32, board: STM32H573I-DK board 2, kind: aegis-pq}
+    frdm-rw612: {node: rw612, board: NXP FRDM-RW612, kind: aegis-device}
+    zynqmp-te0808: {node: zynqmp, board: "Trenz TE0807 (XCZU4EG)", kind: aegis-tee}
+    arduino-uno-legacy: {node: legacy, board: Arduino Uno R3, kind: psa}
+  recordings:
+    - id: two-stm32
+      title: Two STM32 boards and the Uno, a tampered image on board 1
+      parts:
+        - source: evidence/console/two-endpoints-demo.txt
+          date: no time in the file
+          lines:
+            - "stm32h573-dk ADMITTED  [credential: valid, heartbeat 8 (uptime_s=283;link=1;fw=0.5.0)]"
+            - "stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 7 (uptime_s=254;link=1;fw=0.5.0)]"
+            - "arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'"
+            - {line: "stm32h573-dk QUARANTINED component NSPE not allowed (measurement a605d9536321...) [credential: revoked]", note: "Board 1 now runs a validly signed but modified non-secure image."}
+            - "stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 8 (uptime_s=285;link=1;fw=0.5.0)]"
+            - "arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'"
+            - {line: "stm32h573-dk ADMITTED  [credential: issued session bb6bd9de871f...]", note: "The good image is back: a new session."}
+            - "stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 9 (uptime_s=317;link=1;fw=0.5.0)]"
+            - "arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'"
+            - "stm32h573-dk ADMITTED  [credential: valid, heartbeat 1 (uptime_s=50;link=1;fw=0.5.0)]"
+            - "stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 10 (uptime_s=348;link=1;fw=0.5.0)]"
+            - "arduino-uno-legacy QUARANTINED no attestation: no token in reply: 'LEGACY-SENSOR uno v1 cannot attest; requ'"
+    - id: rw612-tamper
+      title: The RW612 with TrustZone, a modified non-secure image
+      parts:
+        - source: evidence/rw612-tfm/trustzone-prover.txt
+          date: "2026-11-18"
+          lines:
+            - "06:33:52 frdm-rw612 ADMITTED (trustzone trust)  [credential: issued session f5ba87c14aa9...]"
+            - "06:34:26 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=10;fw=rw612-tfm-0.2.0)]"
+            - "06:35:00 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 2 (requests=12;fw=rw612-tfm-0.2.0)]"
+            - {line: "06:35:48 frdm-rw612 QUARANTINED no attestation: [Errno 113] No route to host [credential: revoked]", note: "The board is being flashed with the modified image."}
+            - {line: "06:36:21 frdm-rw612 QUARANTINED (trustzone trust) component NSPE not allowed (measurement dea2a3b37159...) [credential: revoked]", note: "One byte of the banner changed: the quote is valid, the measurement is not allowed."}
+            - "06:36:55 frdm-rw612 QUARANTINED (trustzone trust) component NSPE not allowed (measurement dea2a3b37159...) [credential: revoked]"
+            - "06:37:43 frdm-rw612 QUARANTINED no attestation: [Errno 113] No route to host [credential: revoked]"
+            - {line: "06:38:17 frdm-rw612 ADMITTED (trustzone trust)  [credential: issued session 0a3caec39a2c...]", note: "The good image again, a new session."}
+            - "06:38:50 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=6;fw=rw612-tfm-0.2.0)]"
+            - "06:39:24 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 2 (requests=8;fw=rw612-tfm-0.2.0)]"
+    - id: rw612-upgrade
+      title: The RW612 upgraded to 0.2.1, the stack reported
+      parts:
+        - source: evidence/rw612-tfm/upgrade-0.2.1.txt
+          date: "2026-11-18"
+          lines:
+            - "08:16:09 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 56 (requests=116;fw=rw612-tfm-0.2.0)]"
+            - "08:16:43 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 57 (requests=118;fw=rw612-tfm-0.2.0)]"
+            - "08:17:17 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 58 (requests=120;fw=rw612-tfm-0.2.0)]"
+            - "08:17:51 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 59 (requests=122;fw=rw612-tfm-0.2.0)]"
+            - {line: "08:18:44 frdm-rw612 QUARANTINED no attestation: timed out [credential: revoked]", note: "The cycle during which the board was being flashed. The new SPE value was allowed in the policy beforehand."}
+            - "08:19:18 frdm-rw612 ADMITTED (trustzone trust)  [credential: issued session ce1e766cc878...]"
+            - {line: "08:19:52 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=6;stack=19368/32768;fw=rw612-tfm-0.2.1)]", note: "0.2.1 reports the partition's stack high-water mark in every heartbeat, under the MAC."}
+            - "08:20:25 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 2 (requests=8;stack=19368/32768;fw=rw612-tfm-0.2.1)]"
+            - "08:20:59 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 3 (requests=10;stack=19368/32768;fw=rw612-tfm-0.2.1)]"
+            - "08:21:33 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 4 (requests=12;stack=19368/32768;fw=rw612-tfm-0.2.1)]"
+    - id: stm32-replay
+      title: STM32 board 2, the fixed partition and a replayed PQKEMFIN
+      parts:
+        - source: evidence/stm32-kemfix/board2-kemfix.txt
+          date: "2026-11-18"
+          lines:
+            - "09:07:06 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1183 (uptime_s=40601;link=1;fw=0.5.0)]"
+            - "09:07:40 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1184 (uptime_s=40634;link=1;fw=0.5.0)]"
+            - "09:08:13 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1185 (uptime_s=40668;link=1;fw=0.5.0)]"
+            - {line: "09:09:07 stm32h573-dk-2 QUARANTINED no attestation: timed out [credential: revoked]", note: "The new secure image is being written."}
+            - {line: "09:09:40 stm32h573-dk-2 ADMITTED  [credential: issued session 54ed7660b315...]", note: "Admitted on the new SPE value; the pinned key is unchanged, because it comes from the chip's DHUK."}
+            - "09:10:14 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1 (uptime_s=70;link=1;fw=0.5.0)]"
+            - "09:10:48 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=103;link=1;fw=0.5.0)]"
+            - "09:11:22 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 3 (uptime_s=137;link=1;fw=0.5.0)]"
+            - "09:11:56 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 4 (uptime_s=171;link=1;fw=0.5.0)]"
+            - "09:12:29 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 5 (uptime_s=205;link=1;fw=0.5.0)]"
+            - "09:13:03 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 6 (uptime_s=238;link=1;fw=0.5.0)]"
+            - "09:13:36 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 7 (uptime_s=272;link=1;fw=0.5.0)]"
+            - {line: "09:14:30 stm32h573-dk-2 QUARANTINED no attestation: timed out [credential: revoked]", note: "A reset of the board, to make the gateway provision a new session while tcpdump captures it."}
+            - {line: "09:15:04 stm32h573-dk-2 ADMITTED  [credential: issued session 46bd3f986284...]", note: "This PQKEMFIN (10,073 bytes) is the one captured for the replay."}
+            - "09:15:37 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1 (uptime_s=86;link=1;fw=0.5.0)]"
+            - "09:16:11 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=119;link=1;fw=0.5.0)]"
+            - {line: "09:16:45 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 3 (uptime_s=153;link=1;fw=0.5.0)]", note: "At 09:16:59 the captured PQKEMFIN is sent again from the PC: ERR pq -137 with no exchange pending, ERR pq -149 after a new PQKEMINIT. The session is kept."}
+            - {line: "09:17:19 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 4 (uptime_s=187;link=1;fw=0.5.0)]", note: "Heartbeat 4 of the same session: the replay changed nothing."}
+            - "09:17:53 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 5 (uptime_s=220;link=1;fw=0.5.0)]"
+            - "09:18:26 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 6 (uptime_s=254;link=1;fw=0.5.0)]"
+    - id: zynq-trust
+      title: The Zynq UltraScale+, from software trust to trustzone trust
+      parts:
+        - source: evidence/zynqmp/software-trust.txt
+          date: "2026-11-18"
+          kinds: {zynqmp-te0808: aegis-linux}
+          lines:
+            - {line: "18:26:21 zynqmp-te0808 ADMITTED (software trust)  [credential: issued session 5b5f0b6e512a...]", note: "The Linux prover: its key is a file and the running Linux takes the measurements, hence software trust."}
+            - "18:26:58 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 1 (uptime_s=529;link=1;fw=linux-0.1.0)]"
+            - "18:27:34 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 2 (uptime_s=565;link=1;fw=linux-0.1.0)]"
+        - source: evidence/zynqmp/boot-chain.txt
+          date: "2026-11-18"
+          kinds: {zynqmp-te0808: aegis-linux}
+          lines:
+            - {line: "19:43:07 zynqmp-te0808 ADMITTED (software trust)  [credential: issued session 744132daf956...]", note: "The boot chain built from source, admitted on its new values."}
+            - "19:43:41 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 1 (uptime_s=57;link=1;fw=linux-0.1.0)]"
+            - "19:44:15 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 2 (uptime_s=90;link=1;fw=linux-0.1.0)]"
+            - "19:44:49 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 3 (uptime_s=124;link=1;fw=linux-0.1.0)]"
+            - "19:45:23 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 4 (uptime_s=158;link=1;fw=linux-0.1.0)]"
+            - {line: "19:45:56 zynqmp-te0808 QUARANTINED (software trust) component KERNEL not allowed (measurement d65da5fa0dc5...) [credential: revoked]", note: "A tamper test: boot.scr with one added echo line, put back right after."}
+            - "19:46:30 zynqmp-te0808 ADMITTED (software trust)  [credential: issued session dc38f54525ee...]"
+            - "19:47:04 zynqmp-te0808 ADMITTED (software trust)  [credential: valid, heartbeat 1 (uptime_s=260;link=1;fw=linux-0.1.0)]"
+        - source: evidence/zynqmp/optee-phase-a.txt
+          date: "2026-11-18"
+          lines:
+            - {line: "22:22:25 zynqmp-te0808 QUARANTINED no attestation: [Errno 113] No route to host [credential: revoked]", note: "The power-on reset into OP-TEE with the Aegis TA."}
+            - {line: "22:22:59 zynqmp-te0808 ADMITTED (trustzone-devkey trust)  [credential: issued session 7c4fc689152b...]", note: "The key is in the secure world now, but derived from OP-TEE's development HUK, the same on every chip: trustzone-devkey."}
+            - "22:23:32 zynqmp-te0808 ADMITTED (trustzone-devkey trust)  [credential: valid, heartbeat 1 (requests=5;fw=zynqmp-optee-0.1.0)]"
+            - "22:24:06 zynqmp-te0808 ADMITTED (trustzone-devkey trust)  [credential: valid, heartbeat 2 (requests=7;fw=zynqmp-optee-0.1.0)]"
+        - source: evidence/zynqmp/puf-phase-b.txt
+          date: "2026-11-19"
+          lines:
+            - {line: "06:30:35 zynqmp-te0808 ADMITTED (trustzone trust)  [credential: issued session bcfee3cea812...]", note: "The key from the PUF and seven boot measurements. Before the pin was changed the gateway refused the new key."}
+            - "06:31:09 zynqmp-te0808 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=7;fw=zynqmp-optee-0.1.0)]"
+    - id: stm32-sstack
+      title: Both STM32 boards report their partition's stack
+      parts:
+        - source: evidence/stm32-sstack/heartbeat-sstack.txt
+          date: "2026-11-19"
+          lines:
+            - {line: "09:02:15 stm32h573-dk-2 ADMITTED  [credential: issued session e03532f481e2...]", note: "Board 2 on the new secure image."}
+            - "09:02:49 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1 (uptime_s=50;link=1;fw=0.5.0)]"
+            - "09:03:23 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=84;link=1;fw=0.5.0)]"
+            - {line: "09:04:03 stm32h573-dk-2 ADMITTED  [credential: issued session 988db46d4c81...]", note: "Board 2 with the non-secure prover 0.6.0, which asks the partition for the status text."}
+            - "09:04:37 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1 (uptime_s=46;link=1;fw=0.6.0;sstack=19088/26624)]"
+            - "09:05:11 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=80;link=1;fw=0.6.0;sstack=19088/26624)]"
+            - "09:05:45 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 3 (uptime_s=114;link=1;fw=0.6.0;sstack=19088/26624)]"
+            - {line: "09:06:39 stm32h573-dk QUARANTINED no attestation: timed out [credential: revoked]", note: "Board 1's secure slot is being written."}
+            - "09:07:13 stm32h573-dk ADMITTED  [credential: issued session 6f2dec712eee...]"
+            - "09:07:47 stm32h573-dk ADMITTED  [credential: valid, heartbeat 1 (uptime_s=73;link=1;fw=0.5.0)]"
+            - "09:08:22 stm32h573-dk ADMITTED  [credential: valid, heartbeat 2 (uptime_s=107;link=1;fw=0.5.0)]"
+            - "09:08:56 stm32h573-dk ADMITTED  [credential: issued session 836896198fd9...]"
+            - "09:09:30 stm32h573-dk ADMITTED  [credential: valid, heartbeat 1 (uptime_s=54;link=1;fw=0.6.0;sstack=19088/26624)]"
+            - "09:10:04 stm32h573-dk ADMITTED  [credential: valid, heartbeat 2 (uptime_s=88;link=1;fw=0.6.0;sstack=19088/26624)]"
+            - {line: "09:10:38 stm32h573-dk ADMITTED  [credential: valid, heartbeat 3 (uptime_s=122;link=1;fw=0.6.0;sstack=19088/26624)]", note: "19088/26624 equals the depth read over SWD that morning, now under the session's KMAC."}
+    - id: expiry
+      title: Three endpoints that end their own sessions
+      parts:
+        - source: evidence/endpoint-expiry/bench.txt
+          date: "2026-11-19"
+          lines:
+            - {line: "10:28:22 stm32h573-dk ADMITTED  [credential: valid, heartbeat 27 (uptime_s=992;link=1;fw=0.6.0;sstack=19088/26624;ttl=3005)]", note: "After the endpoint-side expiry was flashed: ttl is the seconds the session has left on the endpoint's own clock."}
+            - "10:28:22 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 33 (uptime_s=1217;link=1;fw=0.6.0;sstack=19088/26624;ttl=2771)]"
+            - {line: "10:28:22 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=19;stack=19384/32768;clk=ref;fw=rw612-tfm-0.2.2;ttl=3791)]", note: "clk=ref: the RW612 counts its reference clock, the one it should."}
