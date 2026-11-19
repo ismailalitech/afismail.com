@@ -1,0 +1,12 @@
+{{- /* One component of the Aegis explorer as text: summary, facts, labs, sources. */ -}}
+{{- $n := .n }}{{ $pages := .pages }}{{ $repo := .repo -}}
+{{ $n.summary }}
+{{- with $n.facts }}
+<span class="facts">{{ range $k, $v := . }}<span><b>{{ replace $k "_" " " }}</b>: {{ $v }}</span> {{ end }}</span>
+{{- end }}
+{{- with $n.learn }}
+<span class="learn">Labs: {{ range $i, $k := . }}{{ if $i }}, {{ end }}{{ $p := index $pages $k }}<a href="{{ $p.url }}">{{ with $p.lab }}Lab {{ . }}: {{ end }}{{ $p.title }}</a>{{ end }}</span>
+{{- end }}
+{{- with $n.sources }}
+<span class="learn">Sources: {{ range $i, $s := . }}{{ if $i }}, {{ end }}<a href="{{ $repo }}/{{ if strings.HasSuffix $s "/" }}tree{{ else }}blob{{ end }}/main/{{ strings.TrimSuffix "/" $s }}"><code>{{ $s }}</code></a>{{ end }}</span>
+{{- end }}

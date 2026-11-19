@@ -13,6 +13,8 @@ weight = 20
   result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 13 of 13 regression stages pass."
   hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK, an NXP FRDM-RW612 and a Trenz TE0807 (Zynq UltraScale+ XCZU4EG) on a TEBF0808 carrier as attested endpoints, Arduino Uno R3 as a device that cannot attest"
   tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, Vivado and Vitis 2025.2, TF-A, OP-TEE 4.7, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
+  action = "/resources/aegis-explorer/"
+  action_text = "Explore the architecture"
   guide = "/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/a01-reproduce-the-bench/"
   toc = true
 +++
@@ -92,6 +94,9 @@ One decision cycle:
    ([lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/)).
 
 ![One decision cycle: challenge, evidence, checks, then ADMITTED with an ML-KEM exchange and a session, or QUARANTINED with a reason](/aegis/diagrams/decision-cycle.svg)
+
+The [architecture explorer](/aegis/explorer/) shows every component and connection, plays this cycle and six other walks
+step by step, and replays verdict lines the gateway recorded.
 
 The fabric half of the system, as the vendor's tool shows it: the block `aegis_pqc_0` sits on the same APB bus as the
 project's other registers, next to the two peripheral blocks and the processor subsystem.
