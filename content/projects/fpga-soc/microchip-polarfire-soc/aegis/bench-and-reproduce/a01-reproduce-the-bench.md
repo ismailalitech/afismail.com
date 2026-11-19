@@ -96,7 +96,9 @@ remove path and the board becomes unreachable. To remove it, reboot.
 
 Let systemd drive the board's hardware watchdog, so that a hung gateway resets itself instead of going quiet. On this
 image it is off by default. A drop-in `/etc/systemd/system.conf.d/aegis-watchdog.conf` with `RuntimeWatchdogSec=20s`
-and `RebootWatchdogSec=25s` under `[Manager]` turns it on; see
+and `RebootWatchdogSec=25s` under `[Manager]` turns it on. A second file, `/etc/sysctl.d/90-aegis-lockup.conf`, turns
+a soft lock-up or an oops into a panic that prints its reason on the kernel console and reboots after 10 s; record
+that console on the PC with `tools/console_logger.py`. See
 [a gateway that hung for seven hours](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours/).
 
 Optional: build and program the fabric accelerator
@@ -122,7 +124,7 @@ endpoints/stm32h573/prover-ns/build.sh                  # the Non-Secure prover
 ```
 
 Back up the board first (all flash, both security views, the option bytes), then write the secure and non-secure images with
-STM32CubeProgrammer. `endpoints/stm32h573/restore_from_backup.sh` restores both slots; the project tested that the slots
+STM32CubeProgrammer. `restore_from_backup.sh` in `endpoints/stm32h573/` restores both slots; the project tested that the slots
 read back byte-identical to the backup. The prover prints its DHCP address on the console; it serves the line protocol on
 TCP 7444.
 
@@ -139,6 +141,10 @@ Within one cycle (30 seconds) the gateway journal shows the endpoint as admitted
 stm32h573-dk ADMITTED  [credential: valid, heartbeat 12 (uptime_s=393;link=1;fw=0.4.0)]
 ```
 
+That line is from prover 0.4.0. With the current images the status also carries the secure side's stack mark and the
+seconds the session has left, `sstack=` and `ttl=`
+([lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/)).
+
 ### 7. The Arduino
 
 Flash `endpoints/arduino-uno/legacy_sensor` after reading back the Uno's flash with avrdude. Then run the relay that exposes
@@ -148,14 +154,16 @@ shows the Uno quarantined every cycle, with the reason that it cannot attest.
 ### 8. Everything together
 
 ```sh
-tools/regression.sh --board     # 12 stages, about 90 seconds
+tools/regression.sh --board     # 13 stages: 5 on the PC, 8 on the boards
 tools/demo.sh                   # about 2 minutes: quote, attest, tamper, quarantine, restore, admit
 ```
 
-Expected: `passed 12, failed 0`. The demo flashes a modified Non-Secure image and then the good one back, so the STM32 must be
-connected to the PC's ST-LINK.
+Expected: `passed 13, failed 0`. Three of the board stages run the fabric accelerators (`fabric-selftest`,
+`fabric-acvp`, `fabric-sponge-acvp`), and the script stops at the first stage that fails. Without the accelerators
+programmed it stops at `fabric-selftest`, before the fleet and device stages have run. The demo flashes a modified
+Non-Secure image and then the good one back, so the STM32 must be connected to the PC's ST-LINK.
 
-![The board regression printing twelve passing stages: five on the PC and seven on the boards](/aegis/diagrams/console-regression.svg)
+![The board regression from before the stage for the second accelerator was added, printing twelve passing stages: five on the PC and seven on the boards](/aegis/diagrams/console-regression.svg)
 
 ## What was changed on each board, and how to undo it
 
@@ -165,6 +173,7 @@ connected to the PC's ST-LINK.
 | PolarFire | the fabric (only if you programmed the accelerator) | program the pfdaq fabric job again |
 | PolarFire | a kernel with nf_tables, bridge and VLAN support in the boot partition | the bundle's `rollback.sh`, then reboot |
 | PolarFire | the watchdog drop-in in `/etc/systemd/system.conf.d/` | delete it, `systemctl daemon-reexec` |
+| PolarFire | the lock-up settings in `/etc/sysctl.d/90-aegis-lockup.conf` | delete the file, reboot |
 | STM32 | the secure and non-secure firmware slots | `restore_from_backup.sh` |
 | Uno | the sketch in flash | write back the saved hex with avrdude |
 
