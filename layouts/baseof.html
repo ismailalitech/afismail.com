@@ -11,9 +11,12 @@
   </main>
   {{ partial "footer.html" . }}
   {{/* The moving background, in the page margins on wide screens: circuit traces with
-       signals travelling along them. Drawn by assets/js/traces.js, on every page. */}}
+       signals travelling along them. Drawn by assets/js/traces.js, on every page but the
+       home page, which has its own behind the hero (assets/js/fabric.js). */}}
+  {{ if not .IsHome }}
   <canvas class="traces traces-left" data-traces="left" aria-hidden="true"></canvas>
   <canvas class="traces traces-right" data-traces="right" aria-hidden="true"></canvas>
+  {{ end }}
   {{ with resources.Get "js/site.js" }}
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
@@ -22,7 +25,8 @@
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end }}
-  {{ with resources.Get "js/traces.js" }}
+  {{ $background := cond .IsHome "js/fabric.js" "js/traces.js" }}
+  {{ with resources.Get $background }}
     {{ $js := . | fingerprint }}
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" crossorigin="anonymous" defer></script>
   {{ end }}
