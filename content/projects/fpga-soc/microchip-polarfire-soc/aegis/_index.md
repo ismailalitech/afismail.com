@@ -10,7 +10,7 @@ weight = 20
   platform = "Microchip PolarFire SoC, STMicroelectronics STM32H5, NXP RW612 and AMD Zynq UltraScale+"
   problem = "A network usually trusts a device because it is plugged in. A device should earn access by proving what it is and what firmware it runs, and keep proving it, with signatures that a future quantum computer cannot forge."
   role = "Designed and built the complete system: the gateway services, the fabric accelerator and its tests, the secure partition on the endpoint, the attestation and provisioning protocol, the red-team harness and the regression."
-  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 12 of 12 regression stages pass."
+  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; 13 of 13 regression stages pass."
   hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK, an NXP FRDM-RW612 and a Trenz TE0807 (Zynq UltraScale+ XCZU4EG) on a TEBF0808 carrier as attested endpoints, Arduino Uno R3 as a device that cannot attest"
   tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, Vivado and Vitis 2025.2, TF-A, OP-TEE 4.7, liboqs 0.16.0, mldsa-native, mlkem-native, Icarus Verilog, Python"
   guide = "/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/a01-reproduce-the-bench/"
@@ -109,8 +109,9 @@ Three kinds of evidence, kept apart:
 - **Attack harness.** 3,000 mutated tokens, 310 malformed frames to the gateway, 800 hostile endpoint replies, 76
   malformed commands to the STM32, downgrade and key-replay attempts. Two real defects were found and fixed.
 - **Enforcement rules.** Three network namespaces stand in for the gateway, an endpoint and the network; the real ruleset
-  and hook ran in them. The first run found that quarantine did not cut an open connection; fixed, 10 of 10 checks pass.
-- **Whole system.** A regression that runs the host stages and the board stages: 12 of 12 pass, and the five host
+  and hook ran in them. The first run found that quarantine did not cut an open connection, and a later one that the rules dropped
+  replies to the gateway's own connections; both fixed, 13 of 13 checks pass. The one-port VLAN design: 16 of 16.
+- **Whole system.** A regression that runs the host stages and the board stages: 13 of 13 pass, and the five host
   stages and the enforcement test also run on every push on a clean machine in GitHub Actions.
 
 Every number is traced to a record with its method: [results and evidence](/resources/aegis-results/).
