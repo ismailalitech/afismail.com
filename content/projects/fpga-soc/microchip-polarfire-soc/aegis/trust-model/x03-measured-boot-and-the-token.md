@@ -39,7 +39,8 @@ The implementation id and the boot seed are dummy values in this configuration. 
 
 ## The values on this bench
 
-The tool run on the two images the STM32 runs. These are the exact values in the gateway's policy file:
+The tool run on the two images the STM32 ran when heartbeats were added, prover 0.4.0 and the secure image with
+heartbeats. These were the values in the gateway's policy file then; the table below has every build since:
 
 ![The measurement tool prints the image hash and signer id of the secure image and of the non-secure prover; these are the values in the gateway policy, and the two images are signed by two different keys](/aegis/diagrams/console-measurements.svg)
 
@@ -53,13 +54,17 @@ so the policy has to be updated with each release. And the secure and non-secure
 | prover 0.2.0 (post-quantum quote) | `ccae9f5fc9082afe` | `82a5b443594853d4` |
 | prover 0.3.0 (ML-KEM credential) | `56ec5b078c037317` | `82a5b443594853d4` |
 | prover 0.4.0 (heartbeats) | `ae689ecbd090a33b` | `82a5b443594853d4` |
-| prover 0.5.0 (MAC address from the device key), **running** on both boards | `34637a4e23d8b127` | `82a5b443594853d4` |
+| prover 0.5.0 (MAC address from the device key) | `34637a4e23d8b127` | `82a5b443594853d4` |
 | prover 0.5.0, modified for the tamper test | `a605d95363214dd7` | `82a5b443594853d4` |
+| prover 0.6.0 (passes the secure side's status on), **running** on both boards | `1f4110fd8b2a5e93` | `82a5b443594853d4` |
 | TF-M v2.3.0 + partition, first | `b9186d3173278df7` | `e30466f6b8470c1f` |
 | TF-M v2.3.0 + partition, with ML-KEM | `227e3c8a5c40dd66` | `e30466f6b8470c1f` |
 | TF-M v2.3.0 + partition, with mutual authentication | `380513d6dea90048` | `e30466f6b8470c1f` |
 | TF-M v2.3.0 + partition, with heartbeats | `1793b3fb1ff47218` | `e30466f6b8470c1f` |
-| TF-M v2.3.0 + partition, hedged signing and KMAC heartbeats, **running** on both boards | `a5997cc3c61af12d` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, hedged signing and KMAC heartbeats | `a5997cc3c61af12d` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, a refused key exchange leaves nothing pending | `3cacd9d03cddccd5` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, the stack mark in every heartbeat | `e68ad79772a55c9c` | `e30466f6b8470c1f` |
+| TF-M v2.3.0 + partition, the session's end on the partition's clock, **running** on both boards | `02549860e419cd94` | `e30466f6b8470c1f` |
 
 The modified prover has the same signer as the good one, because it was signed with the same published development key. Only
 the hash tells them apart.

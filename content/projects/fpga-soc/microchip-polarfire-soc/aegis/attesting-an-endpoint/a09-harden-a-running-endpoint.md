@@ -121,7 +121,7 @@ claimed the quotes "were identical before"; that was never measured and is not t
 
 - `PQKEY` gives the same key before and after the new image.
 - The new image is quarantined until the policy names it, then admitted with a new session.
-- The journal shows the heartbeat counter rising after the change; `tools/regression.sh --board` gives 12 of 12.
+- The journal shows the heartbeat counter rising after the change; `tools/regression.sh --board` gives 12 of 12 (13 of 13 since the stage for the second fabric accelerator was added).
 
 ## Where it can go wrong
 

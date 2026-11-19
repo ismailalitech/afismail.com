@@ -158,7 +158,8 @@ Every claim above holds within these limits. The project's threat model lists th
 - **Linux is not yet kept away from the device key.** The PMU firmware offers AES with the device key to Linux by
   default, and no documented control clears the device key after boot. Making those PMU firmware services secure-only,
   guarding the CSU and OP-TEE's memory with the XPPU and XMPU, `CONFIG_STRICT_DEVMEM`, and probes from Linux that test
-  each of these are phase C, which is not done.
+  each of these are phase C. Phase C is prepared in the repository, with a test plan of one change per image, but
+  it is not on the board yet.
 - **The kernel is not measured.** OP-TEE takes and wipes the hand-off page before U-Boot loads the kernel.
 - **The hand-off page is not authenticated.** Until the XMPU guards it, root on Linux could plant a page before a warm
   reset. The FSBL always overwrites it, and a planted seed would give a key the gateway's pin refuses.
