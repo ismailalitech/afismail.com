@@ -163,7 +163,7 @@ tools/demo.sh                   # about 2 minutes: quote, attest, tamper, quaran
 
 Expected: `passed 13, failed 0`, or `passed 14, failed 0` with `--with-expiry`. Three of the board stages run the
 fabric accelerators (`fabric-selftest`, `fabric-acvp`, `fabric-sponge-acvp`). The script runs every stage, even after
-one fails, and exits non-zero if any failed; without the accelerators programmed, those three fail. The demo flashes a
+one fails, and exits non-zero if any failed; those three need the accelerators in the fabric. The demo flashes a
 modified Non-Secure image and then the good one back, so the STM32 must be connected to the PC's ST-LINK.
 
 The fourteenth stage, `endpoint-expiry`, is off by default because it stops `aegis-fleet` for about 3 minutes. It
