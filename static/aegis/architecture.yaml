@@ -61,8 +61,8 @@ nodes:
     title: PolarFire SoC Discovery Kit (the gateway)
     kind: group
     summary: Decides which endpoints may be trusted, from evidence the endpoints' secure hardware produces, and gives admitted endpoints a credential and a session key established with ML-KEM. Linux on U54 harts 1 to 3 runs the services.
-    facts: {chip: "MPFS095T, the non-S part", network: "one Ethernet port: it decides, it is not yet in the traffic path", regression: "13 of 13 stages on the boards"}
-    sources: [docs/architecture.md, evidence/console/regression-13of13.txt]
+    facts: {chip: "MPFS095T, the non-S part", network: "one Ethernet port: it decides, it is not yet in the traffic path", regression: "13 of 13 stages; 14 of 14 with --with-expiry"}
+    sources: [docs/architecture.md, evidence/console/regression-13of13.txt, evidence/console/regression-14of14-20261119.txt, tools/bench_watch.py]
     learn: [identity-and-quotes/k01-chip-is-not-an-s-device, bench-and-reproduce/a01-reproduce-the-bench, bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours]
   - id: aegisd
     title: aegisd

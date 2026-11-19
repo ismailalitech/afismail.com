@@ -2053,6 +2053,8 @@ body:has(.hero-fabric) {
   background: color-mix(in srgb, var(--ink) 8%, transparent);
   font-family: var(--font-mono);
   font-size: 0.9em;
+  /* A long path or name may break anywhere rather than widen the page; blocks below scroll instead */
+  overflow-wrap: anywhere;
 }
 
 /* Code blocks stay dark in both themes, like a terminal */
