@@ -32,6 +32,12 @@ reset handler and each interrupt handler.
 A signal that makes the processor pause its current code and run a handler. Its
 priority decides which interrupt runs first when several are pending.
 
+### Watchdog
+
+A hardware timer that resets the chip unless software restarts it in time. If the
+software hangs, it stops restarting the timer and the chip resets. Some watchdogs
+cannot be stopped once started.
+
 ## Arm security features
 
 ### TrustZone for Armv8-M

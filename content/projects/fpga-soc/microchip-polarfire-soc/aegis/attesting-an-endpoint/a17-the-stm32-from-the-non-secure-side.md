@@ -2,7 +2,7 @@
 title = "The STM32 from the non-secure side: probe its TrustZone, measure the partition's stack, upgrade board 1"
 date = '2026-11-19T06:30:00+01:00'
 draft = false
-description = "Test from the non-secure side what the STM32's TrustZone set-up claims: the hardware-unique key in SAES refuses non-secure code, and secure memory and peripherals fault or read as zero, each against a control. Then measure how deep the Aegis partition's stack goes, and move board 1 to the fixed secure image with a backup and the gateway watching."
+description = "Test from the non-secure side what the STM32's TrustZone set-up claims: the hardware-unique key in SAES refuses non-secure code, and secure memory and peripherals fault or read as zero, each against a control. Then measure how deep the Aegis partition's stack goes, move board 1 to the fixed secure image with a backup and the gateway watching, and have both boards report the stack mark in every heartbeat."
 weight = 38
 
 [params]
@@ -115,7 +115,38 @@ allowed for stm32h573-dk: [('NSPE', '34637a4e23d8'), ('SPE', '3cacd9d03cdd')]
 ```
 
 Admitted with only the new value allowed, so the board runs the new image. The key did not change: it comes from the
-chip's DHUK, not from the image. Both STM32 boards now run the fixed secure image.
+chip's DHUK, not from the image. Both STM32 boards now run the fixed secure image, and every later image keeps the fix.
+
+## 5. The stack mark in every heartbeat
+
+A depth read once over SWD says nothing about the next week. The RW612's partition reports its high-water mark in
+every heartbeat ([lab 58](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a12-trustzone-on-the-rw612/)),
+and the same afternoon the STM32 partition was given the same report:
+
+- **Secure image `...-kemfix-sstack`** (SPE `e68ad797...`, same version and signer): the partition fills its stack
+  with a pattern first thing at start-up, before the key is made. At each heartbeat it finds the lowest byte that lost
+  the pattern, as section 3 did by hand with zeros, and appends `;sstack=<used>/<size>` to the status text before it
+  computes the KMAC. It refuses a status text from the non-secure side that already holds `sstack=` or `ttl=`, so the
+  prover cannot put its own figure under the MAC.
+- **Non-secure prover 0.6.0** (NSPE `1f4110fd...`): asks the partition for that status text and passes it on. An
+  older prover still works with the new image; its heartbeats just carry no stack mark.
+
+Each board was moved in two steps, board 2 first: the secure image with `upgrade_secure.sh`, then the prover. Each
+step had a backup, and the gateway admitted the board on the new value before the old one left the policy. Board 2
+after the prover change:
+
+```text
+09:04:03 stm32h573-dk-2 ADMITTED  [credential: issued session 988db46d4c81...]
+09:04:37 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 1 (uptime_s=46;link=1;fw=0.6.0;sstack=19088/26624)]
+09:05:11 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 2 (uptime_s=80;link=1;fw=0.6.0;sstack=19088/26624)]
+```
+
+`19088/26624` is the depth read over SWD in section 3, now reported by the partition itself on every cycle, on both
+boards. Before the boards, the partition's new code was fuzzed: 42,769 executions with no crash and no model failure,
+and three planted bugs caught.
+
+The next secure image adds the session's end on the partition's own clock, and the heartbeat gains `;ttl=`:
+[lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/).
 
 ## What it shows
 
@@ -127,6 +158,7 @@ chip's DHUK, not from the image. Both STM32 boards now run the fixed secure imag
 | Control | the non-secure code word reads correctly |
 | Aegis partition stack | at least 19,088 of 26,624 bytes used |
 | Board 1 | admitted on SPE `3cacd9d0...`, old value removed; both boards on the fix |
+| Stack mark in every heartbeat | `sstack=19088/26624` on both boards, under the KMAC, equal to the SWD reading |
 
 ## What it does not do
 

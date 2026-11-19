@@ -101,6 +101,12 @@ construction. The gateway uses them to check that the endpoint still holds the s
 provisions again. After a reboot the endpoint has lost its session in secure RAM, so the next heartbeat fails and a new session is
 issued.
 
+The secure side has since added two fields of its own to the status, under the same tag: the high-water mark of its
+stack, `sstack=` ([lab 64](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side/)),
+and the seconds the session has left, `ttl=`. The endpoint now ends a session itself when the credential's lifetime
+has passed on a clock of its secure side, whether or not the gateway is still there
+([lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/)).
+
 ## What to check
 
 - `PQKEY` returns the same key on every call and after a reboot.

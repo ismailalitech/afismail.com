@@ -56,6 +56,16 @@ the chip's PUF and the boot chain took the measurements.
 
 ![Three kinds of endpoint: who holds the key, who measures the firmware, and the label the gateway puts on the verdict](/aegis/diagrams/endpoint-trust-levels.svg)
 
+## Between two attestations
+
+An attestation is a moment. What holds between two of them is the session: after an admission the gateway and the
+endpoint share a key from an ML-KEM exchange, and every cycle the endpoint proves with a heartbeat that its secure
+side still holds it. The session has an end on both sides. The gateway replaces the credential before its hour is up,
+and since [lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/)
+the endpoint's secure side ends the session on its own clock when the credential's lifetime has passed, so a session
+cannot outlive a gateway that has gone away. Neither side has a wall clock it trusts: the endpoint measures how long it
+has held the session, not what time it is.
+
 ## What attestation does not prove
 
 - **That the software is correct.** It proves the software is the software the policy names. A policy that allows a vulnerable image allows it.

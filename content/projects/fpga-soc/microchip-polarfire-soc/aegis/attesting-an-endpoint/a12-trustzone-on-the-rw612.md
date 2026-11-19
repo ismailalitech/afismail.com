@@ -225,6 +225,11 @@ The fix and the stack report changed only the secure image; the non-secure image
 `SPE` changed: the new value went into the gateway policy before flashing, and the old one came out once the board was
 admitted again. The only gap was the one gateway cycle during which the board was being flashed and did not answer.
 
+The next secure image, 0.2.2 on 19 November, gave the partition the secure SysTick as a clock, so that it ends a
+session after the credential's lifetime on its own. The heartbeat gained `clk=` and `ttl=`, and the stack mark moved
+to 19,384 bytes:
+[lab 65](/projects/fpga-soc/microchip-polarfire-soc/aegis/attesting-an-endpoint/a18-the-endpoint-ends-its-session/).
+
 ## What it shows
 
 | Check | Result |
