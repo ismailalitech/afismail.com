@@ -1,6 +1,6 @@
 {{/* The right-hand side of the home page.
-     By default it is a moving drawing: a chip with its traces fanning out and signals
-     travelling along them (assets/js/traces.js). It carries no text and no caption.
+     By default it is left empty: the hard block of the moving fabric behind the hero
+     (assets/js/fabric.js) is drawn here. It carries no text and no caption.
      With hero_image set in content/_index.md it shows that photo or capture instead. */}}
 {{ with .Params.hero_image }}
 <figure class="hero-figure">
@@ -8,5 +8,5 @@
   {{ with $.Params.hero_image_caption }}<figcaption>{{ . }}</figcaption>{{ end }}
 </figure>
 {{ else }}
-<canvas class="hero-field" data-traces="chip" aria-hidden="true"></canvas>
+<div class="hero-space" data-fabric-anchor aria-hidden="true"></div>
 {{ end }}
