@@ -1,7 +1,9 @@
 {{ define "main" }}
-{{/* 1. Name, role, one sentence and two actions on the left; the moving chip drawing on the right.
+{{/* 1. Name, role, one sentence and two actions on the left. Behind them, across the full width,
+     a moving drawing of an FPGA fabric with its hard block on the right (assets/js/fabric.js).
      The texts are in content/_index.md. */}}
 <section class="hero">
+  <div class="hero-fabric" data-fabric aria-hidden="true"><canvas></canvas><canvas></canvas></div>
   <div class="hero-text">
     <h1><span data-rb="SplitText">{{ site.Title }}</span></h1>
     <p class="hero-role">{{ .Title }}</p>
