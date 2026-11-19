@@ -2,7 +2,7 @@
 title = "A gateway that hung for seven hours, and a watchdog nobody was feeding"
 date = '2026-11-19T06:35:00+01:00'
 draft = false
-description = "The PolarFire gateway stopped overnight without an error, and stayed stopped for about seven hours until it was power-cycled. The chip has a hardware watchdog, and systemd had left it off. Now systemd drives it, a test showed the gateway resetting itself and coming back, and a lock-up becomes a panic whose reason a PC records from the kernel console."
+description = "The PolarFire gateway stopped overnight without an error, and stayed stopped for about seven hours until it was power-cycled. The chip has a hardware watchdog, and systemd had left it off. Now systemd drives it, a test showed the gateway resetting itself and coming back, a lock-up becomes a panic whose reason a PC records from the kernel console, and the PC checks every 2 minutes that the gateway still admits its endpoints."
 weight = 20
 
 [params]
@@ -71,12 +71,35 @@ tools/console_logger.py /dev/ttyUSB2 logs/gateway-console
 
 The port number depends on the PC. The project's evidence holds no recorded panic yet.
 
+## Noticing a quiet gateway
+
+The hang went unnoticed for seven hours because nothing outside the board was looking. The watchdog and the panic
+settings act on the board; neither tells anyone. A last change on the PC does: `tools/bench_watch.py`.
+
+```sh
+tools/bench_watch.py --gateway <gateway>          # every 2 minutes; --once for one check
+```
+
+Every 2 minutes it makes one read-only SSH call to the gateway (`date`, `systemctl is-active`, `journalctl`) and
+checks three things:
+
+- the gateway answers;
+- the `aegis-fleet` unit is active;
+- each expected endpoint has an ADMITTED line in the gateway's journal in the last 10 minutes.
+
+The 10 minutes are counted on the gateway's own clock, so a wrong clock on either machine does not matter. An item is
+DOWN only after 2 failed checks in a row, and OK again after one good check. Only these changes are written, one line
+each, to an events log; a status file holds the current state. While the gateway or the fleet unit is down, the
+endpoints are not checked, so one failure gives one line, not one per endpoint. With `--once` it checks once, prints
+the result and exits 0 only if everything is OK.
+
 ## What it does and does not cover
 
 - It covers a hang of the kernel or of systemd itself: the watchdog is no longer fed and the board resets.
 - A soft lock-up or an oops now panics and reboots after 10 s, with its reason on a console the PC keeps.
-- It does not cover a service that stops working while the system runs. systemd keeps feeding the hardware watchdog
-  then. A hung `aegis-fleet` with a healthy system is not caught by these changes.
+- It does not recover a service that stops working while the system runs. systemd keeps feeding the hardware watchdog
+  then. A stopped `aegis-fleet`, or one that no longer admits an endpoint, is now noticed by the watcher on the PC,
+  but nothing restarts it.
 - It does not explain the hang of 18 November.
 
 ## Undo
@@ -90,3 +113,5 @@ been opened. Delete `90-aegis-lockup.conf` and reboot.
   really being fed, not only that the driver is loaded.
 - Test the watchdog by letting it expire once, on the bench, and watch the board come back.
 - Make a hang leave evidence: turn lock-ups into panics, and record the kernel console on another machine.
+- Watch the device from outside. A check every few minutes from another machine turns a silent stop of hours into a
+  line in a log.

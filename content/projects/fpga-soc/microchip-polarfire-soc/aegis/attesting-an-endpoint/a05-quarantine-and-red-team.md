@@ -131,7 +131,7 @@ The case study of the stalled service, found by the harness's first long run, is
 - The tampered image is quarantined within one cycle (30 s), and a credential file is gone.
 - The good image restored returns a different session identifier than before.
 - The host fuzz run finishes in seconds, not minutes; if it takes minutes, the stall is back.
-- `tools/regression.sh --board` ends with `passed 13, failed 0` (12 before the stage for the second fabric accelerator was added).
+- `tools/regression.sh --board` ends with `passed 13, failed 0` (12 before the stage for the second fabric accelerator was added; 14 with `--with-expiry`).
 
 ## Where it can go wrong
 
