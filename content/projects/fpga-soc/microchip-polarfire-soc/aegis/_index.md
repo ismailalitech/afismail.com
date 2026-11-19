@@ -71,7 +71,7 @@ Constraints that shaped the design:
 
 ## Architecture
 
-![The system: a PC checks the gateway quote; the PolarFire gateway runs aegisd and aegis-fleet, reads the system controller and can use the fabric accelerator; two STM32s and an NXP RW612 are attested over Ethernet, the Arduino Uno through a PC relay](/aegis/diagrams/system-overview.svg)
+![The system: a PC checks the gateway quote; the PolarFire gateway runs aegisd and aegis-fleet, reads the system controller and can use the fabric accelerator; an NXP RW612, two STM32s and a Zynq UltraScale+ are attested over Ethernet, the Arduino Uno through a PC relay](/aegis/diagrams/system-overview.svg)
 
 One decision cycle:
 

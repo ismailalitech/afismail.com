@@ -22,7 +22,7 @@ A device can pass one and fail another. A cloned device with a copied key passes
 
 ## Who proves what
 
-![The system: a PC checks the gateway, the gateway reads its system controller and attests the endpoints; two STM32s and an NXP RW612 are admitted and the Arduino is quarantined](/aegis/diagrams/system-overview.svg)
+![The system: a PC checks the gateway, the gateway reads its system controller and attests the endpoints; an NXP RW612, two STM32s and a Zynq UltraScale+ are admitted and the Arduino is quarantined](/aegis/diagrams/system-overview.svg)
 
 There are two directions of proof.
 
