@@ -11,7 +11,7 @@ weight = 50
 Aegis 1.2 is the verifier of 1.1 with the additions below, merged as
 [pull request 53](https://github.com/ismailalitech/aegis/pull/53), with the data formats for readers in
 [pull request 54](https://github.com/ismailalitech/aegis/pull/54), and running on the bench gateway since 21 November
-2026; on GitHub as v1.2.0 (being released). The Prover SDK and the endpoint images are unchanged: everything here happens
+2026; on GitHub as [v1.2.0](https://github.com/ismailalitech/aegis/releases/tag/v1.2.0). The Prover SDK and the endpoint images are unchanged: everything here happens
 in `aegis-fleet`, in the evidence pack, in the two standalone checkers and in the documents for readers
 ([`docs/evidence-format.md`](https://github.com/ismailalitech/aegis/blob/main/docs/evidence-format.md),
 [`docs/audit-and-policy.md`](https://github.com/ismailalitech/aegis/blob/main/docs/audit-and-policy.md)).

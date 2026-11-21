@@ -100,7 +100,7 @@ From the release notes; the full list is section 5 of the
 ## Aegis 1.2
 
 [Aegis 1.2](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x10-aegis-1-2/) is merged ([pull request 53](https://github.com/ismailalitech/aegis/pull/53)) and on
-the bench gateway since 21 November 2026; on GitHub as v1.2.0 (being released), with the other releases on the
+the bench gateway since 21 November 2026; on GitHub as [v1.2.0](https://github.com/ismailalitech/aegis/releases/tag/v1.2.0), with the other releases on the
 [releases page](https://github.com/ismailalitech/aegis/releases). It changes only the verifier and the checkers: a
 signed export time in the evidence pack, with `aegis.pack-signed` in every result so that a removed signature is
 caught; the audit log's head and `aegis.warnings` in each result; and the policy keys `min_trust` and `disabled`. The
