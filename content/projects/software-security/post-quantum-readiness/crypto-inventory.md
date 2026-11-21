@@ -25,7 +25,7 @@ The project is a map and health check of all the locks in a building: which are 
 
 ## My role
 
-I designed it and built it with Claude Code agents doing the routine implementation, under a written plan and architecture decision records. Every design choice that touches trust, scoring or signatures is marked for a second review before it is relied on.
+I designed it and built it, under a written plan and architecture decision records. Every design choice that touches trust, scoring or signatures is marked for a second review before it is relied on.
 
 ## How it works
 
@@ -66,7 +66,7 @@ The platform only reads. It never restarts a service or changes a policy on the 
 
 - The code is private for now. This page describes what was built and tested; it does not yet offer a download.
 - Two planted weaknesses cannot be fully reproduced: the DSA SSH host key, because the current OpenSSH removed it, and 3DES, because the host's OpenSSL has no 3DES suites.
-- The design records have had one pass by the same author and the agents. An independent review is still to come.
+- The design records have had one pass by their author. An independent review is still to come.
 - The scanners read the local machine and test services only. Scanning a real network needs an explicit allowlist, on purpose.
 - Only one Aegis endpoint is development-signed, and the platform says so; it does not call that hardware trust.
 - The Go collectors exist as a skeleton only; the working collectors are in Python.
