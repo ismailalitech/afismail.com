@@ -2,7 +2,7 @@
 title = "Trust labels, endorsed keys and one transcript"
 date = '2026-11-21T09:00:00+01:00'
 draft = false
-description = "An admitted verdict says how far it can be trusted, how the device key came to be trusted, and whether the session belongs to the code that was appraised. The five trust labels as of Aegis 1.1, endorsement at the bench instead of trust on first use, and transcript v2, with what each adds and what it does not."
+description = "An admitted verdict says how far it can be trusted, how the device key came to be trusted, and whether the session belongs to the code that was appraised. The five trust labels as of Aegis 1.1, their order and the floor on it since 1.2, endorsement at the bench instead of trust on first use, and transcript v2, with what each adds and what it does not."
 weight = 50
 
 [params]
@@ -57,17 +57,48 @@ the gateway printed `trustzone-devkey` for the Zynq UltraScale+ development prof
 the same on every chip). Since 1.1 that profile is labelled `development-shared-key`, and `trustzone-devkey` means
 only the TF-M case above ([release notes 1.1](https://github.com/ismailalitech/aegis/blob/main/docs/release-notes-1.1.md)).
 
-### A floor and a switch, in review for 1.2
+### The order, and a floor on it (Aegis 1.2)
 
-Aegis 1.2 is in review ([pull request 53](https://github.com/ismailalitech/aegis/pull/53)) and not on the bench.
-It adds two policy keys:
+The labels are ordered, strongest first:
 
-- `"min_trust"`, per entry or for the whole policy, compares labels in the order of the figure above. A verdict
-  below the floor, or one without a label, is refused with the reason `trust X below min_trust Y` and the signed
-  status **contraindicated**. `fleet.py check` fails a floor that an entry can never meet.
-- `"disabled": true` takes an entry out of service without deleting it: the endpoint is not contacted, it is
-  quarantined with the reason `disabled by policy`, its session is revoked, and the signed status is
-  **incomplete**.
+```text
+trustzone > trustzone-devkey > device-key > software > development-shared-key
+```
+
+The order follows what an attacker needs to forge a good quote:
+
+| Label | To forge a good quote, an attacker needs |
+|---|---|
+| `trustzone` | code in the secure world, which the measured software cannot reach |
+| `trustzone-devkey` | the same, but the platform's token is signed with a published key, so it is no second witness: what it says rests on the ML-DSA-65 key alone |
+| `device-key` | code on the device: the chip derives the key, but the firmware measures itself |
+| `software` | root on the host, which holds both the key and the measurements |
+| `development-shared-key` | nothing device-specific: the key is the same on every chip, so a quote does not even say which device sent it |
+
+Since [Aegis 1.2](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x10-aegis-1-2/) a policy can set a floor on this order, `"min_trust"`, per entry or for every entry
+([`docs/audit-and-policy.md`](https://github.com/ismailalitech/aegis/blob/main/docs/audit-and-policy.md)):
+
+- a verdict is admitted only if its label is the floor or a stronger one; a verdict with no label meets no floor;
+- the label follows from the entry's kind, its pinned profile and its attestation key, so the verifier knows when the
+  policy loads which labels an entry can ever get. **A floor the entry can never meet is refused then**, as the
+  policy's mistake: the endpoint is not contacted, the signed status is **incomplete**, and `fleet.py check` exits 1.
+  At run time the floor is checked again on each quote's label;
+- an entry cannot opt out of a top-level floor: `"min_trust": null` is a policy error. The weakest floor is
+  `development-shared-key`, which every labelled verdict meets.
+
+A second key, `"disabled": true`, takes an entry out of service without deleting it: the endpoint is not contacted,
+it is quarantined every cycle with `disabled by policy`, its session is revoked, and the signed status is
+**incomplete**.
+
+Both ran on STM32 board 2 on 21 November 2026. With `"min_trust": "trustzone"` the gateway logged
+`QUARANTINED policy: entry stm32h573-dk-2 can NEVER meet min_trust trustzone: its trust is trustzone-devkey` and did
+not contact the board; with `"disabled": true`, `QUARANTINED disabled by policy [credential: revoked]`; with
+`"min_trust": "trustzone-devkey"`, which it meets, it was admitted again.
+
+![fleet.py check on the simulated device's entry: min_trust device-key, REFUSED, it can never meet it with software trust, exit 1; min_trust software, met; min_trust null, refused; disabled true, DISABLED, not contacted, quarantined every cycle, session revoked, exit 0](/aegis/diagrams/console-v12-check.svg)
+
+A floor is only as good as the labels under it. The STM32s stay `trustzone-devkey` while they run with TF-M's
+published keys: a floor of `trustzone` refuses them, it does not make them any stronger.
 
 ## Endorsed keys instead of trust on first use
 
