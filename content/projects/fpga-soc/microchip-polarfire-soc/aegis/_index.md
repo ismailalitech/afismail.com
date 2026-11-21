@@ -10,7 +10,7 @@ weight = 20
   platform = "Microchip PolarFire SoC, STMicroelectronics STM32H5, NXP RW612 and AMD Zynq UltraScale+"
   problem = "A network usually trusts a device because it is plugged in. A device should earn access by proving what it is and what firmware it runs, and keep proving it, with signatures that a future quantum computer cannot forge."
   role = "Designed and built the complete system: the gateway services, the fabric accelerator and its tests, the secure partition on the endpoint, the attestation and provisioning protocol, the red-team harness and the regression."
-  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; one Prover SDK runs on three secure worlds; evidence, results, the audit log and the policy are signed objects a third party checks without Aegis code; 14 of 14 regression stages pass, three times during a 3-hour soak; releases 1.0 and 1.1."
+  result = "A signed endpoint is admitted and holds an ML-KEM session; a validly signed but modified firmware image is quarantined within one cycle and its credential revoked; an Arduino that cannot attest is quarantined every cycle; NIST test vectors pass on three platforms; one Prover SDK runs on three secure worlds; evidence, results, the audit log and the policy are signed objects a third party checks without Aegis code; 14 of 14 regression stages pass, three times during a 3-hour soak; releases 1.0 and 1.1, and Aegis 1.2 on the gateway."
   hardware = "Microchip PolarFire SoC Discovery Kit (MPFS095T) as the gateway, two STM32H573I-DK, an NXP FRDM-RW612 and a Trenz TE0807 (Zynq UltraScale+ XCZU4EG) on a TEBF0808 carrier as attested endpoints, Arduino Uno R3 as a device that cannot attest"
   tools = "Libero SoC 2026.1, TF-M v2.3.0, Zephyr v4.5.0, Vivado and Vitis 2025.2, TF-A, OP-TEE 4.7, liboqs 0.16.0, mldsa-native, mlkem-native, pycose, OpenSSL 3.5, Icarus Verilog, Python"
   action = "/resources/aegis-explorer/"
@@ -141,12 +141,13 @@ Every number is traced to a record with its method: [results and evidence](/reso
 ## State of the bench
 
 What each board runs on 21 November 2026, at the releases
-[1.0 and 1.1](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x09-releases-1-0-and-1-1/),
+[1.0 and 1.1](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x09-releases-1-0-and-1-1/)
+with [Aegis 1.2](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x10-aegis-1-2/) on the gateway,
 and what is still open on it.
 
 | Board | Runs | Gateway's verdict | Still open |
 |---|---|---|---|
-| PolarFire SoC Discovery Kit | `aegisd` and `aegis-fleet` from a [signed policy](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy/), with the signed audit log on, anchors kept on the PC and signed results for every endpoint; fabric design 102 with the second accelerator; a kernel with packet filtering and VLANs; the hardware watchdog driven by systemd, lock-ups turned into panics | the gateway's own quote accepted by the PC | no VLAN switch, so no enforcement; the cause of the overnight hang; the identity key is software |
+| PolarFire SoC Discovery Kit | `aegisd` and `aegis-fleet` (Aegis 1.2) from a [signed policy](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy/), with the signed audit log on, anchors kept on the PC and signed results for every endpoint; fabric design 102 with the second accelerator; a kernel with packet filtering and VLANs; the hardware watchdog driven by systemd, lock-ups turned into panics | the gateway's own quote accepted by the PC | no VLAN switch, so no enforcement; the cause of the overnight hang; the identity key is software |
 | STM32H573I-DK, board 2 | TF-M v2.3.0 with the Aegis partition on the Prover SDK and [standard evidence](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x07-standard-evidence/) (SPE `315dcc2f...`, NSPE `acf8fc53...`); transcript v2, key endorsed | admitted, trustzone-devkey trust | open product state with development keys; isolation level 1 |
 | STM32H573I-DK, board 1 | the partition on the Prover SDK (SPE `9de76167...`), prover 0.6.0; transcript v2, key endorsed | unplugged for the soak | as board 2 |
 | NXP FRDM-RW612 | NXP's TF-M v2.1.4 with the Aegis partition 0.3.2 on the Prover SDK; transcript v2, key endorsed | admitted, trustzone trust | no secure boot fused; isolation level 2 |

@@ -8,7 +8,7 @@ weight = 50
 [params]
 +++
 
-Aegis 1.2 is the verifier of 1.1 with four things added, merged as
+Aegis 1.2 is the verifier of 1.1 with the additions below, merged as
 [pull request 53](https://github.com/ismailalitech/aegis/pull/53) and running on the bench gateway since 21 November
 2026; on GitHub as v1.2.0 (being released). The Prover SDK and the endpoint images are unchanged: everything here happens
 in `aegis-fleet`, in the evidence pack and in the two standalone checkers
