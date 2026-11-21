@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 380" width="900" height="380" role="img" aria-labelledby="t d">
+<title id="t">The trust labels of an admitted verdict, in the order a minimum trust compares them. trustzone: a secure world holds a key of the chip and the measurements come from the boot chain or the secure side (the RW612's TF-M partition, the Zynq UltraScale+ trusted application with its PUF-bound key). trustzone-devkey: a TF-M endpoint whose PSA token is signed with TF-M's published development key, the bench's STM32s since Aegis 1.1; the signed result says warning. device-key: a single-image prover with a key of the chip. software: a key in a file, such as the Linux prover or the simulated device. development-shared-key: one key on every chip, refused unless the policy allows it.</title><desc id="d">The trust labels of an admitted verdict, in the order a minimum trust compares them. trustzone: a secure world holds a key of the chip and the measurements come from the boot chain or the secure side (the RW612's TF-M partition, the Zynq UltraScale+ trusted application with its PUF-bound key). trustzone-devkey: a TF-M endpoint whose PSA token is signed with TF-M's published development key, the bench's STM32s since Aegis 1.1; the signed result says warning. device-key: a single-image prover with a key of the chip. software: a key in a file, such as the Linux prover or the simulated device. development-shared-key: one key on every chip, refused unless the policy allows it.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 8.50s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 8.50s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}15.29%{opacity:1}18.29%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="380" rx="12" fill="#12171d"/>
+<g id="tz">
+<rect x="20" y="20" width="230" height="52" rx="9" fill="#17382f" stroke="#4fd1a5" stroke-width="1.5"/>
+<text x="135" y="50.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">trustzone</text>
+<rect class="hl" style="animation-delay:0.00s" x="19" y="19" width="232" height="54" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="tzd">
+<rect x="20" y="90" width="230" height="52" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="135" y="120.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">trustzone-devkey</text>
+<rect class="hl" style="animation-delay:1.30s" x="19" y="89" width="232" height="54" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="dk">
+<rect x="20" y="160" width="230" height="52" rx="9" fill="#352f1c" stroke="#c0a95f" stroke-width="1.5"/>
+<text x="135" y="190.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">device-key</text>
+<rect class="hl" style="animation-delay:2.60s" x="19" y="159" width="232" height="54" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="sw">
+<rect x="20" y="230" width="230" height="52" rx="9" fill="#43201f" stroke="#ef6f6c" stroke-width="1.5"/>
+<text x="135" y="260.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">software</text>
+<rect class="hl" style="animation-delay:3.90s" x="19" y="229" width="232" height="54" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="dsk">
+<rect x="20" y="300" width="230" height="52" rx="9" fill="#43201f" stroke="#ef6f6c" stroke-width="1.5"/>
+<text x="135" y="330.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">development-shared-key</text>
+<rect class="hl" style="animation-delay:5.20s" x="19" y="299" width="232" height="54" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<text x="275" y="42" text-anchor="start" font-size="12" fill="#9aa8b5">RW612 TF-M partition; Zynq UltraScale+ TA with the PUF key; affirming</text>
+<text x="275" y="112" text-anchor="start" font-size="12" fill="#9aa8b5">Both STM32s since 1.1: TF-M's published attestation key; status warning</text>
+<text x="275" y="182" text-anchor="start" font-size="12" fill="#9aa8b5">A single-image prover with a key of the chip that measures itself</text>
+<text x="275" y="252" text-anchor="start" font-size="12" fill="#9aa8b5">A key in a file: the Linux prover, the simulated device</text>
+<text x="275" y="322" text-anchor="start" font-size="12" fill="#9aa8b5">One key on every chip: refused unless the policy allows it</text>
+</svg>

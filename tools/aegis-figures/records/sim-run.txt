@@ -1,0 +1,15 @@
+# sdk/examples/simulated-device/run.sh on the build PC, 2026-11-21T09:58Z, aegis main 2c501e6
+ 1 Python with ML-DSA-65 (cryptography)               ok  (cryptography 50.0.2)
+ 2 build the SDK and the device (AEGIS_EAT_COSE=1)    ok  (116908 bytes)
+ 3 verifier identity (aegisd.py init)                 ok  (key sha256 750691eb1fd18989...)
+ 4 device secret and firmware image                   ok  (APP sha256 fe88ae045060324b...)
+ 5 start the simulated device                         ok  (127.0.0.1:38225, key sha256 fa8a3a7c87f2d28b...)
+ 6 enrol the device key (fleet.py enroll-pq)          ok
+ 7 policy check (fleet.py check)                      ok
+ 8 attest and provision (fleet.py once)               ok  (ADMITTED, trust software, session bound to the quote, eat-cose-v1)
+ 9 same session on both sides (fleet.py session)      ok
+10 KMAC256 heartbeat with the session key             ok  (fw=sim-1.0.0;requests=6;ttl=3825 counter 1)
+11 evidence pack: tools/verify_evidence.py            ok  (EAT, result and keys verified)
+12 changed image: quarantined                         ok  (component APP not allowed (measurement b38718fb24db...))
+13 audit log: tools/verify_audit.py                   ok  (11 entries in 3 signed batches)
+RESULT: PASS (work directory /tmp/aegis-sim.XXXXXX, kept)
