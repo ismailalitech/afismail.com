@@ -5,13 +5,13 @@
 # Every fact comes from the Aegis repository (https://github.com/ismailalitech/aegis): docs/architecture.md,
 # docs/threat-model.md, docs/zynqmp-key-design.md, docs/endpoint-expiry.md, docs/evidence-format.md,
 # docs/audit-and-policy.md, docs/enrolment.md, docs/zynqmp-sdk-port.md, docs/release-notes-1.0.md and -1.1.md,
-# endpoints/*/README.md and evidence/, as of 21 November 2026. Each component and connection names the files behind it ("sources") and the labs that
+# endpoints/*/README.md and evidence/, as of 21 November 2026, with Aegis 1.2 (main 6bf5b53) on the gateway. Each component and connection names the files behind it ("sources") and the labs that
 # explain it ("learn", paths under /projects/fpga-soc/microchip-polarfire-soc/aegis/; the build fails on a
 # missing page).
 schema: 1
 baseline:
   date: "2026-11-21"
-  state: Releases v1.0.0 and v1.1.0, 21 November 2026 (1.2 in review, not shown)
+  state: Releases v1.0.0 and v1.1.0, and Aegis 1.2 on the gateway, 21 November 2026
   repo: https://github.com/ismailalitech/aegis
 
 node_kinds:
@@ -94,10 +94,10 @@ nodes:
     sub: no Aegis code
     kind: host
     parent: pc
-    summary: Check evidence packs, the audit log and signed policies with pycose 1.1.0, cbor2 and OpenSSL 3.5 only. Their claim numbers were written from the format documents, not from the verifier's code.
-    facts: {does_not: "judge the policy, or check the ES256 signature inside a nested PSA token"}
+    summary: Check evidence packs, the audit log and signed policies with pycose 1.1.0, cbor2 and OpenSSL 3.5 only. Their claim numbers were written from the format documents, not from the verifier's code. Since Aegis 1.2 verify_evidence.py reports whether a pack's export time is signed (--require-signed-export refuses one that is not), and verify_audit.py --result finds the log's head a result names.
+    facts: {does_not: "judge the policy, or check the ES256 signature inside a nested PSA token", stripped: "a pack whose result says aegis.pack-signed and that has no manifest.cose is refused"}
     sources: [tools/verify_evidence.py, tools/verify_audit.py, docs/evidence-format.md]
-    learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware]
+    learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware, standards-and-releases/x10-aegis-1-2]
 
   # ---------------------------------------------------------------- the gateway
   - id: gateway
@@ -140,28 +140,28 @@ nodes:
     sub: keys, measurements, endorsements
     kind: file
     parent: gateway
-    summary: The endpoints, their ML-DSA-65 keys, the allowed measurements, the pinned profiles, the endorsement records each entry requires, and whether the transcript, results and the audit log are on. Since 21 November 2026 signed by the operator key on the PC; aegis-fleet checks it against policy-signers.json every cycle and refuses an unsigned file or a lower version.
-    facts: {signed: "by a key no verifier holds; a version that never goes back", pins: "device keys by pq_pub_sha256, endorsement records by endorsement_sha256", root_on_the_gateway: "can replace the signers file, cannot sign a new policy"}
+    summary: The endpoints, their ML-DSA-65 keys, the allowed measurements, the pinned profiles, the endorsement records each entry requires, and whether the transcript, results and the audit log are on. Since 21 November 2026 signed by the operator key on the PC; aegis-fleet checks it against policy-signers.json every cycle and refuses an unsigned file or a lower version. Since Aegis 1.2 an entry can have a floor on its trust label (min_trust) and can be taken out of service without being deleted (disabled).
+    facts: {signed: "by a key no verifier holds; a version that never goes back", pins: "device keys by pq_pub_sha256, endorsement records by endorsement_sha256", min_trust: "trustzone > trustzone-devkey > device-key > software > development-shared-key; a floor an entry can never meet is refused when the policy loads, the endpoint not contacted", disabled: "not contacted, quarantined every cycle, session revoked, result incomplete", root_on_the_gateway: "can replace the signers file, cannot sign a new policy"}
     sources: [docs/audit-and-policy.md, docs/enrolment.md, gateway/policy/fleet.example.json]
-    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy, trust-model/x05-trust-labels-endorsement-transcript, attesting-an-endpoint/a05-quarantine-and-red-team]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy, trust-model/x05-trust-labels-endorsement-transcript, standards-and-releases/x10-aegis-1-2, attesting-an-endpoint/a05-quarantine-and-red-team]
   - id: audit
     title: Audit log
     sub: chained batches, one signature each
     kind: file
     parent: gateway
-    summary: aegis-fleet's decisions in segment files of batch records, each a COSE_Sign1 by the gateway's identity key naming the hash of the batch before it. An entry is made only when a decision, a session or the policy changes; a steady cycle writes nothing.
+    summary: aegis-fleet's decisions in segment files of batch records, each a COSE_Sign1 by the gateway's identity key naming the hash of the batch before it. An entry is made only when a decision, a session or the policy changes; a steady cycle writes nothing. Since Aegis 1.2 every signed result names the log's last batch at that moment, so a result kept off the gateway is an anchor too.
     facts: {measured: "the directory did not grow over ten minutes (44 KB); eight batches, 43 KB, in the first hour", cost: "about 0.3 MB a day for the bench", limit: "a log cut at a record boundary is found only with an anchor"}
     sources: [docs/audit-and-policy.md, common/audit.py]
-    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy, standards-and-releases/x10-aegis-1-2]
   - id: results
     title: Attestation results
     sub: EAR per verdict, evidence packs
     kind: file
     parent: gateway
-    summary: For each verdict an attestation result in the EAR format, signed with the gateway's identity key, beside the evidence as received; replaced every cycle. fleet.py export-evidence writes them with the keys into a pack that the standalone checker verifies.
-    facts: {per_cycle: "evidence.cbor 4,048 bytes, result.cbor 4,529, meta.json 440 for STM32 board 2", status: "affirming, warning, contraindicated or incomplete; never better than the verdict", formats: "EAR draft-06 and AR4SI draft-11: IETF drafts"}
-    sources: [docs/evidence-format.md, common/eat.py, docs/audit-and-policy.md]
-    learn: [standards-and-releases/x07-standard-evidence]
+    summary: For each verdict an attestation result in the EAR format, signed with the gateway's identity key, beside the evidence as received; replaced every cycle. fleet.py export-evidence writes them with the keys into a pack that the standalone checker verifies. Since Aegis 1.2 the verifier also signs the pack's manifest and export time (manifest.cose), and every result says so (aegis.pack-signed), names the audit log's head and lists the verdict's warnings (aegis.warnings).
+    facts: {per_cycle: "evidence.cbor 4,048 bytes, result.cbor 4,529, meta.json 440 for STM32 board 2", status: "affirming, warning, contraindicated or incomplete; never better than the verdict; incomplete for a disabled entry or a floor it can never meet", signed_manifest: "COSE_Sign1 over the endpoint, the export time and the SHA-256 of the manifest and the result", formats: "EAR draft-06 and AR4SI draft-11: IETF drafts"}
+    sources: [docs/evidence-format.md, common/eat.py, common/evidence_pack.py, docs/audit-and-policy.md]
+    learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/x10-aegis-1-2]
   - id: fleet
     title: aegis-fleet
     sub: attest, decide, provision, every 30 s
@@ -500,12 +500,13 @@ edges:
   - {id: sdk-rw612, from: sdk, to: rw612-pq, kind: uses, label: "built into the TF-M partition", learn: [standards-and-releases/x06-one-prover-sdk]}
   - {id: sdk-zq, from: sdk, to: zq-ta, kind: uses, label: "built into the trusted application", learn: [zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk]}
   - {id: stm32-eat, from: fleet, to: stm32-s, kind: attest, views: [records], label: "PQEAT challenge, answered by an EAT in a COSE_Sign1", detail: "Board 2 only. The non-secure prover forwards it as the PSA message QUOTE_EAT; the EAT nests TF-M's PSA token and is signed with ML-DSA-65, COSE algorithm -49. On the bench 4,048 bytes.", learn: [standards-and-releases/x07-standard-evidence]}
-  - {id: fleet-results, from: fleet, to: results, kind: record, label: "a signed attestation result for every verdict", detail: "EAR claims with the AR4SI trustworthiness vector, the policy's hash, the evidence's hash, the quote hash of the transcript, the trust label and the enrolment.", learn: [standards-and-releases/x07-standard-evidence]}
+  - {id: fleet-results, from: fleet, to: results, kind: record, label: "a signed attestation result for every verdict", detail: "EAR claims with the AR4SI trustworthiness vector, the policy's hash, the evidence's hash, the quote hash of the transcript, the trust label and the enrolment; since 1.2 also aegis.pack-signed, aegis.warnings, the audit log's head and, where the policy sets them, aegis.min-trust and aegis.disabled.", learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/x10-aegis-1-2]}
+  - {id: result-head, from: results, to: audit, kind: uses, views: [records], label: "each result names the log's last batch", detail: "Aegis 1.2: aegis.audit-log, aegis.audit-batch and aegis.audit-head, the batch written before the result; the result's own decision goes into a later batch. verify_audit.py --result finds it byte for byte.", learn: [standards-and-releases/x10-aegis-1-2]}
   - {id: fleet-audit, from: fleet, to: audit, kind: record, label: "a signed batch when a decision, a session or the policy changes", detail: "At most one batch per 300 s; an empty one every hour; nothing in a steady cycle.", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
   - {id: sign-policy, from: policy-signer, to: policy, kind: record, label: "a signed policy, version never lower", detail: "Deployed with fleet.py check first; the loop reloads it at its next cycle.", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
   - {id: endorse, from: endorser, to: policy, kind: record, label: "an endorsement record, pinned by its hash", detail: "The endorser asks the device for PQKEY and a quote first; the record names one device, its family, one key and the components it reported.", learn: [trust-model/x05-trust-labels-endorsement-transcript]}
   - {id: anchor-fetch, from: anchors, to: audit, kind: uses, label: "fetches the last batch record every 300 s", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
-  - {id: check-pack, from: checkers, to: results, kind: uses, label: "checks an exported evidence pack", learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware]}
+  - {id: check-pack, from: checkers, to: results, kind: uses, label: "checks an exported evidence pack and its signed export time", learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware, standards-and-releases/x10-aegis-1-2]}
   - {id: check-log, from: checkers, to: audit, kind: uses, label: "checks the log against the anchors kept", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
 
 # Drawing positions. Boxes are [x, y, width, height] in the view's coordinates. An edge is drawn in a view when
@@ -718,6 +719,16 @@ walks:
       - {edge: fleet-policy, say: "The policy began to require an endorsement. Next cycle: frdm-rw612, stm32h573-dk and stm32h573-dk-2 ADMITTED, endorsed by bench-pc."}
       - {node: policy, say: "Board 2's pinned key replaced by board 1's: 12:24:26 stm32h573-dk-2 QUARANTINED endorsement required: the pinned key is not the endorsed key: substituted key [credential: revoked]."}
       - {node: policy, say: "The key restored and the record removed: QUARANTINED, no endorsement record. The record back: ADMITTED. The full board regression then passed 14 of 14."}
+  - id: aegis-1-2
+    title: "Aegis 1.2: a floor, a switch and a signed pack"
+    steps:
+      - {edge: sign-policy, say: "21 November 2026, Aegis 1.2 on the gateway; the board regression passed 14 of 14. The operator signs a policy version with \"min_trust\": \"trustzone\" on STM32 board 2."}
+      - {edge: fleet-policy, say: "aegis-fleet loads it and works out which labels the entry can ever get: its PSA token is signed with TF-M's published key, so trustzone-devkey at best. It logs QUARANTINED policy: entry stm32h573-dk-2 can NEVER meet min_trust trustzone: its trust is trustzone-devkey, and does not contact the board."}
+      - {node: policy, say: "With \"disabled\": true the board is not contacted either: QUARANTINED disabled by policy [credential: revoked]. The signed result says incomplete, not contraindicated: nothing was appraised."}
+      - {edge: fleet-policy, say: "With \"min_trust\": \"trustzone-devkey\", which the board meets, it is contacted, appraised and ADMITTED again."}
+      - {edge: fleet-results, say: "A 1.2 result for it carries aegis.pack-signed, the floor as aegis.min-trust and, because its label comes with a warning, aegis.warnings."}
+      - {edge: result-head, say: "It also names the audit log's last batch on disk at that moment; the admission itself goes into a later batch."}
+      - {edge: check-pack, say: "export-evidence signs the pack's manifest and export time. verify_evidence.py pack --require-signed-export verifies a 1.2 pack of the bench with its export time signed. With manifest.cose removed it would refuse the pack: the result says there was one."}
 
 # The fleet replay: verdict lines from the gateway's journal, as recorded in evidence/ (already masked: no LAN
 # address, no MAC address). The explorer replays them one line at a time; nothing here is live.

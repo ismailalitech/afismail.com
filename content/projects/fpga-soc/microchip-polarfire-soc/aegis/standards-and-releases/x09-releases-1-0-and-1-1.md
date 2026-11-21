@@ -2,7 +2,7 @@
 title = "Releases 1.0 and 1.1, and their known limits"
 date = '2026-11-21T10:00:00+01:00'
 draft = false
-description = "Aegis 1.0 and 1.1 were released on 21 November 2026: a bench prototype of a post-quantum attestation gateway with its source, its tests and the records of what ran on the boards. What each release contains, how it was verified, what runs on the bench, and the limits that are part of the release. 1.2 is in review."
+description = "Aegis 1.0 and 1.1 were released on 21 November 2026: a bench prototype of a post-quantum attestation gateway with its source, its tests and the records of what ran on the boards. What each release contains, how it was verified, what runs on the bench, and the limits that are part of the release. 1.2 followed the same day."
 weight = 40
 
 [params]
@@ -97,12 +97,12 @@ From the release notes; the full list is section 5 of the
   namespaces only, not on a switch.
 - **Side channels and fault injection are not evaluated.**
 
-## In review: 1.2
+## Aegis 1.2
 
-Aegis 1.2 is two open pull requests, not released and not on the bench:
-[53](https://github.com/ismailalitech/aegis/pull/53), the verifier (a signed export time in the evidence pack, the
-audit log's head in each result, the policy keys `disabled` and `min_trust`, and `aegis.warnings`), and
-[54](https://github.com/ismailalitech/aegis/pull/54), the data formats (JSON Schemas, a reference of every claim,
-and golden vectors). What they add is described with
-[standard evidence](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x07-standard-evidence/)
-and the [trust labels](/projects/fpga-soc/microchip-polarfire-soc/aegis/trust-model/x05-trust-labels-endorsement-transcript/).
+[Aegis 1.2](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x10-aegis-1-2/) is merged ([pull request 53](https://github.com/ismailalitech/aegis/pull/53)) and on
+the bench gateway since 21 November 2026; on GitHub as [v1.2.0](https://github.com/ismailalitech/aegis/releases/tag/v1.2.0), with the other releases on the
+[releases page](https://github.com/ismailalitech/aegis/releases). It changes only the verifier and the checkers: a
+signed export time in the evidence pack, with `aegis.pack-signed` in every result so that a removed signature is
+caught; the audit log's head and `aegis.warnings` in each result; and the policy keys `min_trust` and `disabled`. The
+board regression passed 14 of 14 with it deployed. The data formats for readers (JSON Schemas, a reference of every
+claim, golden vectors) are part of 1.2 too ([pull request 54](https://github.com/ismailalitech/aegis/pull/54)).

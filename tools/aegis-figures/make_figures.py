@@ -195,6 +195,106 @@ def consoles(aegis):
          {'lines': [at('# live'), at('# key restored') - 1], 'title': 'Substituted key', 'text': 'Board 1\'s key under board 2\'s name: quarantined, credential revoked.'},
          {'lines': [at('# key restored'), at('# record restored') - 1], 'title': 'No record', 'text': 'Quarantined until the record is back.'},
          {'lines': [at('# record restored'), len(lines)], 'title': 'Back', 'text': 'Admitted; the regression passes 14 of 14.'}], width=1140))
+
+    figs += consoles_v12(rec)
+    return figs
+
+
+def consoles_v12(rec):
+    """The Aegis 1.2 figures: the bench record (records/v12-bench.txt) and two runs on the build PC
+    (records/v12-pack.txt, records/v12-check.txt)."""
+    figs = []
+
+    # 1.2 on the bench gateway, 21 November 2026 (the operator's record)
+    lines = []
+    for l in rec('v12-bench.txt')[2:]:
+        if l.startswith('# a 1.2 pack of the bench: '):
+            l = '$ ' + l[len('# a 1.2 pack of the bench: '):].replace('<pack>', '<a 1.2 pack of the bench>')
+        elif l.startswith('# '):
+            l = '  # ' + l[2:]
+        if l:
+            lines.append(l)
+    at = lambda text: next(i for i, l in enumerate(lines) if text in l) + 1
+    figs.append(fig('console-v12-bench', 'Aegis 1.2 on the bench: a floor, a switch and a signed export time',
+        'The gateway with Aegis 1.2 on 21 November 2026, from the operator\'s record. The board regression passed 14 of '
+        '14. With "min_trust": "trustzone" on STM32 board 2 the gateway logged QUARANTINED policy: entry stm32h573-dk-2 '
+        'can NEVER meet min_trust trustzone: its trust is trustzone-devkey, and did not contact the board. With '
+        '"disabled": true it logged QUARANTINED disabled by policy [credential: revoked]. With "min_trust": '
+        '"trustzone-devkey", which the board meets, it was admitted again. A 1.2 pack of the bench verified with '
+        '--require-signed-export, its export time signed.',
+        '$ journalctl -u aegis-fleet -o cat   # 21 November 2026, Aegis 1.2 on the gateway, with the operator\'s notes', lines,
+        [{'lines': [1, 1], 'title': 'Deployed', 'text': 'The board regression with 1.2: 14 of 14.'},
+         {'lines': [at('"trustzone" on'), at('did not contact')], 'title': 'A floor it can never meet', 'text': 'Refused as the policy\'s mistake; the board is not contacted.'},
+         {'lines': [at('"disabled"'), at('disabled by policy')], 'title': 'Disabled', 'text': 'Quarantined and its session revoked, without being asked.'},
+         {'lines': [at('"trustzone-devkey", which'), at('ADMITTED')], 'title': 'A floor it meets', 'text': 'trustzone-devkey: admitted again.'},
+         {'lines': [at('$ tools/verify_evidence'), len(lines)], 'title': 'Signed export time', 'text': 'The pack\'s time is the verifier\'s signed statement.'}], width=1060))
+
+    # the simulated device's 1.2 pack: signed, stripped, retimed; its result's head in the audit log (records/v12-pack.txt)
+    blocks, cur = {}, None
+    for l in rec('v12-pack.txt'):
+        if re.match(r'^# [A-D]: ', l):
+            cur = l[2]; blocks[cur] = []
+        elif cur and not l.startswith('# '):
+            blocks[cur].append(l)
+    js = {k: json.loads('\n'.join(v)) for k, v in blocks.items()}
+    a, b, c, d = js['A'], js['B'], js['C'], js['D']
+    vc = a['attestation_result']['verifier_claims']
+    q = lambda v: json.dumps(v)
+    h8 = lambda s: s[:8] + '...'
+    anc = d['anchors'][0]
+    lines = (['"aegis.pack-signed": %s' % q(vc['aegis.pack-signed']),
+              '"aegis.audit-log": "%s", "aegis.audit-batch": %d, "aegis.audit-head": "%s"' % (h8(vc['aegis.audit-log']), vc['aegis.audit-batch'], h8(vc['aegis.audit-head'])),
+              '"aegis.warnings": ['] + ['    %s' % q(w) for w in vc['aegis.warnings']] + [']',
+             '"export_time": {"time": %d, "signed": %s}' % (a['export_time']['time'], q(a['export_time']['signed'])),
+             '"verified": %s' % q(a['verified']),
+             '$ tools/verify_evidence.py pack <the same pack, manifest.cose and "signed_manifest" removed> ...',
+             '"verified": %s' % q(b['verified'])] + wrap('"reason": %s' % q(b['reason']), 118, 11) +
+            ['$ tools/verify_evidence.py pack <the same pack, "exported" in manifest.json one day earlier> ...',
+             '"verified": %s' % q(c['verified']), '"reason": %s' % q(c['reason']),
+             '$ tools/verify_audit.py log <audit dir> --key identity.json --result <the pack>/attestation-result.cbor',
+             '"last_batch": %d, "entries": %d' % (d['logs'][-1]['last_batch'], d['logs'][-1]['entries']),
+             '"anchors": the result names batch %d, head "%s"; its decision: batch %d, entry %d, %s' % (
+                 anc['batch'], h8(anc['head']), anc['decision']['batch'], anc['decision']['entry'], anc['decision']['event']),
+             '"verified": %s' % q(d['verified'])])
+    assert a['verified'] and not b['verified'] and not c['verified'] and d['verified'], 'the record changed'
+    at = lambda text: next(i for i, l in enumerate(lines) if text in l) + 1
+    figs.append(fig('console-v12-pack', 'a 1.2 evidence pack: signed, stripped, edited',
+        'tools/verify_evidence.py on the evidence pack the simulated device left on the build PC with Aegis 1.2 '
+        '(main 6bf5b53). The signed result says aegis.pack-signed, names the audit log\'s head (batch 1) and carries '
+        'two warnings; with --require-signed-export the export time is reported signed and the pack verifies. With '
+        'manifest.cose deleted and the manifest\'s pointer to it removed, as if it were a pack of 1.1, the pack is '
+        'refused, because the result says the verifier signs every pack. With the export time moved one day, the '
+        'manifest is not the one the verifier signed. verify_audit.py finds the result\'s batch in the log and its '
+        'decision, admit, in batch 2.',
+        '$ tools/verify_evidence.py pack <pack> --verifier-key <thumbprint> --device-key <thumbprint> --require-signed-export', lines,
+        [{'lines': [1, 2], 'title': 'In the signed result', 'text': 'aegis.pack-signed and the audit log\'s head when it was signed.'},
+         {'lines': [3, at('"export_time"') - 1], 'title': 'aegis.warnings', 'text': 'An admitted endpoint\'s cautions, in one place.'},
+         {'lines': [at('"export_time"'), at('"export_time"') + 1], 'title': 'Signed export time', 'text': 'manifest.cose verifies under the verifier key.'},
+         {'lines': [at('"signed_manifest" removed'), at('"exported" in') - 1], 'title': 'Signature stripped', 'text': 'The result says it was there: refused.'},
+         {'lines': [at('"exported" in'), at('"exported" in') + 2], 'title': 'Time moved', 'text': 'Not the manifest the verifier signed.'},
+         {'lines': [at('--result'), len(lines)], 'title': 'Result as anchor', 'text': 'Batch 1 is in the log; the admit is in batch 2.'}], width=1060))
+
+    # fleet.py check on the simulated device's policy with a floor or the switch (records/v12-check.txt)
+    lines = []
+    for l in rec('v12-check.txt')[1:]:
+        if l.startswith('# entry with '):
+            lines.append('  # the entry with ' + l[len('# entry with '):])
+        elif l.startswith('# exit'):
+            lines.append('  # ' + l[2:])
+        elif l.strip() and not l.startswith('  enrolment') and not l.startswith('  credentials') and not l.startswith('  session'):
+            lines += wrap(l, 118, 4)
+    at = lambda text: next(i for i, l in enumerate(lines) if text in l) + 1
+    figs.append(fig('console-v12-check', 'fleet.py check: a floor never met, a floor met, no floor, disabled',
+        'gateway/aegisd/fleet.py check on the build PC with Aegis 1.2, on the simulated device\'s policy with one key '
+        'added to its entry each time. min_trust device-key, which a Linux device with software trust can never meet: '
+        'REFUSED as a policy error, exit status 1. min_trust software: met. min_trust null: refused, since an entry '
+        'cannot opt out of a floor. disabled true: DISABLED, not contacted, quarantined every cycle, its session '
+        'revoked, exit status 0.',
+        '$ fleet.py check <policy> --platform linux   # the simulated device\'s entry, one key added each time', lines,
+        [{'lines': [at('"device-key"'), at('"software"') - 1], 'title': 'Never met', 'text': 'Software trust cannot reach device-key: a policy error.'},
+         {'lines': [at('"software"'), at('null') - 1], 'title': 'Met', 'text': 'The floor and the label it is met by.'},
+         {'lines': [at('null'), at('"disabled"') - 1], 'title': 'No opt-out', 'text': 'null is not "no floor": refused.'},
+         {'lines': [at('"disabled"'), len(lines)], 'title': 'Disabled', 'text': 'Not a mistake: exit status 0.'}], width=1060))
     return figs
 
 

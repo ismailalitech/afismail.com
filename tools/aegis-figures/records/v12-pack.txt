@@ -1,0 +1,173 @@
+# sdk/examples/simulated-device/run.sh <work> on the build PC, 2026-11-21T10:48Z, aegis main 6bf5b53 (Aegis 1.2, pull request 53), then the checkers on what it left in <work>
+# A: tools/verify_evidence.py pack <work>/pack --verifier-key <thumbprint> --device-key <thumbprint> --require-signed-export
+{
+ "endpoint": "sim-device-1",
+ "policy_sha256": "0cf07322c332060e3dd852e21de0d951e264c00a379492119655bc8c037ea16f",
+ "keys": {
+  "verifier": {
+   "thumbprint": "4eecdf2d34dc15dc4d93b04a10b13ed0e97a7fb7068b51c9c074322fcf9b205d",
+   "sha256": "38b66eb7910456c2ca7395c8b163cc5dcdb49f28f7d8d2fb061cd52eb9d912b3",
+   "trusted": "given on the command line"
+  },
+  "device": {
+   "thumbprint": "4135b10a4db86a7210f548b768301bd181942f9937e2f8c225be27f5f429ae69",
+   "sha256": "f0a062aab5b10f224a012403119312b93eb39510deb519e6dda4333c5fa1c0dd",
+   "trusted": "given on the command line"
+  }
+ },
+ "checks": [
+  "the evidence file and the result's evidence hash agree",
+  "the quote hash (transcript v2) in evidence and result agree",
+  "the device key in evidence and result agree",
+  "the nonce in evidence and result agree",
+  "the measurements in evidence and result agree",
+  "the result names the manifest's policy"
+ ],
+ "attestation_result": {
+  "profile": "tag:ietf.org,2026:rats/ear#05",
+  "iat": 1795258115,
+  "exp": 1795258297,
+  "verifier": {
+   "developer": "https://github.com/ismailalitech/aegis",
+   "build": "aegis-fleet-verifier 1 (evidence eat-cose-v1, results draft-ietf-rats-ear-06)"
+  },
+  "verifier_key_sha256": "38b66eb7910456c2ca7395c8b163cc5dcdb49f28f7d8d2fb061cd52eb9d912b3",
+  "kid": "4eecdf2d34dc15dc4d93b04a10b13ed0e97a7fb7068b51c9c074322fcf9b205d",
+  "signature": "ML-DSA-65 valid (COSE alg -49, RFC 9964)",
+  "appraisal": "aegis-linux",
+  "status": "warning",
+  "trustworthiness_vector": {
+   "0": -33,
+   "2": -35
+  },
+  "details": null,
+  "policy_ids": [
+   "ni:///sha-256;DPBzIsMyBg492FLiHeDZUeJkwAo3lJIRllW8jAN-oW8"
+  ],
+  "admitted": true,
+  "endpoint": "sim-device-1",
+  "verifier_claims": {
+   "aegis.kind": "aegis-linux",
+   "aegis.trust": "software",
+   "aegis.admitted": true,
+   "aegis.endpoint": "sim-device-1",
+   "aegis.warnings": [
+    "instance-identity: the key is pinned without an endorsement: nothing names the device that holds it",
+    "executables: the components are measured by the measured software itself (trust: software)"
+   ],
+   "aegis.audit-log": "7ed0a5998894929e214b7d461ee824aa",
+   "aegis.enrolment": "trust-on-first-use",
+   "aegis.audit-head": "d4527da116d07760bdaad2654de7800b18c7eead650ad311a0a834fa8042509c",
+   "aegis.audit-batch": 1,
+   "aegis.pack-signed": true,
+   "aegis.quote-sha3-256": "9899ebc41e9f521385a4b22d8453ef2945130a2253aefe885a3ff14b0efba7d2",
+   "aegis.evidence-format": "eat-cose-v1",
+   "aegis.evidence-sha256": "9dd94f6e5e7acfe9a542cc4c4452e9149b17b69c69a90d570dce2ccac34178ae",
+   "aegis.session-binding": "transcript-v2",
+   "aegis.device-key-sha256": "f0a062aab5b10f224a012403119312b93eb39510deb519e6dda4333c5fa1c0dd"
+  },
+  "evidence_nonce": "106e776c68cc29ee4f85a8b8fce5b206758d39a6b5c2f4c474f39e46a056b25a",
+  "measurements": [
+   {
+    "name": "APP",
+    "sha256": "2cf05cc19bc26282091cc34f28caf0dfe7aa76780fa9519889ba903c5e30fa88",
+    "version": "sim-1.0.0"
+   }
+  ],
+  "ueid": "01f0a062aab5b10f224a012403119312b93eb39510deb519e6dda4333c5fa1c0dd",
+  "vector_details": {
+   "instance-identity": [
+    "the key is pinned without an endorsement: nothing names the device that holds it"
+   ],
+   "executables": [
+    "the components are measured by the measured software itself (trust: software)"
+   ]
+  },
+  "audit_head": {
+   "log": "7ed0a5998894929e214b7d461ee824aa",
+   "batch": 1,
+   "sha256": "d4527da116d07760bdaad2654de7800b18c7eead650ad311a0a834fa8042509c",
+   "meaning": "the verifier's audit log ended at this batch when the result was signed; check with tools/verify_audit.py log DIR --key KEY --result FILE"
+  },
+  "warnings": [
+   "instance-identity: the key is pinned without an endorsement: nothing names the device that holds it",
+   "executables: the components are measured by the measured software itself (trust: software)"
+  ],
+  "pack_signed": true
+ },
+ "evidence": {
+  "profile": "tag:github.com,2026:ismailalitech/aegis/evidence/v1",
+  "eat_nonce": "106e776c68cc29ee4f85a8b8fce5b206758d39a6b5c2f4c474f39e46a056b25a",
+  "ueid": "01f0a062aab5b10f224a012403119312b93eb39510deb519e6dda4333c5fa1c0dd",
+  "device_key_sha256": "f0a062aab5b10f224a012403119312b93eb39510deb519e6dda4333c5fa1c0dd",
+  "kid": "4135b10a4db86a7210f548b768301bd181942f9937e2f8c225be27f5f429ae69",
+  "signature": "ML-DSA-65 valid (COSE alg -49, RFC 9964)",
+  "quote_sha3_256": "9899ebc41e9f521385a4b22d8453ef2945130a2253aefe885a3ff14b0efba7d2",
+  "platform": "aegis-linux-software-v1",
+  "measurements": [
+   {
+    "name": "APP",
+    "sha256": "2cf05cc19bc26282091cc34f28caf0dfe7aa76780fa9519889ba903c5e30fa88",
+    "version": "sim-1.0.0"
+   }
+  ]
+ },
+ "export_time": {
+  "time": 1795258115,
+  "signed": true,
+  "note": "the export time and manifest.json are signed by the verifier key (manifest.cose, typ application/vnd.aegis.evidence-pack+cbor)"
+ },
+ "verified": true
+}
+# exit 0
+# B: the same pack with manifest.cose deleted and "signed_manifest" removed from manifest.json (the pack made to look like one of Aegis 1.1)
+{
+ "verified": false,
+ "reason": "pack: the result says its verifier signs the manifest of every pack (aegis.pack-signed) and the pack has no manifest.cose: it was removed"
+}
+# exit 1
+# C: the same pack with manifest.cose kept and "exported" in manifest.json moved one day earlier
+{
+ "verified": false,
+ "reason": "pack signature: manifest.json is not the manifest the verifier signed"
+}
+# exit 1
+# D: tools/verify_audit.py log <work>/verifier/audit --key <work>/verifier/identity.json --result <work>/pack/attestation-result.cbor
+{
+ "logs": [
+  {
+   "log": "7ed0a5998894929e214b7d461ee824aa",
+   "kid": "4eecdf2d34dc15dc4d93b04a10b13ed0e97a7fb7068b51c9c074322fcf9b205d",
+   "first_batch": 1,
+   "first_entry": 1,
+   "from": 1795258115,
+   "last_batch": 3,
+   "to": 1795258115,
+   "head": "80fc9401324f9e2511d0c37de089fcd341e0afe58cb67a05d342c7d4077da8af",
+   "due": null,
+   "entries": 11
+  }
+ ],
+ "pruned": false,
+ "anchors": [
+  {
+   "result": "attestation-result.cbor",
+   "log": "7ed0a5998894929e214b7d461ee824aa",
+   "batch": 1,
+   "head": "d4527da116d07760bdaad2654de7800b18c7eead650ad311a0a834fa8042509c",
+   "iat": 1795258115,
+   "batch_time": 1795258115,
+   "time_order": "the result was signed at or after the batch it names",
+   "decision": {
+    "batch": 2,
+    "entry": 7,
+    "event": "admit",
+    "subject": "sim-device-1"
+   }
+  }
+ ],
+ "time_goes_back_at_batch": [],
+ "freshness": "the last batch promises no next one (one run, or a stopped log): how long ago the log ended is not known from it",
+ "verified": true
+}
+# exit 0

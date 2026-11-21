@@ -2,7 +2,8 @@
 # docs/diagrams/*.yaml. make_figures.py renders them with that repository's tools/gen_diagrams.py, together with
 # the console figures it builds from recorded runs. Every figure is written to static/aegis/diagrams/.
 # Facts come from the Aegis repository: docs/architecture.md, docs/sdk-porting-guide.md, docs/evidence-format.md,
-# docs/audit-and-policy.md, docs/zynqmp-sdk-port.md and docs/release-notes-1.1.md.
+# docs/audit-and-policy.md, docs/zynqmp-sdk-port.md and docs/release-notes-1.1.md; the Aegis 1.2 figures (pack-signed-manifest,
+# result-audit-head, min-trust-floor) from docs/evidence-format.md and docs/audit-and-policy.md at main 6bf5b53.
 
 - id: sdk-one-core
   alt: "The Prover SDK. One protocol core, sdk/src/aegis_proto.c, does the quote, the ML-KEM exchange, the transcript, the KMAC heartbeat and the session's end. Each device adds a platform file (randomness, a clock, measurements or a token, the identity seed, a status text) and a transport. On the bench three secure worlds build it: the STM32H573 as a TF-M partition with its key from the DHUK, the RW612 as a TF-M partition with its key from ELS, and the Zynq UltraScale+ as an OP-TEE trusted application with its key from the PUF-derived seed. A Linux port and the PC's simulated device build it too, with software trust."
@@ -116,3 +117,58 @@
     - {from: win.right@0.3, to: card.left}
     - {from: card.bottom, to: gw.top, label: "admitted"}
   steps: [six, e0, tee, e1, win, e2, card, e3, gw]
+
+- id: pack-signed-manifest
+  alt: "The signed manifest of Aegis 1.2. The verifier signs every attestation result with aegis.pack-signed set, which says that its packs are always signed. fleet.py export-evidence writes manifest.json, with every file's SHA-256 and the export time, and manifest.cose beside it: a COSE_Sign1 by the verifier's key over the endpoint, the export time and the SHA-256 of the manifest and of the result. verify_evidence.py with --require-signed-export reports the export time as signed. A pack whose manifest.cose was removed is refused, because its signed result still says aegis.pack-signed; a pack whose manifest was edited, its export time moved for instance, is refused because it is not the manifest the verifier signed."
+  width: 900
+  height: 340
+  nodes:
+    res:   {x: 20,  y: 30,  w: 250, h: 84, kind: hart,  title: "Attestation result", sub: "signed by the verifier\naegis.pack-signed: true\nin every 1.2 result"}
+    man:   {x: 325, y: 30,  w: 250, h: 84, kind: mem,   title: "manifest.json", sub: "every file's SHA-256,\nthe export time,\nsigned_manifest"}
+    cose:  {x: 630, y: 30,  w: 250, h: 84, kind: good,  title: "manifest.cose", sub: "COSE_Sign1, verifier key:\nendpoint, export time,\nSHA-256 of manifest, result"}
+    strip: {x: 20,  y: 210, w: 250, h: 100, kind: bad,  title: "manifest.cose removed", sub: "the signed result still\nsays aegis.pack-signed:\nrefused"}
+    edit:  {x: 325, y: 210, w: 250, h: 100, kind: bad,  title: "manifest edited", sub: "the export time moved:\nnot the manifest the\nverifier signed, refused"}
+    chk:   {x: 630, y: 210, w: 250, h: 100, kind: start, title: "verify_evidence.py", sub: "--require-signed-export\nexport time signed: true\nno Aegis code"}
+  edges:
+    - {from: res.right, to: man.left, label: "listed"}
+    - {from: man.right, to: cose.left, label: "signed"}
+    - {from: cose.bottom, to: chk.top, label: "verifies"}
+    - {from: res.bottom, to: strip.top, label: "a strip here", dashed: true, kind: bad}
+    - {from: man.bottom, to: edit.top, label: "an edit here", dashed: true, kind: bad}
+  steps: [res, e0, man, e1, cose, e2, chk, e3, strip, e4, edit]
+
+- id: result-audit-head
+  alt: "The audit log's head in each result, Aegis 1.2. With the audit log on, every attestation result the fleet loop signs names the log's last batch record on disk at that moment: aegis.audit-log, the log's id; aegis.audit-batch, the batch number N; aegis.audit-head, the SHA-256 of that record. The result's own decision is written later, in batch N+1 or after, with the result's hash. tools/verify_audit.py log with --result fails unless batch N is in the log byte for byte, and reports where the result's decision is. A relying party that holds a result therefore holds a head of the log."
+  width: 900
+  height: 340
+  nodes:
+    bn:   {x: 20,  y: 30,  w: 250, h: 84, kind: mem,   title: "Batch N, on disk", sub: "the log's last batch record\nwhen the result is signed"}
+    res:  {x: 325, y: 30,  w: 250, h: 84, kind: hart,  title: "Attestation result", sub: "aegis.audit-log, -batch N,\n-head: SHA-256 of batch N"}
+    bn1:  {x: 630, y: 30,  w: 250, h: 84, kind: mem,   title: "Batch N+1 or later", sub: "the result's own decision,\nwith the result's SHA-256"}
+    chk:  {x: 325, y: 210, w: 250, h: 100, kind: start, title: "verify_audit.py --result", sub: "batch N in the log byte\nfor byte, or refused;\nwhere the decision is"}
+    rp:   {x: 630, y: 210, w: 250, h: 100, kind: plain, title: "Relying party", sub: "holds a head of the log\nwith every result\nit was given"}
+  edges:
+    - {from: bn.right, to: res.left, label: "names"}
+    - {from: res.right, to: bn1.left, label: "then logged"}
+    - {from: res.bottom, to: chk.top, label: "--result"}
+    - {from: chk.right, to: rp.left, label: "report"}
+  steps: [bn, e0, res, e1, bn1, e2, chk, e3, rp]
+
+- id: min-trust-floor
+  alt: "A trust floor and a switch, Aegis 1.2. A policy entry can say min_trust, or inherit the policy's top-level one, and disabled. When the policy loads, possible_trust works out the labels the entry's kind, profile and attestation key can ever give. If none meets the floor, the entry is refused by the policy rules, not contacted, its result incomplete, and fleet.py check exits 1. If a label can meet it, the endpoint is contacted and appraised and the label of that cycle's quote is checked again; a verdict that meets the floor is admitted as before and its result says aegis.min-trust. An entry with disabled set to true is not contacted, is quarantined every cycle with disabled by policy, its session revoked, its result incomplete."
+  width: 900
+  height: 340
+  nodes:
+    pol:   {x: 20,  y: 30,  w: 250, h: 84, kind: mem,   title: "Policy entry", sub: "min_trust: its own,\nor the policy's top level;\ndisabled"}
+    pos:   {x: 325, y: 30,  w: 250, h: 84, kind: hart,  title: "possible_trust", sub: "the labels its kind, profile\nand attestation key can\never give, at load time"}
+    ask:   {x: 630, y: 30,  w: 250, h: 84, kind: sw,    title: "Contacted, appraised", sub: "the label of this cycle's\nquote checked again"}
+    dis:   {x: 20,  y: 210, w: 250, h: 100, kind: bad,  title: "disabled: true", sub: "not contacted, QUARANTINED,\nsession revoked,\nresult incomplete"}
+    never: {x: 325, y: 210, w: 250, h: 100, kind: bad,  title: "Can NEVER meet the floor", sub: "refused as the policy's\nmistake, not contacted,\nresult incomplete"}
+    met:   {x: 630, y: 210, w: 250, h: 100, kind: good, title: "Floor met", sub: "admitted as before,\naegis.min-trust\nin the result"}
+  edges:
+    - {from: pol.right, to: pos.left, label: "loads"}
+    - {from: pos.right, to: ask.left, label: "can meet"}
+    - {from: ask.bottom, to: met.top}
+    - {from: pol.bottom, to: dis.top, dashed: true, kind: bad}
+    - {from: pos.bottom, to: never.top, label: "no label meets it", dashed: true, kind: bad}
+  steps: [pol, e0, pos, e1, ask, e2, met, e3, dis, e4, never]
