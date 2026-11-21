@@ -1,0 +1,118 @@
+# Flow diagrams for the Aegis 1.x pages of this site, in the format of the Aegis repository's
+# docs/diagrams/*.yaml. make_figures.py renders them with that repository's tools/gen_diagrams.py, together with
+# the console figures it builds from recorded runs. Every figure is written to static/aegis/diagrams/.
+# Facts come from the Aegis repository: docs/architecture.md, docs/sdk-porting-guide.md, docs/evidence-format.md,
+# docs/audit-and-policy.md, docs/zynqmp-sdk-port.md and docs/release-notes-1.1.md.
+
+- id: sdk-one-core
+  alt: "The Prover SDK. One protocol core, sdk/src/aegis_proto.c, does the quote, the ML-KEM exchange, the transcript, the KMAC heartbeat and the session's end. Each device adds a platform file (randomness, a clock, measurements or a token, the identity seed, a status text) and a transport. On the bench three secure worlds build it: the STM32H573 as a TF-M partition with its key from the DHUK, the RW612 as a TF-M partition with its key from ELS, and the Zynq UltraScale+ as an OP-TEE trusted application with its key from the PUF-derived seed. A Linux port and the PC's simulated device build it too, with software trust."
+  width: 900
+  height: 360
+  nodes:
+    plat:  {x: 20,  y: 30,  w: 250, h: 84, kind: plain, title: "Platform file", sub: "random, clock, measurements,\nidentity seed, status text\nabout 150 lines per chip"}
+    core:  {x: 320, y: 30,  w: 260, h: 84, kind: hart,  title: "Prover SDK core", sub: "sdk/src/aegis_proto.c\nquote, exchange, transcript,\nheartbeat, session end"}
+    trans: {x: 630, y: 30,  w: 250, h: 84, kind: plain, title: "Transport", sub: "one request in, one reply out\na text line or a binary call"}
+    stm:   {x: 20,  y: 220, w: 200, h: 100, kind: sw,   title: "STM32H573, TF-M", sub: "SPE 9de76167\nkey from the DHUK\nPSA messages"}
+    rw:    {x: 240, y: 220, w: 200, h: 100, kind: sw,   title: "RW612, TF-M", sub: "secure image 0.3.2\nkey from ELS\nlines in a PSA message"}
+    zq:    {x: 460, y: 220, w: 200, h: 100, kind: sw,   title: "Zynq UltraScale+", sub: "OP-TEE TA 0.2.0\nkey from the PUF seed\nlines in a TA command"}
+    lx:    {x: 680, y: 220, w: 200, h: 100, kind: plain, title: "Linux and the PC", sub: "sdk/ports/linux, host\nthe simulated device\nsoftware trust"}
+  edges:
+    - {from: plat.right, to: core.left}
+    - {from: trans.left, to: core.right}
+    - {from: core.bottom@0.2, to: stm.top}
+    - {from: core.bottom@0.4, to: rw.top, label: "the same source"}
+    - {from: core.bottom@0.6, to: zq.top}
+    - {from: core.bottom@0.8, to: lx.top, dashed: true}
+  steps: [plat, e0, core, e1, trans, e2, stm, e3, rw, e4, zq, e5, lx]
+
+- id: eat-evidence-path
+  alt: "Standard evidence. The device's secure world signs an EAT (RFC 9711) in a COSE_Sign1 (RFC 9052) with ML-DSA-65, COSE algorithm -49 of RFC 9964. aegis-fleet appraises it against the policy and signs an attestation result in the EAR format of the IETF draft, with the AR4SI trustworthiness vector. fleet.py export-evidence writes an evidence pack: a manifest, the evidence, the result and the keys. tools/verify_evidence.py checks the pack with pycose, cbor2 and OpenSSL, without any code of the Aegis repository, and the relying party compares the key thumbprints with keys it obtained another way."
+  width: 900
+  height: 330
+  nodes:
+    dev:  {x: 20,  y: 30,  w: 240, h: 84, kind: sw,    title: "Device secure world", sub: "EAT, RFC 9711\nin a COSE_Sign1, RFC 9052\nML-DSA-65, algorithm -49"}
+    ver:  {x: 330, y: 30,  w: 240, h: 84, kind: hart,  title: "aegis-fleet", sub: "nonce, signature, profile,\nmeasurements against\nthe policy"}
+    ear:  {x: 640, y: 30,  w: 240, h: 84, kind: good,  title: "Attestation result", sub: "EAR and AR4SI (IETF drafts)\nsigned by the verifier\nstatus and trust vector"}
+    pack: {x: 640, y: 200, w: 240, h: 100, kind: mem,  title: "Evidence pack", sub: "fleet.py export-evidence\nmanifest, evidence,\nresult, keys"}
+    chk:  {x: 330, y: 200, w: 240, h: 100, kind: start, title: "verify_evidence.py", sub: "pycose 1.1.0, cbor2,\nOpenSSL 3.5 for ML-DSA\nno Aegis code"}
+    rp:   {x: 20,  y: 200, w: 240, h: 100, kind: plain, title: "Relying party", sub: "compares the key\nthumbprints with keys\nit already trusts"}
+  edges:
+    - {from: dev.right, to: ver.left, label: "PQEAT"}
+    - {from: ver.right, to: ear.left, label: "signs"}
+    - {from: ear.bottom, to: pack.top}
+    - {from: pack.left, to: chk.right, label: "checks"}
+    - {from: chk.left, to: rp.right, label: "report"}
+  steps: [dev, e0, ver, e1, ear, e2, pack, e3, chk, e4, rp]
+
+- id: audit-policy-anchors
+  alt: "The signed policy and the audit log. On the operator's PC, policy-sign signs the policy with an ML-DSA-65 key sealed to the PC's TPM. On the gateway, aegis-fleet runs only from a policy signed by a key in policy-signers.json and never from an older version. Its decisions go into an audit log: batches chained by SHA-256, one signature per batch, written only when something changes. On the PC, audit_anchors.py fetches the last batch record every 300 seconds and keeps it where the gateway cannot write, and verify_audit.py checks the whole log against every anchor kept."
+  width: 900
+  height: 340
+  nodes:
+    sign: {x: 20,  y: 30,  w: 250, h: 84, kind: mem,   title: "policy-sign", sub: "operator's PC\nML-DSA-65 key sealed\nto the PC's TPM"}
+    pol:  {x: 325, y: 30,  w: 250, h: 84, kind: mem,   title: "fleet.cose", sub: "the policy in a COSE_Sign1\nversion that never goes back"}
+    fl:   {x: 630, y: 30,  w: 250, h: 84, kind: hart,  title: "aegis-fleet", sub: "checks the signer against\npolicy-signers.json\nevery 30 s cycle"}
+    log:  {x: 630, y: 210, w: 250, h: 100, kind: mem,  title: "Audit log", sub: "batches chained by SHA-256\none signature per batch\nonly when something changes"}
+    anc:  {x: 325, y: 210, w: 250, h: 100, kind: start, title: "audit_anchors.py", sub: "on the PC, every 300 s:\nthe last batch record,\nkept read-only"}
+    chk:  {x: 20,  y: 210, w: 250, h: 100, kind: start, title: "verify_audit.py", sub: "the whole log against\nevery anchor kept\nno Aegis code"}
+  edges:
+    - {from: sign.right, to: pol.left, label: "signs"}
+    - {from: pol.right, to: fl.left, label: "loads"}
+    - {from: fl.bottom, to: log.top, label: "decisions"}
+    - {from: log.left, to: anc.right, label: "fetch"}
+    - {from: anc.left, to: chk.right, label: "check"}
+  steps: [sign, e0, pol, e1, fl, e2, log, e3, anc, e4, chk]
+
+- id: transcript-v2
+  alt: "Transcript v2. The gateway's challenge and the endpoint's signed token give T1. PQKEMINIT carries that challenge, and the endpoint signs its ML-KEM key over T2, which contains T1. The gateway's credential names T2, and the session key comes from T3, which contains T2. A session therefore goes only to the code whose quote was appraised, in the boot that signed it. An image swapped in after the quote cannot continue it: the exchange is refused before a credential is sent."
+  width: 900
+  height: 330
+  nodes:
+    q:    {x: 20,  y: 30,  w: 200, h: 84, kind: sw,    title: "Quote", sub: "challenge and token,\nsigned by the device key"}
+    t1:   {x: 245, y: 30,  w: 190, h: 84, kind: hart,  title: "T1", sub: "SHA3-256 of a label,\nthe challenge and\nSHA3-256(token)"}
+    ek:   {x: 460, y: 30,  w: 200, h: 84, kind: sw,    title: "PQKEMINIT", sub: "ML-KEM key signed\nover T2 = (T1, key)"}
+    cr:   {x: 685, y: 30,  w: 195, h: 84, kind: hart,  title: "Credential", sub: "names T2, signed\nby the gateway"}
+    ses:  {x: 685, y: 210, w: 195, h: 84, kind: good,  title: "Session key", sub: "from T3 = (T2,\nciphertext, credential)"}
+    swap: {x: 245, y: 210, w: 300, h: 84, kind: bad,   title: "Another image after the quote", sub: "cannot continue it: refused\nbefore a credential is sent"}
+  edges:
+    - {from: q.right, to: t1.left}
+    - {from: t1.right, to: ek.left}
+    - {from: ek.right, to: cr.left}
+    - {from: cr.bottom, to: ses.top}
+    - {from: ek.bottom, to: swap.top, label: "a swap here", dashed: true, kind: bad}
+  steps: [q, e0, t1, e1, ek, e2, cr, e3, ses, e4, swap]
+
+- id: trust-labels-1x
+  alt: "The trust labels of an admitted verdict, in the order a minimum trust compares them. trustzone: a secure world holds a key of the chip and the measurements come from the boot chain or the secure side (the RW612's TF-M partition, the Zynq UltraScale+ trusted application with its PUF-bound key). trustzone-devkey: a TF-M endpoint whose PSA token is signed with TF-M's published development key, the bench's STM32s since Aegis 1.1; the signed result says warning. device-key: a single-image prover with a key of the chip. software: a key in a file, such as the Linux prover or the simulated device. development-shared-key: one key on every chip, refused unless the policy allows it."
+  width: 900
+  height: 380
+  nodes:
+    tz:  {x: 20, y: 20,  w: 230, h: 52, kind: good,  title: "trustzone"}
+    tzd: {x: 20, y: 90,  w: 230, h: 52, kind: mem,   title: "trustzone-devkey"}
+    dk:  {x: 20, y: 160, w: 230, h: 52, kind: mem,   title: "device-key"}
+    sw:  {x: 20, y: 230, w: 230, h: 52, kind: bad,   title: "software"}
+    dsk: {x: 20, y: 300, w: 230, h: 52, kind: bad,   title: "development-shared-key"}
+  notes:
+    - {x: 275, y: 42,  text: "RW612 TF-M partition; Zynq UltraScale+ TA with the PUF key; affirming"}
+    - {x: 275, y: 112, text: "Both STM32s since 1.1: TF-M's published attestation key; status warning"}
+    - {x: 275, y: 182, text: "A single-image prover with a key of the chip that measures itself"}
+    - {x: 275, y: 252, text: "A key in a file: the Linux prover, the simulated device"}
+    - {x: 275, y: 322, text: "One key on every chip: refused unless the policy allows it"}
+  steps: [tz, tzd, dk, sw, dsk]
+
+- id: zynqmp-ta-boot-image
+  alt: "Moving the Zynq UltraScale+ to TA 0.2.0. The trusted application is built into OP-TEE as an early TA, so only the TEE partition changes: a new tee-raw.bin with TA 0.2.0, the other six inputs as in the image before. The Windows build PC, which alone holds the red key, builds the boot image in boot-header PUF mode. After the card swap and a power cycle the key is the same, c02f156d, and the gateway admits the board on the new TEE measurement with a session bound to its quote and an endorsed key. The FSBL partition is encrypted with a fresh IV on every build, so its measurement and the PMU firmware's change with every image."
+  width: 900
+  height: 340
+  nodes:
+    six:  {x: 20,  y: 30,  w: 250, h: 84, kind: plain, title: "Six inputs", sub: "FSBL, PMU firmware, bitstream,\nTF-A, U-Boot: as before"}
+    tee:  {x: 20,  y: 210, w: 250, h: 84, kind: good,  title: "tee-raw.bin", sub: "OP-TEE with TA 0.2.0 built in\nthe only new input"}
+    win:  {x: 325, y: 110, w: 250, h: 100, kind: hart, title: "Windows build PC", sub: "holds the red key\nbootgen 2019.1\nboot-header PUF mode"}
+    card: {x: 630, y: 30,  w: 250, h: 84, kind: mem,   title: "BOOT.BIN e540d774...", sub: "card swap, power cycle\nsame key c02f156d..."}
+    gw:   {x: 630, y: 210, w: 250, h: 84, kind: good,  title: "Gateway", sub: "TEE 011989d7..., transcript v2\nendorsed by bench-pc"}
+  edges:
+    - {from: six.right, to: win.left@0.3}
+    - {from: tee.right, to: win.left@0.7}
+    - {from: win.right@0.3, to: card.left}
+    - {from: card.bottom, to: gw.top, label: "admitted"}
+  steps: [six, e0, tee, e1, win, e2, card, e3, gw]
