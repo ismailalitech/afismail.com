@@ -154,18 +154,23 @@ per-process write counter, so these are file sizes and cycle counts, not measure
 ([`docs/audit-and-policy.md`](https://github.com/ismailalitech/aegis/blob/main/docs/audit-and-policy.md),
 "Measured on the bench").
 
-## In review for 1.2
+## Since 1.2
 
-Two pull requests, not merged and not on the bench:
+[Aegis 1.2](/projects/fpga-soc/microchip-polarfire-soc/aegis/standards-and-releases/x10-aegis-1-2/), on the bench gateway since 21 November 2026, adds to the pack and the result:
 
-- [Pull request 53](https://github.com/ismailalitech/aegis/pull/53): the pack's manifest signed by the verifier with
-  its export time, so a pack's statement about itself is no longer unsigned; the head of the audit log named in each
-  result; `aegis.warnings` with the verdict's warning and the details behind each value; and the policy keys
-  `min_trust` and `disabled`.
-- [Pull request 54](https://github.com/ismailalitech/aegis/pull/54): JSON Schemas for the manifest, the state file,
-  the policy, the endorsement record and the signers file; a data-formats reference with every `aegis.*` claim and its
-  type; and golden vectors (nine evidence packs over every kind, profile and status, a signed policy, an audit log
-  with an anchor) for programs that read Aegis evidence without running Aegis code.
+- `manifest.cose`, the verifier's signature over the manifest and the export time. The checker reports the time as
+  signed, and `--require-signed-export` refuses a pack without it;
+- `aegis.pack-signed` in every result, so a pack whose signature was removed is refused: its signed result says
+  there was one;
+- the audit log's head when the result was signed (`aegis.audit-log`, `aegis.audit-batch`, `aegis.audit-head`), which
+  `tools/verify_audit.py --result` finds in the log;
+- `aegis.warnings`, the verdict's warning and the details behind each value of the vector, whatever the status;
+- `aegis.min-trust` and `aegis.disabled` for the two new policy keys.
+
+[Pull request 54](https://github.com/ismailalitech/aegis/pull/54), in review, adds JSON Schemas for the manifest,
+the state file, the policy, the endorsement record and the signers file; a data-formats reference with every
+`aegis.*` claim and its type; and synthetic golden vectors (an evidence pack for every kind, profile and status, a
+signed policy, an audit log with an anchor) for programs that read Aegis evidence without running Aegis code.
 
 ## Limits
 
