@@ -1,7 +1,7 @@
 +++
 title = "A cryptography inventory with post-quantum migration planning"
 description = "A platform that finds the cryptography an organisation uses, keeps one catalogue of it, checks it against policy, ranks the weak spots and plans the move to post-quantum algorithms. Attested device evidence from the Aegis project is one of its inputs."
-date = '2026-11-21T20:00:00+01:00'
+date = '2026-11-21T09:00:00+01:00'
 draft = false
 weight = 30
 
