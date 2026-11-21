@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 360" width="900" height="360" role="img" aria-labelledby="t d">
+<title id="t">The Prover SDK. One protocol core, sdk/src/aegis_proto.c, does the quote, the ML-KEM exchange, the transcript, the KMAC heartbeat and the session's end. Each device adds a platform file (randomness, a clock, measurements or a token, the identity seed, a status text) and a transport. On the bench three secure worlds build it: the STM32H573 as a TF-M partition with its key from the DHUK, the RW612 as a TF-M partition with its key from ELS, and the Zynq UltraScale+ as an OP-TEE trusted application with its key from the PUF-derived seed. A Linux port and the PC's simulated device build it too, with software trust.</title><desc id="d">The Prover SDK. One protocol core, sdk/src/aegis_proto.c, does the quote, the ML-KEM exchange, the transcript, the KMAC heartbeat and the session's end. Each device adds a platform file (randomness, a clock, measurements or a token, the identity seed, a status text) and a transport. On the bench three secure worlds build it: the STM32H573 as a TF-M partition with its key from the DHUK, the RW612 as a TF-M partition with its key from ELS, and the Zynq UltraScale+ as an OP-TEE trusted application with its key from the PUF-derived seed. A Linux port and the PC's simulated device build it too, with software trust.</desc>
+<style>
+text{font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif}
+.hl,.co{opacity:0;animation:lit 18.90s linear infinite;animation-fill-mode:forwards}
+.flow{stroke-dasharray:9 6;animation:lit 18.90s linear infinite,flow .7s linear infinite;animation-fill-mode:forwards}
+@keyframes lit{0%{opacity:0}2%{opacity:1}6.88%{opacity:1}9.88%{opacity:0}100%{opacity:0}}
+@keyframes flow{to{stroke-dashoffset:-15}}
+.play{animation-name:slide;animation-timing-function:linear;animation-iteration-count:infinite}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+@media (prefers-reduced-motion:reduce){.hl,.play{animation:none}.play{display:none}.co{animation:none;opacity:1}.cap{display:none}}
+</style>
+<defs><marker id="ar-plain" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d8c9b"/></marker><marker id="ar-start" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c9d3dd"/></marker><marker id="ar-hart" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5aa0d6"/></marker><marker id="ar-mss" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8da6d4"/></marker><marker id="ar-fabric" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5fbf84"/></marker><marker id="ar-mem" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0a95f"/></marker><marker id="ar-sw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b08fe0"/></marker><marker id="ar-good" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4fd1a5"/></marker><marker id="ar-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ef6f6c"/></marker><marker id="ar-hl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#ffd166"/></marker></defs>
+<rect width="900" height="360" rx="12" fill="#12171d"/>
+<g id="e0">
+<path d="M270,72 L320,72" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:1.30s" d="M270,72 L320,72" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e1">
+<path d="M630,72 L580,72" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:3.90s" d="M630,72 L580,72" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e2">
+<path d="M372,114 L372,167 L120,167 L120,220" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:6.50s" d="M372,114 L372,167 L120,167 L120,220" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e3">
+<path d="M424,114 L424,167 L340,167 L340,220" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:9.10s" d="M424,114 L424,167 L340,167 L340,220" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+<rect x="328.7" y="145" width="106.6" height="17" rx="4" fill="#12171d" fill-opacity="0.85"/>
+<text x="382" y="157.5" text-anchor="middle" font-size="11.5" fill="#e6ecf1">the same source</text>
+</g>
+<g id="e4">
+<path d="M476,114 L476,167 L560,167 L560,220" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:11.70s" d="M476,114 L476,167 L560,167 L560,220" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="e5">
+<path d="M528,114 L528,167 L780,167 L780,220" fill="none" stroke="#7d8c9b" stroke-width="1.8" stroke-dasharray="5 4" stroke-linejoin="round" marker-end="url(#ar-plain)"/>
+<path class="hl flow" style="animation-delay:14.30s" d="M528,114 L528,167 L780,167 L780,220" fill="none" stroke="#ffd166" stroke-width="3.4" stroke-linejoin="round" marker-end="url(#ar-hl)"/>
+</g>
+<g id="plat">
+<rect x="20" y="30" width="250" height="84" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="145" y="51" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Platform file</text>
+<text x="145" y="68" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">random, clock, measurements,</text>
+<text x="145" y="85" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">identity seed, status text</text>
+<text x="145" y="102" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">about 150 lines per chip</text>
+<rect class="hl" style="animation-delay:0.00s" x="19" y="29" width="252" height="86" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="core">
+<rect x="320" y="30" width="260" height="84" rx="9" fill="#1b3047" stroke="#5aa0d6" stroke-width="1.5"/>
+<text x="450" y="51" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Prover SDK core</text>
+<text x="450" y="68" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">sdk/src/aegis_proto.c</text>
+<text x="450" y="85" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">quote, exchange, transcript,</text>
+<text x="450" y="102" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">heartbeat, session end</text>
+<rect class="hl" style="animation-delay:2.60s" x="319" y="29" width="262" height="86" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="trans">
+<rect x="630" y="30" width="250" height="84" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="755" y="59.5" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Transport</text>
+<text x="755" y="76.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">one request in, one reply out</text>
+<text x="755" y="93.5" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">a text line or a binary call</text>
+<rect class="hl" style="animation-delay:5.20s" x="629" y="29" width="252" height="86" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="stm">
+<rect x="20" y="220" width="200" height="100" rx="9" fill="#2f2447" stroke="#b08fe0" stroke-width="1.5"/>
+<text x="120" y="249" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">STM32H573, TF-M</text>
+<text x="120" y="266" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">SPE 9de76167</text>
+<text x="120" y="283" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">key from the DHUK</text>
+<text x="120" y="300" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">PSA messages</text>
+<rect class="hl" style="animation-delay:7.80s" x="19" y="219" width="202" height="102" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="rw">
+<rect x="240" y="220" width="200" height="100" rx="9" fill="#2f2447" stroke="#b08fe0" stroke-width="1.5"/>
+<text x="340" y="249" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">RW612, TF-M</text>
+<text x="340" y="266" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">secure image 0.3.2</text>
+<text x="340" y="283" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">key from ELS</text>
+<text x="340" y="300" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">lines in a PSA message</text>
+<rect class="hl" style="animation-delay:10.40s" x="239" y="219" width="202" height="102" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="zq">
+<rect x="460" y="220" width="200" height="100" rx="9" fill="#2f2447" stroke="#b08fe0" stroke-width="1.5"/>
+<text x="560" y="249" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Zynq UltraScale+</text>
+<text x="560" y="266" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">OP-TEE TA 0.2.0</text>
+<text x="560" y="283" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">key from the PUF seed</text>
+<text x="560" y="300" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">lines in a TA command</text>
+<rect class="hl" style="animation-delay:13.00s" x="459" y="219" width="202" height="102" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+<g id="lx">
+<rect x="680" y="220" width="200" height="100" rx="9" fill="#1e2530" stroke="#6b7b8c" stroke-width="1.5"/>
+<text x="780" y="249" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6ecf1">Linux and the PC</text>
+<text x="780" y="266" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">sdk/ports/linux, host</text>
+<text x="780" y="283" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">the simulated device</text>
+<text x="780" y="300" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#9aa8b5">software trust</text>
+<rect class="hl" style="animation-delay:15.60s" x="679" y="219" width="202" height="102" rx="9" fill="#ffd166" fill-opacity="0.10" stroke="#ffd166" stroke-width="3"/>
+</g>
+</svg>

@@ -1,0 +1,6 @@
+# the same pack with one bit of evidence.cbor flipped (byte len/3)
+{
+ "verified": false,
+ "reason": "pack: evidence.cbor is not the file the manifest names"
+}
+# exit 1

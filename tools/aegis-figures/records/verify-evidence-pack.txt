@@ -1,0 +1,89 @@
+# tools/verify_evidence.py pack <pack> --verifier-key <thumbprint> --device-key <thumbprint>, the pack of the run above
+{
+ "endpoint": "sim-device-1",
+ "policy_sha256": "6754186ed62cdcf25fb5bea5b0c053dcde8702227fafbfb4bcbb8ad3aad142f3",
+ "keys": {
+  "verifier": {
+   "thumbprint": "03784bc939ada58b5a7da1a527f5d5b6da3cb21df8cc57b4c5791d9cb8c4f30b",
+   "sha256": "750691eb1fd18989bed79f91610b5d8815ed3072ab03664977d7e0591b08b456",
+   "trusted": "given on the command line"
+  },
+  "device": {
+   "thumbprint": "34acc8ef1b409fcc6cd17620fea600dfd6c40efe3a7f17b4a76f020c9ed2c810",
+   "sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be",
+   "trusted": "given on the command line"
+  }
+ },
+ "checks": [
+  "the evidence file and the result's evidence hash agree",
+  "the quote hash (transcript v2) in evidence and result agree",
+  "the device key in evidence and result agree",
+  "the nonce in evidence and result agree",
+  "the measurements in evidence and result agree",
+  "the result names the manifest's policy"
+ ],
+ "attestation_result": {
+  "profile": "tag:ietf.org,2026:rats/ear#05",
+  "iat": 1795255138,
+  "exp": 1795255320,
+  "verifier": {
+   "developer": "https://github.com/ismailalitech/aegis",
+   "build": "aegis-fleet-verifier 1 (evidence eat-cose-v1, results draft-ietf-rats-ear-06)"
+  },
+  "verifier_key_sha256": "750691eb1fd18989bed79f91610b5d8815ed3072ab03664977d7e0591b08b456",
+  "kid": "03784bc939ada58b5a7da1a527f5d5b6da3cb21df8cc57b4c5791d9cb8c4f30b",
+  "signature": "ML-DSA-65 valid (COSE alg -49, RFC 9964)",
+  "appraisal": "aegis-linux",
+  "status": "warning",
+  "trustworthiness_vector": {
+   "0": -33,
+   "2": -35
+  },
+  "details": null,
+  "policy_ids": [
+   "ni:///sha-256;Z1QYbtYs3PJftb6lsMBT3N6HAiJ_r7-0vLuK06rRQvM"
+  ],
+  "admitted": true,
+  "endpoint": "sim-device-1",
+  "verifier_claims": {
+   "aegis.kind": "aegis-linux",
+   "aegis.trust": "software",
+   "aegis.admitted": true,
+   "aegis.endpoint": "sim-device-1",
+   "aegis.enrolment": "trust-on-first-use",
+   "aegis.quote-sha3-256": "333fbbb3efb5e25cc74e6a1237e697e2ff68c1205ba7220580f0875e5976691f",
+   "aegis.evidence-format": "eat-cose-v1",
+   "aegis.evidence-sha256": "09e3783c53f603e4879e80a3c7ae1bb4a5267e1874eda539237fa18439659b95",
+   "aegis.session-binding": "transcript-v2",
+   "aegis.device-key-sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be"
+  },
+  "evidence_nonce": "ed406d63af41d8e6b2f0dde1e1d61b19681f629c1e6e035a8aec9aaa9f228fb6",
+  "measurements": [
+   {
+    "name": "APP",
+    "sha256": "fe88ae045060324bd43c3212e5c67b12b61adf2db87fa26cbf98e5b171a45382",
+    "version": "sim-1.0.0"
+   }
+  ],
+  "ueid": "01fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be"
+ },
+ "evidence": {
+  "profile": "tag:github.com,2026:ismailalitech/aegis/evidence/v1",
+  "eat_nonce": "ed406d63af41d8e6b2f0dde1e1d61b19681f629c1e6e035a8aec9aaa9f228fb6",
+  "ueid": "01fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be",
+  "device_key_sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be",
+  "kid": "34acc8ef1b409fcc6cd17620fea600dfd6c40efe3a7f17b4a76f020c9ed2c810",
+  "signature": "ML-DSA-65 valid (COSE alg -49, RFC 9964)",
+  "quote_sha3_256": "333fbbb3efb5e25cc74e6a1237e697e2ff68c1205ba7220580f0875e5976691f",
+  "platform": "aegis-linux-software-v1",
+  "measurements": [
+   {
+    "name": "APP",
+    "sha256": "fe88ae045060324bd43c3212e5c67b12b61adf2db87fa26cbf98e5b171a45382",
+    "version": "sim-1.0.0"
+   }
+  ]
+ },
+ "verified": true
+}
+# exit 0

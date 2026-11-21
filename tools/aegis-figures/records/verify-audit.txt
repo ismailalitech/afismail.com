@@ -1,0 +1,242 @@
+# tools/verify_audit.py log <audit dir> --key identity.json, the verifier's log of the run above (record ends at bytes 3825 8229 12503)
+{
+ "logs": [
+  {
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "kid": "03784bc939ada58b5a7da1a527f5d5b6da3cb21df8cc57b4c5791d9cb8c4f30b",
+   "first_batch": 1,
+   "first_entry": 1,
+   "from": 1795255138,
+   "last_batch": 3,
+   "to": 1795255138,
+   "head": "7760bde44a6d800f6c9353b43fbf5b6ec962033daa02e1170ec97f0a83bdf3f0",
+   "due": null,
+   "entries": 11
+  }
+ ],
+ "pruned": false,
+ "anchors": [],
+ "time_goes_back_at_batch": [],
+ "freshness": "the last batch promises no next one (one run, or a stopped log): how long ago the log ended is not known from it",
+ "entries": [
+  {
+   "time": 1795255138,
+   "event": "log-start",
+   "subject": null,
+   "details": {
+    "why": "no log in this directory yet",
+    "verifier_key_sha256": "750691eb1fd18989bed79f91610b5d8815ed3072ab03664977d7e0591b08b456"
+   },
+   "entry": 1,
+   "batch": 1,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "policy",
+   "subject": null,
+   "details": {
+    "sha256": "6754186ed62cdcf25fb5bea5b0c053dcde8702227fafbfb4bcbb8ad3aad142f3",
+    "signed": false
+   },
+   "entry": 2,
+   "batch": 1,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "enrol",
+   "subject": "sim-device-1",
+   "details": {
+    "how": "trust-on-first-use",
+    "from": "127.0.0.1:38225",
+    "forced": false,
+    "device_key_sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be"
+   },
+   "entry": 3,
+   "batch": 1,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "start",
+   "subject": null,
+   "details": {
+    "cmd": "once",
+    "platform": "linux",
+    "verifier": "aegis-fleet-verifier 1",
+    "enforcing": false,
+    "credentials": true,
+    "verifier_key_sha256": "750691eb1fd18989bed79f91610b5d8815ed3072ab03664977d7e0591b08b456"
+   },
+   "entry": 4,
+   "batch": 2,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "policy",
+   "subject": null,
+   "details": {
+    "sha256": "6754186ed62cdcf25fb5bea5b0c053dcde8702227fafbfb4bcbb8ad3aad142f3",
+    "signed": false
+   },
+   "entry": 5,
+   "batch": 2,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "issue",
+   "subject": "sim-device-1",
+   "details": {
+    "note": "issued session e4e51fd2c59e... bound to quote 333fbbb3efb5... (transcript v2)",
+    "binding": "transcript-v2",
+    "expires": 1795258738,
+    "session": "e4e51fd2c59ec7b22a945fb010958c321342f298748856225a913949514d2ea3"
+   },
+   "entry": 6,
+   "batch": 2,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "admit",
+   "subject": "sim-device-1",
+   "details": {
+    "kind": "aegis-linux",
+    "stage": "appraised",
+    "trust": "software",
+    "address": "127.0.0.1:38225",
+    "enrolment": "trust-on-first-use",
+    "credential": "issued session e4e51fd2c59e... bound to quote 333fbbb3efb5... (transcript v2)",
+    "measurements": {
+     "APP": "fe88ae045060324bd43c3212e5c67b12b61adf2db87fa26cbf98e5b171a45382"
+    },
+    "result_sha256": "6d88a0b598d1d8ec41903657dfd2263f12843e0528e786165f57779f26837d90",
+    "quote_sha3_256": "333fbbb3efb5e25cc74e6a1237e697e2ff68c1205ba7220580f0875e5976691f",
+    "evidence_format": "eat-cose-v1",
+    "session_binding": "transcript-v2",
+    "device_key_sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be"
+   },
+   "entry": 7,
+   "batch": 2,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "start",
+   "subject": null,
+   "details": {
+    "cmd": "once",
+    "platform": "linux",
+    "verifier": "aegis-fleet-verifier 1",
+    "enforcing": false,
+    "credentials": true,
+    "verifier_key_sha256": "750691eb1fd18989bed79f91610b5d8815ed3072ab03664977d7e0591b08b456"
+   },
+   "entry": 8,
+   "batch": 3,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "policy",
+   "subject": null,
+   "details": {
+    "sha256": "6754186ed62cdcf25fb5bea5b0c053dcde8702227fafbfb4bcbb8ad3aad142f3",
+    "signed": false
+   },
+   "entry": 9,
+   "batch": 3,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "revoke",
+   "subject": "sim-device-1",
+   "details": {
+    "why": "revoked",
+    "session": "e4e51fd2c59ec7b22a945fb010958c321342f298748856225a913949514d2ea3",
+    "replaced": false
+   },
+   "entry": 10,
+   "batch": 3,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  },
+  {
+   "time": 1795255138,
+   "event": "refuse",
+   "subject": "sim-device-1",
+   "details": {
+    "kind": "aegis-linux",
+    "stage": "appraised",
+    "trust": "software",
+    "address": "127.0.0.1:38225",
+    "reasons": [
+     "component APP not allowed (measurement b38718fb24db...)"
+    ],
+    "enrolment": "trust-on-first-use",
+    "credential": "revoked",
+    "measurements": {
+     "APP": "b38718fb24db05052e8de28aed8f4a994dc1e3733a7d16ac28267ef4f23f2f65"
+    },
+    "result_sha256": "dc95e760a26bc91be6e7df2655064d32bf81bb2debdc1b46a3aa9eccb85c6d29",
+    "quote_sha3_256": "9f7ead3373ae98262ea69ba743aa51db9474ee46cd941953fa5227fd0ed6c25d",
+    "evidence_format": "eat-cose-v1",
+    "device_key_sha256": "fa8a3a7c87f2d28bf58948ee09f4d62e0b7a148ecbf1deddff6d6daf831717be"
+   },
+   "entry": 11,
+   "batch": 3,
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "signed": 1795255138
+  }
+ ],
+ "verified": true
+}
+# exit 0
+# one bit flipped in the second batch record
+{
+ "verified": false,
+ "reason": "audit-000001.cbor, record at byte 3825: the ML-DSA-65 signature does not verify"
+}
+# exit 1
+# the last batch record cut off, no anchor
+{
+ "logs": [
+  {
+   "log": "11b8ed69320fd8c307b49f751a01f82d",
+   "kid": "03784bc939ada58b5a7da1a527f5d5b6da3cb21df8cc57b4c5791d9cb8c4f30b",
+   "first_batch": 1,
+   "first_entry": 1,
+   "from": 1795255138,
+   "last_batch": 2,
+   "to": 1795255138,
+   "head": "a295c635603dcb28a77fe07e5372683ac22cc021ceb3a160ebe87545040c7d12",
+   "due": null,
+   "entries": 7
+  }
+ ],
+ "pruned": false,
+ "anchors": [],
+ "time_goes_back_at_batch": [],
+ "freshness": "the last batch promises no next one (one run, or a stopped log): how long ago the log ended is not known from it",
+ "verified": true
+}
+# exit 0
+# the same, with the journal's head line of the last batch (--head 3:7760bde44a6d800f6c9353b43fbf5b6ec962033daa02e1170ec97f0a83bdf3f0)
+{
+ "verified": false,
+ "reason": "the log ends at batch 2 and the given head is batch 3: the end was cut off"
+}
+# exit 1
