@@ -172,3 +172,5 @@ Limits, stated plainly:
   ([case study](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours/)).
 - Everything was measured on one set of boards.
 - The code is public: [github.com/ismailalitech/aegis](https://github.com/ismailalitech/aegis). The labs run from it.
+
+Related project: the [cryptography inventory](/projects/software-security/post-quantum-readiness/crypto-inventory/) reads Aegis evidence packs and checks their signatures itself, so attested devices appear in a catalogue of all the cryptography an organisation uses.
