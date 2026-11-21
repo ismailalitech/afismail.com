@@ -97,7 +97,7 @@
     const lanes = v.lanes || [];
     const groups = ids.filter(id => NODES[id].kind === 'group');
     groups.forEach(id => drawGroupBox(svg, v, id, lanes.indexOf(id) >= 0));
-    A.edges.forEach(e => { if (v.nodes[e.from] && v.nodes[e.to]) drawEdge(svg, v, e); });
+    A.edges.forEach(e => { if (edgeIn(v, e)) drawEdge(svg, v, e); });
     ids.filter(id => NODES[id].kind !== 'group').forEach(id => drawNode(svg, v, id));
     groups.forEach(id => drawGroupLabel(svg, v, id));
     (v.notes || []).forEach(n => {
@@ -147,7 +147,7 @@
   function drawLegend() {
     const lg = $('#legend');
     const kinds = {};
-    VIEWS.forEach(v => A.edges.forEach(e => { if (v.nodes[e.from] && v.nodes[e.to]) kinds[e.kind] = 1; }));
+    VIEWS.forEach(v => A.edges.forEach(e => { if (edgeIn(v, e)) kinds[e.kind] = 1; }));
     Object.keys(A.edge_kinds).forEach(k => {
       if (!kinds[k]) return;
       const s = el('span');
@@ -164,8 +164,11 @@
     const vv = VIEWS.find(x => x.id === v);
     if (!vv) return false;
     if (!isEdge) return !!vv.nodes[id];
-    const e = EDGES[id];
-    return !!(vv.nodes[e.from] && vv.nodes[e.to]);
+    return edgeIn(vv, EDGES[id]);
+  }
+  /* An edge is drawn in a view that holds both its ends, unless it names the views it belongs to. */
+  function edgeIn(v, e) {
+    return !!(v.nodes[e.from] && v.nodes[e.to]) && (!e.views || e.views.indexOf(v.id) >= 0);
   }
   function viewFor(id, isEdge) {
     if (inView(id, isEdge, view)) return view;
@@ -438,7 +441,9 @@
   function parseLine(text) {
     const m = RE.exec(text);
     if (!m) return null;
-    const out = { time: m[1] || '', name: m[2], verdict: m[3], trust: m[4] || '', rest: m[5], cred: '', reason: '', hb: null, status: {} };
+    const out = { time: m[1] || '', name: m[2], verdict: m[3], trust: m[4] || '', rest: m[5], cred: '', reason: '', hb: null, status: {}, endorsed: '' };
+    const en = /\s*\[endorsed by ([^\]]*)\]\s*$/.exec(out.rest);
+    if (en) { out.endorsed = en[1]; out.rest = out.rest.slice(0, en.index); }
     const c = /\[credential: ([^\]]*)\]\s*$/.exec(out.rest);
     out.reason = (c ? out.rest.slice(0, c.index) : out.rest).trim();
     if (c) {
@@ -480,7 +485,7 @@
         s.why = p.reason.replace(/^no attestation: /, 'no attestation, ') + (p.cred ? '; credential ' + p.cred : '');
         s.hb = s.stack = s.ttl = null;
       } else if (p.hb != null) {
-        s.why = 'credential valid' + (p.status.fw ? ', firmware ' + p.status.fw : '');
+        s.why = 'credential valid' + (p.status.fw ? ', firmware ' + p.status.fw : '') + (p.endorsed ? ', endorsed by ' + p.endorsed : '');
         s.hb = p.hb; s.stack = p.status.sstack || p.status.stack || null; s.ttl = p.status.ttl || null;
       } else {
         s.why = p.cred ? 'credential ' + p.cred : p.reason;

@@ -3,14 +3,15 @@
 # the data to the page and prints the same content as text for readers without JavaScript.
 #
 # Every fact comes from the Aegis repository (https://github.com/ismailalitech/aegis): docs/architecture.md,
-# docs/threat-model.md, docs/zynqmp-key-design.md, docs/endpoint-expiry.md, endpoints/*/README.md and evidence/,
-# as of 19 November 2026. Each component and connection names the files behind it ("sources") and the labs that
+# docs/threat-model.md, docs/zynqmp-key-design.md, docs/endpoint-expiry.md, docs/evidence-format.md,
+# docs/audit-and-policy.md, docs/enrolment.md, docs/zynqmp-sdk-port.md, docs/release-notes-1.0.md and -1.1.md,
+# endpoints/*/README.md and evidence/, as of 21 November 2026. Each component and connection names the files behind it ("sources") and the labs that
 # explain it ("learn", paths under /projects/fpga-soc/microchip-polarfire-soc/aegis/; the build fails on a
 # missing page).
 schema: 1
 baseline:
-  date: "2026-11-19"
-  state: Release v0.2.0 and the main branch after it, 19 November 2026
+  date: "2026-11-21"
+  state: Releases v1.0.0 and v1.1.0, 21 November 2026 (1.2 in review, not shown)
   repo: https://github.com/ismailalitech/aegis
 
 node_kinds:
@@ -37,14 +38,15 @@ edge_kinds:
   enforce: Enforcement hook
   serial: Serial line
   uses: Uses or reads
+  record: Signed record
 
 nodes:
   # ---------------------------------------------------------------- the bench PC
   - id: pc
     title: PC on the bench
     kind: group
-    summary: On the same LAN as the gateway and the endpoints. Checks the gateway's own quote and relays requests to the Arduino Uno.
-    sources: [host/]
+    summary: On the same LAN as the gateway and the endpoints. Checks the gateway's own quote, relays requests to the Arduino Uno, endorses device keys, signs the gateway's policy with a key sealed to its TPM, and keeps the audit log's anchors where the gateway cannot write.
+    sources: [host/, provision/aegis_provision.py, tools/audit_anchors.py]
   - id: verifier
     title: Gateway verifier
     label: aegis_verify.py
@@ -56,14 +58,55 @@ nodes:
     sources: [host/aegis_verify.py, evidence/console/quote-accepted.json]
     learn: [identity-and-quotes/a02-gateway-identity-and-quote]
 
+  - id: endorser
+    title: Endorser
+    label: aegis_provision.py endorse
+    sub: endorses device keys
+    kind: host
+    parent: pc
+    summary: Asks a device for its key and a quote on a fresh challenge, checks the quote against its own reference list, shows the operator the key's hash and the components, and signs an endorsement record only after a typed yes. Its ML-DSA-65 key is sealed to the PC's TPM.
+    facts: {time: "0.566 s, 0.691 s and 0.194 s for the three devices", required_for: "both STM32s, the RW612 and the Zynq UltraScale+", shows: "what this endorser saw on this cable, not that another image cannot use the key"}
+    sources: [docs/enrolment.md, evidence/endorsed-enrolment/bench/live-switch.txt]
+    learn: [trust-model/x05-trust-labels-endorsement-transcript]
+  - id: policy-signer
+    title: Policy signer
+    label: aegis_provision.py policy-sign
+    sub: the operator key, TPM-sealed
+    kind: host
+    parent: pc
+    summary: Signs the gateway's policy with the operator's ML-DSA-65 key, which no verifier holds. Takes the next version from its own ledger, pins the device keys' hashes, prints what it is about to sign and signs only after a typed yes.
+    facts: {key: "sealed to the PC's TPM", object: "the policy JSON byte for byte in a COSE_Sign1, typ application/vnd.aegis.fleet-policy+cbor"}
+    sources: [docs/audit-and-policy.md, provision/aegis_provision.py]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]
+  - id: anchors
+    title: Audit anchors
+    label: audit_anchors.py
+    sub: keeps batch records off the gateway
+    kind: host
+    parent: pc
+    summary: Fetches the audit log's last batch record over read-only SSH every 300 s and keeps it in a store where files are written once and made read-only; once an hour it copies the whole log and checks it against every anchor kept. Reports a log cut short, written again, with a gap, replaced or rolled back.
+    facts: {interval: "fetch every 300 s, check every hour", cannot_see: "what was cut after the last fetch; entries never written"}
+    sources: [tools/audit_anchors.py, docs/audit-and-policy.md]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]
+  - id: checkers
+    title: Standalone checkers
+    label: verify_evidence.py, verify_audit.py
+    sub: no Aegis code
+    kind: host
+    parent: pc
+    summary: Check evidence packs, the audit log and signed policies with pycose 1.1.0, cbor2 and OpenSSL 3.5 only. Their claim numbers were written from the format documents, not from the verifier's code.
+    facts: {does_not: "judge the policy, or check the ES256 signature inside a nested PSA token"}
+    sources: [tools/verify_evidence.py, tools/verify_audit.py, docs/evidence-format.md]
+    learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware]
+
   # ---------------------------------------------------------------- the gateway
   - id: gateway
     title: PolarFire SoC Discovery Kit (the gateway)
     kind: group
     summary: Decides which endpoints may be trusted, from evidence the endpoints' secure hardware produces, and gives admitted endpoints a credential and a session key established with ML-KEM. Linux on U54 harts 1 to 3 runs the services.
-    facts: {chip: "MPFS095T, the non-S part", network: "one Ethernet port: it decides, it is not yet in the traffic path", regression: "13 of 13 stages; 14 of 14 with --with-expiry"}
-    sources: [docs/architecture.md, evidence/console/regression-13of13.txt, evidence/console/regression-14of14-20261119.txt, tools/bench_watch.py]
-    learn: [identity-and-quotes/k01-chip-is-not-an-s-device, bench-and-reproduce/a01-reproduce-the-bench, bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours]
+    facts: {chip: "MPFS095T, the non-S part", network: "one Ethernet port: it decides, it is not yet in the traffic path", regression: "14 of 14 with --with-expiry, three times during the 3-hour soak", soak: "3 h on three boards: 40 of 40 samples, 37 renewals per endpoint, no quarantine or reset"}
+    sources: [docs/architecture.md, evidence/console/regression-14of14-20261119.txt, evidence/soak-20261121/NOTE.md, tools/bench_watch.py]
+    learn: [identity-and-quotes/k01-chip-is-not-an-s-device, bench-and-reproduce/a01-reproduce-the-bench, bench-and-reproduce/k15-a-gateway-that-hung-for-seven-hours, bench-and-reproduce/k16-a-soak-that-failed-its-own-clock-estimate, standards-and-releases/x09-releases-1-0-and-1-1]
   - id: aegisd
     title: aegisd
     sub: identity and quote
@@ -92,24 +135,42 @@ nodes:
     sources: [docs/threat-model.md, endpoints/rw612/README.md]
     learn: [identity-and-quotes/a02-gateway-identity-and-quote, identity-and-quotes/k01-chip-is-not-an-s-device]
   - id: policy
-    title: Policy
-    label: fleet.json
-    sub: keys, measurements, profiles
+    title: Signed policy
+    label: fleet.cose
+    sub: keys, measurements, endorsements
     kind: file
     parent: gateway
-    summary: The endpoints, their enrolled ML-DSA-65 keys, the allowed measurements and the pinned claims profiles. Edited by the operator and reloaded by aegis-fleet every cycle. Enrolment is trust on first use; enroll-pq keeps an existing pin unless told --force.
-    facts: {pins: "a re-enrolment keeps existing pins (T19)", profiles: "pinned where one chip key could serve two firmwares (T18)"}
-    sources: [gateway/policy/fleet.example.json, docs/threat-model.md]
-    learn: [attesting-an-endpoint/a05-quarantine-and-red-team, attesting-an-endpoint/a10-two-chips-two-keys]
+    summary: The endpoints, their ML-DSA-65 keys, the allowed measurements, the pinned profiles, the endorsement records each entry requires, and whether the transcript, results and the audit log are on. Since 21 November 2026 signed by the operator key on the PC; aegis-fleet checks it against policy-signers.json every cycle and refuses an unsigned file or a lower version.
+    facts: {signed: "by a key no verifier holds; a version that never goes back", pins: "device keys by pq_pub_sha256, endorsement records by endorsement_sha256", root_on_the_gateway: "can replace the signers file, cannot sign a new policy"}
+    sources: [docs/audit-and-policy.md, docs/enrolment.md, gateway/policy/fleet.example.json]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy, trust-model/x05-trust-labels-endorsement-transcript, attesting-an-endpoint/a05-quarantine-and-red-team]
+  - id: audit
+    title: Audit log
+    sub: chained batches, one signature each
+    kind: file
+    parent: gateway
+    summary: aegis-fleet's decisions in segment files of batch records, each a COSE_Sign1 by the gateway's identity key naming the hash of the batch before it. An entry is made only when a decision, a session or the policy changes; a steady cycle writes nothing.
+    facts: {measured: "the directory did not grow over ten minutes (44 KB); eight batches, 43 KB, in the first hour", cost: "about 0.3 MB a day for the bench", limit: "a log cut at a record boundary is found only with an anchor"}
+    sources: [docs/audit-and-policy.md, common/audit.py]
+    learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]
+  - id: results
+    title: Attestation results
+    sub: EAR per verdict, evidence packs
+    kind: file
+    parent: gateway
+    summary: For each verdict an attestation result in the EAR format, signed with the gateway's identity key, beside the evidence as received; replaced every cycle. fleet.py export-evidence writes them with the keys into a pack that the standalone checker verifies.
+    facts: {per_cycle: "evidence.cbor 4,048 bytes, result.cbor 4,529, meta.json 440 for STM32 board 2", status: "affirming, warning, contraindicated or incomplete; never better than the verdict", formats: "EAR draft-06 and AR4SI draft-11: IETF drafts"}
+    sources: [docs/evidence-format.md, common/eat.py, docs/audit-and-policy.md]
+    learn: [standards-and-releases/x07-standard-evidence]
   - id: fleet
     title: aegis-fleet
     sub: attest, decide, provision, every 30 s
     kind: service
     parent: gateway
     summary: Every 30 s it attests each endpoint, admits or quarantines it with a reason, issues or revokes ML-KEM credentials and checks heartbeats. The verdict names the trust behind it.
-    facts: {cycle: "30 s", credential: "one hour, renewed five minutes before it expires", trust_labels: "trustzone, trustzone-devkey, device-key, software"}
-    sources: [gateway/aegisd/fleet.py, docs/architecture.md]
-    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a05-quarantine-and-red-team, attesting-an-endpoint/a09-harden-a-running-endpoint, trust-model/x01-what-a-device-can-prove]
+    facts: {cycle: "30 s", credential: "one hour, renewed five minutes before it expires", trust_labels: "trustzone, trustzone-devkey, device-key, software, development-shared-key (since 1.1)", transcript: "v2 required for every attesting endpoint: the session continues the appraised quote", endorsement: "required for every attesting endpoint"}
+    sources: [gateway/aegisd/fleet.py, docs/architecture.md, docs/release-notes-1.1.md]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a05-quarantine-and-red-team, attesting-an-endpoint/a09-harden-a-running-endpoint, trust-model/x01-what-a-device-can-prove, trust-model/x05-trust-labels-endorsement-transcript]
   - id: fabric
     title: Fabric accelerator
     sub: SHA-3 sponge and NTT, version 2
@@ -142,8 +203,8 @@ nodes:
     title: STM32H573I-DK, boards 1 and 2
     kind: group
     stack: 2
-    summary: Two boards with the same firmware, option bytes and boot loader. TF-M v2.3.0 with the Aegis partition in the secure world, in product state Open with TF-M's published development keys. The gateway knows them as stm32h573-dk and stm32h573-dk-2 (kind aegis-pq).
-    facts: {tfm: "v2.3.0, isolation level 1", two_chips: "ML-DSA keys differ in 1,941 of 1,952 bytes", psa_identity: "the same on both (development provisioning)"}
+    summary: Two boards with the same firmware, option bytes and boot loader. TF-M v2.3.0 with the Aegis partition on the Prover SDK in the secure world, in product state Open with TF-M's published development keys. The gateway knows them as stm32h573-dk and stm32h573-dk-2 (kind aegis-pq), labels them trustzone-devkey since Aegis 1.1, and requires an endorsement and transcript v2 for both. Board 2 sends standard evidence; board 1 was unplugged for the soak.
+    facts: {tfm: "v2.3.0, isolation level 1", two_chips: "ML-DSA keys differ in 1,941 of 1,952 bytes", psa_identity: "the same on both (development provisioning)", trust_label: "trustzone-devkey: the PSA token is signed with TF-M's published key"}
     sources: [docs/second-board.md, evidence/two-boards/]
     learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a10-two-chips-two-keys, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side]
   - id: stm32-ns
@@ -153,8 +214,8 @@ nodes:
     kind: nonsecure
     parent: stm32
     summary: Ethernet (lwIP, LAN8742A) and the line protocol. Holds no keys. Passes each request to the secure partition with psa_call, and gives it the status text (uptime, link, firmware) that a heartbeat carries.
-    facts: {version: "0.6.0"}
-    sources: [endpoints/stm32h573/prover-ns/]
+    facts: {version: "0.6.0; board 2 built with the EAT option, NSPE acf8fc53"}
+    sources: [endpoints/stm32h573/prover-ns/, endpoints/stm32h573/README.md]
     learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/k02-veneers-at-different-addresses]
   - id: stm32-s
     title: STM32 Aegis PQ partition
@@ -162,10 +223,10 @@ nodes:
     sub: TF-M secure partition
     kind: secure
     parent: stm32
-    summary: The device key, quotes, ML-KEM provisioning, mutual authentication and KMAC heartbeats. Derives its ML-DSA-65 key from the DHUK at start-up and checks every credential against the gateway key pinned in its image. Ends a session on its own secure clock.
-    facts: {stack: "19088 of 26624 bytes used (sstack= in every heartbeat)", fuzzing: "892,774 executions, 0 crashes or model failures", session_end: "lifetime plus a sixteenth, then ERR pq -140"}
-    sources: [endpoints/stm32h573/tfm-aegis-partition/aegis_pq_attest.c, evidence/stm32-sstack/heartbeat-sstack.txt, evidence/stm32-kemfix/fuzzing.txt, evidence/endpoint-expiry/bench.txt]
-    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a09-harden-a-running-endpoint, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side, attesting-an-endpoint/k03-anyone-could-end-a-session, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]
+    summary: The device key, quotes, ML-KEM provisioning, mutual authentication and KMAC heartbeats, since 20 November 2026 from the Prover SDK's core with this file as its platform layer. Derives its ML-DSA-65 key from the DHUK at start-up and checks every credential against the gateway key pinned in its image. Ends a session on its own secure clock. On board 2 it also answers QUOTE_EAT with an EAT in a COSE_Sign1 that nests the PSA token.
+    facts: {image: "SPE 9de76167 (board 1); SPE 315dcc2f with the EAT option (board 2)", stack: "18872 of 26624 bytes used (sstack= in every heartbeat)", session_end: "lifetime plus a sixteenth, then ERR pq -140", eat_cost: "secure RAM +736 bytes, code +1,440 bytes"}
+    sources: [endpoints/stm32h573/tfm-aegis-partition/aegis_pq_attest.c, sdk/src/aegis_proto.c, evidence/sdk-core/summary.txt, evidence/soak-20261121/NOTE.md, docs/evidence-format.md]
+    learn: [attesting-an-endpoint/a04-attest-the-stm32, attesting-an-endpoint/a09-harden-a-running-endpoint, attesting-an-endpoint/a17-the-stm32-from-the-non-secure-side, attesting-an-endpoint/k03-anyone-could-end-a-session, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one, standards-and-releases/x06-one-prover-sdk, standards-and-releases/x07-standard-evidence]
   - id: stm32-ias
     title: Initial Attestation service
     label: Initial Attestation
@@ -217,7 +278,7 @@ nodes:
     kind: nonsecure
     parent: rw612
     summary: Passes each line to the Aegis partition with psa_call, one line in and one out. It never holds the key, the seed or the session, and it cannot reach ELS.
-    facts: {version: "0.2.0"}
+    facts: {version: "0.2.2 (NSPE 24979a1f)"}
     sources: [endpoints/rw612/tfm/prover_ns/, evidence/rw612-tfm/trustzone-prover.txt]
     learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612]
   - id: rw612-pq
@@ -226,10 +287,10 @@ nodes:
     sub: PSA-RoT, SID 0xAE10
     kind: secure
     parent: rw612
-    summary: Runs the protocol code (aegis_proto.c) on every line. Before the non-secure image runs it hashes the whole secure (SPE) and non-secure (NSPE) flash partitions; at the first request it derives the ML-DSA-65 key from ELS.
-    facts: {measures: "SHA-256 of SPE 0x18001000-0x1809FFFF and NSPE 0x180A0000-0x1839FFFF", profile: aegis-rw612-tfm-v1, stack: "19368 of 32768 bytes (0.2.1), 19384 of 32768 (0.2.2)", fuzzing: "1,049,515 executions, 0 crashes or model failures"}
+    summary: Runs the Prover SDK's core on every line since secure image 0.3.x. Before the non-secure image runs it hashes the whole secure (SPE) and non-secure (NSPE) flash partitions; at the first request it derives the ML-DSA-65 key from ELS.
+    facts: {image: "0.3.2, SPE c8d0f012", measures: "SHA-256 of SPE 0x18001000-0x1809FFFF and NSPE 0x180A0000-0x1839FFFF", profile: aegis-rw612-tfm-v1, stack: "19176 of 32768 bytes during the soak", secure_ram: "176,924 to 161,828 bytes with the SDK"}
     sources: [endpoints/rw612/tfm/aegis_pq/aegis_pq.c, endpoints/rw612/prover/src/aegis_proto.c, evidence/rw612-tfm/upgrade-0.2.1.txt, evidence/rw612-tfm/fuzzing.txt]
-    learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612, attesting-an-endpoint/k07-els-before-tf-m-set-it-up, attesting-an-endpoint/k08-a-range-erase-that-left-an-old-image, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one]
+    learn: [attesting-an-endpoint/a12-trustzone-on-the-rw612, attesting-an-endpoint/k07-els-before-tf-m-set-it-up, attesting-an-endpoint/k08-a-range-erase-that-left-an-old-image, attesting-an-endpoint/k09-a-refused-key-exchange-left-half-of-one, standards-and-releases/x06-one-prover-sdk]
   - id: rw612-els
     title: ELS and the die key
     sub: from the PUF, CKDF only
@@ -253,10 +314,10 @@ nodes:
     title: Trenz TE0807, Zynq UltraScale+ XCZU4EG
     label: Zynq UltraScale+ (TE0807)
     kind: group
-    summary: On a TEBF0808 carrier. A boot chain built from source, OP-TEE holding the key since 18 November 2026, and since 19 November a key bound to the chip's PUF, without writing a fuse. Known to the gateway as zynqmp-te0808, kind aegis-tee, trust label trustzone.
-    facts: {idcode: "04721093 (XCZU4EG)", trust_over_time: "software, then trustzone-devkey, then trustzone", not_yet: "phase C: keeping Linux away from the device key and OP-TEE's memory"}
+    summary: On a TEBF0808 carrier. A boot chain built from source, OP-TEE holding the key since 18 November 2026, since 19 November a key bound to the chip's PUF, without writing a fuse, and since 20 November the trusted application on the Prover SDK, with a session bound to its quote and an endorsed key. Known to the gateway as zynqmp-te0808, kind aegis-tee, trust label trustzone.
+    facts: {idcode: "04721093 (XCZU4EG)", trust_over_time: "software, then development-shared-key (printed trustzone-devkey before Aegis 1.1), then trustzone", not_yet: "phase C: keeping Linux away from the device key and OP-TEE's memory"}
     sources: [endpoints/zynqmp/README.md, docs/zynqmp-key-design.md, evidence/zynqmp/]
-    learn: [zynq-ultrascale-endpoint/a13-a-linux-board-with-software-trust, zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf]
+    learn: [zynq-ultrascale-endpoint/a13-a-linux-board-with-software-trust, zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf, zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk]
   - id: zq-bridge
     title: Linux bridge
     sub: TCP 7444 to /dev/tee0
@@ -271,10 +332,10 @@ nodes:
     sub: in OP-TEE
     kind: secure
     parent: zynqmp
-    summary: The RW612's protocol code in OP-TEE. Its ML-DSA-65 key derives from the hardware unique key; its quotes carry the boot chain's measurements; it runs the ML-KEM exchange and the KMAC heartbeats. Built into BOOT.BIN, not loaded from Linux.
-    facts: {profile: aegis-zynqmp-optee-v1, key: "sha256 c02f156d..., the same after a power cycle", measurements: "7: PMUFW, FSBL, PL, TFA, TFA.1, TEE, UBOOT", session_end: "built, not yet deployed on this board"}
-    sources: [endpoints/zynqmp/optee/ta/, evidence/zynqmp/puf-phase-b.txt, evidence/endpoint-expiry/bench.txt]
-    learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf]
+    summary: Version 0.2.0 is the Prover SDK's core with an OP-TEE platform layer. Its ML-DSA-65 key derives from the hardware unique key; its quotes carry the boot chain's measurements; it runs the ML-KEM exchange bound to the quote (transcript v2) and the KMAC heartbeats. Built into OP-TEE as an early TA, not loaded from Linux, so a TA signed with OP-TEE's public development key cannot take its UUID.
+    facts: {version: "0.2.0 (TEE 011989d7..., 576,984 bytes)", profile: aegis-zynqmp-optee-v1, key: "sha256 c02f156d..., the same after a power cycle and after the move to 0.2.0", measurements: "7: PMUFW, FSBL, PL, TFA, TFA.1, TEE, UBOOT", session_end: "on OP-TEE's clock at protection level 1000; tested on the PC stand-in"}
+    sources: [endpoints/zynqmp/optee/ta/, docs/zynqmp-sdk-port.md, evidence/zynqmp/puf-phase-b.txt]
+    learn: [zynq-ultrascale-endpoint/a15-optee-holds-the-key, zynq-ultrascale-endpoint/a16-a-key-from-the-puf, zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk]
   - id: zq-optee
     title: OP-TEE 4.7
     sub: secure memory from 0x6000_0000
@@ -344,6 +405,17 @@ nodes:
     summary: linux-xlnx xilinx-v2025.2 with OP-TEE support. The kernel that U-Boot loads is not yet among the measurements - OP-TEE takes and wipes the hand-off page before U-Boot runs.
     sources: [docs/zynqmp-key-design.md, evidence/zynqmp/boot-chain.txt]
     learn: [zynq-ultrascale-endpoint/a14-our-boot-chain-and-the-accelerator, zynq-ultrascale-endpoint/k12-a-jtag-boot-after-linux-stalled]
+
+  # ---------------------------------------------------------------- the Prover SDK
+  - id: sdk
+    title: Prover SDK core
+    label: Prover SDK, aegis_proto.c
+    sub: one protocol source, API version 1
+    kind: secure
+    summary: Since 20 November 2026 every endpoint builds one protocol source, the core of the Prover SDK (release 1.0.0, API version 1) - the quote, the exchange, the transcript, the heartbeat and the session's end - with a platform file per chip. It allocates nothing and includes nothing of TF-M, OP-TEE or a vendor HAL. Standard evidence is an option of it, off by default.
+    facts: {golden: "31 of 31 STM32 and 18 of 18 line-protocol traces equal to the images before it", code: "32.8 KB on a Cortex-M33 (34.5 KB with the EAT option)", context: "13,232 bytes", ports: "STM32H573 and RW612 (TF-M), Zynq UltraScale+ (OP-TEE), Linux, the PC"}
+    sources: [sdk/, docs/sdk-porting-guide.md, docs/sdk-versioning.md, evidence/sdk-core/summary.txt]
+    learn: [standards-and-releases/x06-one-prover-sdk, standards-and-releases/a20-attest-a-device-without-hardware]
 
   # ---------------------------------------------------------------- the legacy node
   - id: legacy
@@ -423,8 +495,21 @@ edges:
   - {id: zq-kernel, from: zq-uboot, to: zq-linux, kind: boot, label: "loads Linux 6.12, not measured yet"}
   - {id: zq-runs, from: zq-linux, to: zq-bridge, kind: uses, label: "runs the bridge"}
 
+  # signed records, the SDK and the PC's tools
+  - {id: sdk-stm32, from: sdk, to: stm32-s, kind: uses, label: "built into the TF-M partition", learn: [standards-and-releases/x06-one-prover-sdk]}
+  - {id: sdk-rw612, from: sdk, to: rw612-pq, kind: uses, label: "built into the TF-M partition", learn: [standards-and-releases/x06-one-prover-sdk]}
+  - {id: sdk-zq, from: sdk, to: zq-ta, kind: uses, label: "built into the trusted application", learn: [zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk]}
+  - {id: stm32-eat, from: fleet, to: stm32-s, kind: attest, views: [records], label: "PQEAT challenge, answered by an EAT in a COSE_Sign1", detail: "Board 2 only. The non-secure prover forwards it as the PSA message QUOTE_EAT; the EAT nests TF-M's PSA token and is signed with ML-DSA-65, COSE algorithm -49. On the bench 4,048 bytes.", learn: [standards-and-releases/x07-standard-evidence]}
+  - {id: fleet-results, from: fleet, to: results, kind: record, label: "a signed attestation result for every verdict", detail: "EAR claims with the AR4SI trustworthiness vector, the policy's hash, the evidence's hash, the quote hash of the transcript, the trust label and the enrolment.", learn: [standards-and-releases/x07-standard-evidence]}
+  - {id: fleet-audit, from: fleet, to: audit, kind: record, label: "a signed batch when a decision, a session or the policy changes", detail: "At most one batch per 300 s; an empty one every hour; nothing in a steady cycle.", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
+  - {id: sign-policy, from: policy-signer, to: policy, kind: record, label: "a signed policy, version never lower", detail: "Deployed with fleet.py check first; the loop reloads it at its next cycle.", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
+  - {id: endorse, from: endorser, to: policy, kind: record, label: "an endorsement record, pinned by its hash", detail: "The endorser asks the device for PQKEY and a quote first; the record names one device, its family, one key and the components it reported.", learn: [trust-model/x05-trust-labels-endorsement-transcript]}
+  - {id: anchor-fetch, from: anchors, to: audit, kind: uses, label: "fetches the last batch record every 300 s", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
+  - {id: check-pack, from: checkers, to: results, kind: uses, label: "checks an exported evidence pack", learn: [standards-and-releases/x07-standard-evidence, standards-and-releases/a20-attest-a-device-without-hardware]}
+  - {id: check-log, from: checkers, to: audit, kind: uses, label: "checks the log against the anchors kept", learn: [standards-and-releases/x08-a-signed-audit-log-and-a-signed-policy]}
+
 # Drawing positions. Boxes are [x, y, width, height] in the view's coordinates. An edge is drawn in a view when
-# both its ends are; "via" bends it through the points given, "off" shifts it sideways (pixels).
+# both its ends are, and, if it has "views", only in those; "via" bends it through the points given, "off" shifts it sideways (pixels).
 views:
   - id: system
     title: System and protocols
@@ -509,6 +594,29 @@ views:
     notes:
       - {x: 354, y: 324, lines: ["No boot stage measures here:", "the partition hashes both", "images before the non-secure", "one runs"]}
       - {x: 128, y: 452, lines: ["PUF helper data and black key", "in the boot header, no eFUSE"]}
+  - id: records
+    title: Evidence and records
+    width: 1000
+    height: 600
+    bands:
+      - {title: PC on the bench, x: 10, y: 10, w: 980, h: 112}
+      - {title: Gateway, x: 10, y: 136, w: 980, h: 236}
+      - {title: Endpoints, x: 10, y: 386, w: 980, h: 204}
+    nodes:
+      endorser: [30, 44, 220, 62]
+      policy-signer: [270, 44, 220, 62]
+      anchors: [510, 44, 220, 62]
+      checkers: [750, 44, 220, 62]
+      policy: [150, 178, 220, 62]
+      audit: [510, 178, 220, 62]
+      results: [750, 178, 220, 62]
+      fleet: [270, 290, 460, 56]
+      sdk: [330, 410, 340, 52]
+      stm32-s: [30, 510, 280, 60]
+      rw612-pq: [360, 510, 280, 60]
+      zq-ta: [690, 510, 280, 60]
+    edges:
+      stm32-eat: {via: [[230, 380]]}
 
 # Walks: each step names an edge (played from its start to its end, or back) or a node, and says what happens.
 walks:
@@ -586,6 +694,30 @@ walks:
       - {edge: sysserv, say: "aegisd reads live platform state through the system controller's read-only services: design info, usercode, security locks and design digests. It adds its own code hash, the kernel and the boot id."}
       - {edge: key-quote, say: "It signs the body with the gateway's ML-DSA-65 key, label aegis-quote-v1."}
       - {edge: quote, back: true, say: "The PC checks the signature, the nonce and the measurements. Recorded: accepted, a 3,309-byte signature, 0.039 s."}
+  - id: standard-evidence
+    title: Standard evidence from STM32 board 2 to a checker
+    steps:
+      - {edge: stm32-eat, say: "aegis-fleet sends STM32 board 2 PQEAT and a fresh challenge; its policy entry asks for evidence_format eat-cose-v1, so there is no fallback to the older quote."}
+      - {edge: sdk-stm32, say: "The partition, built from the Prover SDK with AEGIS_EAT_COSE, builds an EAT around TF-M's PSA token for the same challenge and signs the COSE Sig_structure with its DHUK-derived ML-DSA-65 key, algorithm -49."}
+      - {edge: stm32-eat, back: true, say: "The EAT comes back in a COSE_Sign1: 4,048 bytes on the bench, 3,309 of them the signature."}
+      - {node: fleet, say: "The verifier reads the algorithm from the protected header only, requires the kid to be the thumbprint of the pinned key, checks both signatures and both nonces, and appraises the components of the inner token against the policy."}
+      - {edge: fleet-results, say: "It signs an attestation result: status warning, because the STM32's token is signed with TF-M's published key (trustzone-devkey), with the policy's hash, the evidence's hash and the quote hash the session is bound to."}
+      - {edge: check-pack, say: "fleet.py export-evidence writes the pack. verify_evidence.py checks it with pycose and OpenSSL alone, against key thumbprints the reader obtained another way."}
+  - id: signed-policy-audit
+    title: A signed policy, the audit log and an anchor
+    steps:
+      - {edge: sign-policy, say: "On the PC the operator signs a new policy version with a key sealed to the TPM, after reading what policy-sign prints and typing yes."}
+      - {edge: fleet-policy, say: "aegis-fleet reloads the policy at its next cycle. It accepts it only if a key in policy-signers.json signed it and its version is not lower than the last accepted; otherwise the last accepted policy stays in use."}
+      - {edge: fleet-audit, say: "The policy change is a decision: a batch with a policy entry, its hash and version, chained to the batch before by SHA-256 and signed with the gateway's identity key."}
+      - {edge: anchor-fetch, say: "Within 300 s the PC fetches that batch record and keeps it read-only. From then on the log cannot be cut short, rolled back or written again up to that batch without the hourly check saying so."}
+      - {edge: check-log, say: "verify_audit.py checks the log against every anchor kept. It cannot see entries that whoever holds the gateway's key never wrote."}
+  - id: endorsement
+    title: An endorsed key and a substituted one
+    steps:
+      - {edge: endorse, say: "On 20 November the endorser on the PC asked each STM32 and the RW612 for its key and a quote, and signed a record per device after the operator typed yes: 0.566 s, 0.691 s and 0.194 s."}
+      - {edge: fleet-policy, say: "The policy began to require an endorsement. Next cycle: frdm-rw612, stm32h573-dk and stm32h573-dk-2 ADMITTED, endorsed by bench-pc."}
+      - {node: policy, say: "Board 2's pinned key replaced by board 1's: 12:24:26 stm32h573-dk-2 QUARANTINED endorsement required: the pinned key is not the endorsed key: substituted key [credential: revoked]."}
+      - {node: policy, say: "The key restored and the record removed: QUARANTINED, no endorsement record. The record back: ADMITTED. The full board regression then passed 14 of 14."}
 
 # The fleet replay: verdict lines from the gateway's journal, as recorded in evidence/ (already masked: no LAN
 # address, no MAC address). The explorer replays them one line at a time; nothing here is live.
@@ -737,3 +869,15 @@ replay:
             - {line: "10:28:22 stm32h573-dk ADMITTED  [credential: valid, heartbeat 27 (uptime_s=992;link=1;fw=0.6.0;sstack=19088/26624;ttl=3005)]", note: "After the endpoint-side expiry was flashed: ttl is the seconds the session has left on the endpoint's own clock."}
             - "10:28:22 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 33 (uptime_s=1217;link=1;fw=0.6.0;sstack=19088/26624;ttl=2771)]"
             - {line: "10:28:22 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 1 (requests=19;stack=19384/32768;clk=ref;fw=rw612-tfm-0.2.2;ttl=3791)]", note: "clk=ref: the RW612 counts its reference clock, the one it should."}
+    - id: endorsement
+      title: Endorsement required, a substituted key and a missing record
+      parts:
+        - source: evidence/endorsed-enrolment/bench/live-switch.txt
+          date: "2026-11-20"
+          lines:
+            - {line: "12:22:44 frdm-rw612 ADMITTED (trustzone trust)  [credential: valid, heartbeat 79 (...;fw=rw612-tfm-0.3.2;...)] [endorsed by bench-pc]", note: "The policy now requires an endorsement; the three records were signed at the bench minutes before."}
+            - "12:23:19 stm32h573-dk ADMITTED  [credential: valid, heartbeat 92 (...;sstack=18872/26624;...)] [endorsed by bench-pc]"
+            - "12:23:19 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 95 (...;sstack=18872/26624;...)] [endorsed by bench-pc]"
+            - {line: "12:24:26 stm32h573-dk-2 QUARANTINED endorsement required: the pinned key (sha256 29b953e6571dbd36...) is not the endorsed key (c9e2aa6e8157ac94...): substituted key [credential: revoked]", note: "Board 2's pinned key replaced by board 1's."}
+            - {line: "12:25:34 stm32h573-dk-2 QUARANTINED endorsement required: no endorsement record (.../policy/endorsements/stm32h573-dk-2.json) [credential: revoked]", note: "The key restored, the record removed."}
+            - {line: "12:27:17 stm32h573-dk-2 ADMITTED  [credential: valid, heartbeat 96 (...)] [endorsed by bench-pc]", note: "The record restored. The full board regression passed 14 of 14 afterwards."}

@@ -10,7 +10,7 @@
   --n-boot:#e4e9f3;--n-boot-b:#5470a0;--n-network:#ebe8e1;--n-network-b:#8b887f;--n-legacy:#f3e9e7;--n-legacy-b:#a0524a;
   --n-group:#fcfbf8;--n-group-b:#8b887f;
   --c-quote:#4b6a8f;--c-attest:#0f7a5c;--c-kem:#7b4fa0;--c-hb:#c2410c;--c-world:#55565a;--c-boot:#17181a;--c-key:#9a6b00;
-  --c-measure:#4d7c0f;--c-enforce:#b3261e;--c-serial:#80858a;--c-uses:#8b887f;
+  --c-measure:#4d7c0f;--c-enforce:#b3261e;--c-serial:#80858a;--c-uses:#8b887f;--c-record:#a3367a;
   --font-body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--font-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
@@ -22,7 +22,7 @@
   --n-boot:#222c40;--n-boot-b:#8da6d4;--n-network:#26282d;--n-network-b:#76777c;--n-legacy:#33201d;--n-legacy-b:#e08a7f;
   --n-group:#1c1d21;--n-group-b:#76777c;
   --c-quote:#8fb0d8;--c-attest:#4fd1a5;--c-kem:#c1a0e4;--c-hb:#fb923c;--c-world:#b4b3ad;--c-boot:#eceae5;--c-key:#e0b84f;
-  --c-measure:#a3cf5b;--c-enforce:#ff8a80;--c-serial:#8a9298;--c-uses:#76777c;color-scheme:dark}}
+  --c-measure:#a3cf5b;--c-enforce:#ff8a80;--c-serial:#8a9298;--c-uses:#76777c;--c-record:#e58ac4;color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#16171a;--surface:#1c1d21;--sunken:#26282d;--ink:#eceae5;--muted:#a5a49e;--rule:#303238;--rule-strong:#76777c;
   --accent:#9cb3ff;--on-accent:#0d1326;--alert:#ff8a80;--ok:#7fd3a2;
@@ -32,7 +32,7 @@
   --n-boot:#222c40;--n-boot-b:#8da6d4;--n-network:#26282d;--n-network-b:#76777c;--n-legacy:#33201d;--n-legacy-b:#e08a7f;
   --n-group:#1c1d21;--n-group-b:#76777c;
   --c-quote:#8fb0d8;--c-attest:#4fd1a5;--c-kem:#c1a0e4;--c-hb:#fb923c;--c-world:#b4b3ad;--c-boot:#eceae5;--c-key:#e0b84f;
-  --c-measure:#a3cf5b;--c-enforce:#ff8a80;--c-serial:#8a9298;--c-uses:#76777c;color-scheme:dark}
+  --c-measure:#a3cf5b;--c-enforce:#ff8a80;--c-serial:#8a9298;--c-uses:#76777c;--c-record:#e58ac4;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);
   padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
@@ -109,10 +109,11 @@ svg.diagram{display:block;width:100%;min-width:680px;height:auto;font-family:var
 .k-enforce .line{stroke:var(--c-enforce);stroke-width:2;stroke-dasharray:8 4}
 .k-serial .line{stroke:var(--c-serial);stroke-width:1.6;stroke-dasharray:2 3}
 .k-uses .line{stroke:var(--c-uses);stroke-width:1.3}
+.k-record .line{stroke:var(--c-record);stroke-width:2.4;stroke-dasharray:12 3}
 .mk path{fill:var(--c-uses)}
 .mk-quote path{fill:var(--c-quote)}.mk-attest path{fill:var(--c-attest)}.mk-kem path{fill:var(--c-kem)}.mk-hb path{fill:var(--c-hb)}
 .mk-world path{fill:var(--c-world)}.mk-boot path{fill:var(--c-boot)}.mk-key path{fill:var(--c-key)}.mk-measure path{fill:var(--c-measure)}
-.mk-enforce path{fill:var(--c-enforce)}.mk-serial path{fill:var(--c-serial)}.mk-sel path{fill:var(--accent)}
+.mk-enforce path{fill:var(--c-enforce)}.mk-serial path{fill:var(--c-serial)}.mk-record path{fill:var(--c-record)}.mk-sel path{fill:var(--accent)}
 .has-sel .node,.has-sel .edge{opacity:.2;transition:opacity .15s}
 .has-sel .node.n-group{opacity:.5}
 .has-sel .node.on,.has-sel .edge.on{opacity:1}

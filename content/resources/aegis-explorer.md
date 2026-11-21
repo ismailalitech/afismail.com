@@ -9,8 +9,8 @@ weight = 70
 +++
 
 An interactive map of the [Aegis gateway](/projects/fpga-soc/microchip-polarfire-soc/aegis/) and the four boards it
-attests, as built on 19 November 2026. Select a box to see what it does, what it talks to, which labs explain it and
-which files in the repository back it. Select a line to see what it carries. Seven walks play the protocol one step at
+attests, as built on 21 November 2026, at the releases 1.0 and 1.1. Select a box to see what it does, what it talks to, which labs explain it and
+which files in the repository back it. Select a line to see what it carries. Ten walks play the protocol one step at
 a time, and a replay tab steps through verdict lines the gateway recorded on the bench. It runs in the browser and
 sends nothing.
 
@@ -25,13 +25,19 @@ sends nothing.
 - **Inside the endpoints.** For each endpoint with a secure world, what runs on each side of the boundary, where the
   key comes from (the DHUK in SAES, the die key in ELS, the PUF's black key), which clock ends a session, and what is
   measured and by whom.
+- **Evidence and records.** The signed objects around the verdicts and who makes them: the Prover SDK core in the
+  three secure worlds, standard evidence from STM32 board 2, the gateway's signed attestation results and audit log,
+  the signed policy, and on the PC the endorser, the policy signer with its TPM-sealed key, the audit anchors and the
+  standalone checkers.
 - **Connections.** The gateway quote, attestation (`PQCHAL`, `PQTOKEN`), ML-KEM provisioning (`PQKEMINIT`,
   `PQKEMFIN`), KMAC heartbeats (`PQHB`), calls between the worlds, boot hand-overs, key material, measurements and the
-  enforcement hook, each drawn differently.
+  enforcement hook, and signed records, each drawn differently.
 - **Walks.** One attestation cycle from nonce to verdict; ML-KEM provisioning with mutual authentication; a heartbeat;
   a tampered image quarantined and its credential revoked; a credential that expires on the endpoint; the Zynq
-  UltraScale+ secure boot from the PUF to the trusted application's key; the gateway proving itself to the PC.
-- **Fleet replay.** Seven short recordings of the gateway's verdict lines, from the repository's evidence files. Each
+  UltraScale+ secure boot from the PUF to the trusted application's key; the gateway proving itself to the PC;
+  standard evidence from STM32 board 2 to a checker; a signed policy, the audit log and an anchor; an endorsed key
+  and a substituted one.
+- **Fleet replay.** Eight short recordings of the gateway's verdict lines, from the repository's evidence files. Each
   step replays one line and updates a table of the devices: kind, trust label, last verdict, heartbeat counter, the
   secure partition's stack high-water mark and the seconds the session has left. It is a replay of what was recorded,
   not a live view.
@@ -40,7 +46,9 @@ sends nothing.
 
 Everything on the map comes from one file, [`architecture.yaml`](/aegis/architecture.yaml), written from the
 documents and evidence in the [Aegis repository](https://github.com/ismailalitech/aegis): `docs/architecture.md`,
-`docs/threat-model.md`, `docs/zynqmp-key-design.md`, `docs/endpoint-expiry.md`, the endpoint READMEs and `evidence/`.
+`docs/threat-model.md`, `docs/zynqmp-key-design.md`, `docs/endpoint-expiry.md`, `docs/evidence-format.md`,
+`docs/audit-and-policy.md`, `docs/enrolment.md`, `docs/zynqmp-sdk-port.md`, the release notes, the endpoint READMEs
+and `evidence/`.
 The site reads it when it is built; a lab it names that does not exist stops the build. The replayed lines are copied
 from the evidence files as they are, with the LAN addresses already masked there.
 

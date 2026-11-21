@@ -95,7 +95,7 @@
     </table></div>
     <div class="line-box" id="line-box" aria-live="polite"></div>
   </div>
-  <p class="note">Columns: <b>Kind</b> is the endpoint's kind in the gateway's policy. <b>Trust</b> is the label the gateway prints with the verdict; it prints one only for the kinds whose quote is a plain claims map, so an STM32 line (kind aegis-pq) has none. <b>Heartbeat</b> is the counter of the current session, <b>Stack</b> the secure partition's stack high-water mark (sstack= on the STM32, stack= on the RW612) and <b>ttl</b> the seconds the session has left on the endpoint's own clock, each as the last heartbeat reported it.</p>
+  <p class="note">Columns: <b>Kind</b> is the endpoint's kind in the gateway's policy. <b>Trust</b> is the label the gateway prints with the verdict; in these recordings, most made before Aegis 1.1, it printed one only for the kinds whose quote is a plain claims map, so an STM32 line (kind aegis-pq) has none. Since 1.1 the STM32s are labelled trustzone-devkey. <b>Heartbeat</b> is the counter of the current session, <b>Stack</b> the secure partition's stack high-water mark (sstack= on the STM32, stack= on the RW612) and <b>ttl</b> the seconds the session has left on the endpoint's own clock, each as the last heartbeat reported it.</p>
 </section>
 
 <details class="as-text" id="as-text" open>
