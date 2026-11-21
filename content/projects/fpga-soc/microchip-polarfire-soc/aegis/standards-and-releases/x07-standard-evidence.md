@@ -167,7 +167,7 @@ per-process write counter, so these are file sizes and cycle counts, not measure
 - `aegis.warnings`, the verdict's warning and the details behind each value of the vector, whatever the status;
 - `aegis.min-trust` and `aegis.disabled` for the two new policy keys.
 
-[Pull request 54](https://github.com/ismailalitech/aegis/pull/54), in review, adds JSON Schemas for the manifest,
+[Pull request 54](https://github.com/ismailalitech/aegis/pull/54), also in 1.2, adds JSON Schemas for the manifest,
 the state file, the policy, the endorsement record and the signers file; a data-formats reference with every
 `aegis.*` claim and its type; and synthetic golden vectors (an evidence pack for every kind, profile and status, a
 signed policy, an audit log with an anchor) for programs that read Aegis evidence without running Aegis code.

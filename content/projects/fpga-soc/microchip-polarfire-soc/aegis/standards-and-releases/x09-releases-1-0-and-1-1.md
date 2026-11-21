@@ -105,4 +105,4 @@ the bench gateway since 21 November 2026; on GitHub as v1.2.0 (being released), 
 signed export time in the evidence pack, with `aegis.pack-signed` in every result so that a removed signature is
 caught; the audit log's head and `aegis.warnings` in each result; and the policy keys `min_trust` and `disabled`. The
 board regression passed 14 of 14 with it deployed. The data formats for readers (JSON Schemas, a reference of every
-claim, golden vectors) are [pull request 54](https://github.com/ismailalitech/aegis/pull/54), in review.
+claim, golden vectors) are part of 1.2 too ([pull request 54](https://github.com/ismailalitech/aegis/pull/54)).

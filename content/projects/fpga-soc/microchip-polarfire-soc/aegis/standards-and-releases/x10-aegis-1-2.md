@@ -9,9 +9,10 @@ weight = 50
 +++
 
 Aegis 1.2 is the verifier of 1.1 with the additions below, merged as
-[pull request 53](https://github.com/ismailalitech/aegis/pull/53) and running on the bench gateway since 21 November
+[pull request 53](https://github.com/ismailalitech/aegis/pull/53), with the data formats for readers in
+[pull request 54](https://github.com/ismailalitech/aegis/pull/54), and running on the bench gateway since 21 November
 2026; on GitHub as v1.2.0 (being released). The Prover SDK and the endpoint images are unchanged: everything here happens
-in `aegis-fleet`, in the evidence pack and in the two standalone checkers
+in `aegis-fleet`, in the evidence pack, in the two standalone checkers and in the documents for readers
 ([`docs/evidence-format.md`](https://github.com/ismailalitech/aegis/blob/main/docs/evidence-format.md),
 [`docs/audit-and-policy.md`](https://github.com/ismailalitech/aegis/blob/main/docs/audit-and-policy.md)).
 
@@ -104,10 +105,11 @@ time:
 
 ## For anyone building a reader
 
-[Pull request 54](https://github.com/ismailalitech/aegis/pull/54), in review, adds what a program needs to read
-Aegis evidence without running Aegis code: `docs/data-formats.md`, a reference of every file, claim and closed list
-the verifier writes; JSON Schemas (draft 2020-12) for the manifest, the state file, the policy, the endorsement record
-and the signers file; and synthetic golden vectors in `tests/vectors/aegis-1.2/`, made by the verifier's own writers
+[Pull request 54](https://github.com/ismailalitech/aegis/pull/54) adds what a program needs to read Aegis evidence
+without running Aegis code: [`docs/data-formats.md`](https://github.com/ismailalitech/aegis/blob/main/docs/data-formats.md), a reference of every file, claim and closed list
+the verifier writes; [JSON Schemas](https://github.com/ismailalitech/aegis/tree/main/docs/schemas) (draft 2020-12) for the manifest, the state file, the policy, the endorsement record
+and the signers file; and synthetic golden vectors in
+[`tests/vectors/aegis-1.2/`](https://github.com/ismailalitech/aegis/blob/main/tests/vectors/aegis-1.2/README.md), made by the verifier's own writers
 with keys derived from published seeds: an evidence pack for every kind, profile and status (a disabled entry among
 them), a signed policy, an audit log with an anchor. None of their keys is a secret or a real device's, and their
 signatures differ from run to run, so a reader compares structure and verifies signatures rather than bytes.
