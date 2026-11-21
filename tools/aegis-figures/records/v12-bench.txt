@@ -1,0 +1,13 @@
+# Aegis 1.2 (main 6bf5b53) on the bench gateway, 21 November 2026: the operator's record. Lines that do not begin
+# with "# " are as the gateway logged them or as the tool reported them; "# " lines are the operator's notes.
+# regression: tools/regression.sh --board --with-expiry with 1.2 deployed: 14 of 14
+# policy: "min_trust": "trustzone" on STM32 board 2 (stm32h573-dk-2)
+QUARANTINED policy: entry stm32h573-dk-2 can NEVER meet min_trust trustzone: its trust is trustzone-devkey
+# the gateway did not contact the board
+# policy: "disabled": true on STM32 board 2
+QUARANTINED disabled by policy [credential: revoked]
+# policy: "min_trust": "trustzone-devkey", which the board meets
+# ADMITTED again
+# a 1.2 pack of the bench: tools/verify_evidence.py pack <pack> --require-signed-export
+# reported: the export time signed
+"verified": true

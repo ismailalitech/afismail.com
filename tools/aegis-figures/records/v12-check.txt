@@ -1,0 +1,17 @@
+# gateway/aegisd/fleet.py check <policy> --platform linux --state-dir <work>/verifier, on the build PC, 2026-11-21, aegis main 6bf5b53: the simulated device's policy from the run in v12-pack.txt, with one key added to its entry each time (first line of each report)
+# entry with "min_trust": "device-key"
+sim-device-1 REFUSED: policy: entry sim-device-1 can NEVER meet min_trust device-key: its trust is software (strongest first: trustzone > trustzone-devkey > device-key > software > development-shared-key)
+# exit 1
+# entry with "min_trust": "software"
+sim-device-1 ok
+  min_trust software: met by trust software
+  enrolment: trust on first use: nothing shows that the pinned key belongs to a genuine device (no "endorsement": "required" in the policy entry); weaker
+  credentials: issued by this verifier
+  session bound to the attestation (transcript v2 required; the unbound exchange is refused)
+# exit 0
+# entry with "min_trust": null
+sim-device-1 REFUSED: policy: unknown min_trust None (known, strongest first: trustzone, trustzone-devkey, device-key, software, development-shared-key)
+# exit 1
+# entry with "disabled": true
+sim-device-1 DISABLED: disabled by policy: not contacted, quarantined every cycle, its session revoked
+# exit 0
