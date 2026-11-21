@@ -1,6 +1,6 @@
 +++
 title = "Aegis 1.2: a signed export time, the log's head in each result, a trust floor and a switch"
-date = '2026-11-21T12:00:00+01:00'
+date = '2026-11-21T11:30:00+01:00'
 draft = false
 description = "What Aegis 1.2 adds to the verifier: an evidence pack whose manifest and export time the verifier signs, with every result saying so, so a stripped signature is caught; the audit log's head and the verdict's warnings in each signed result; and two policy keys, a trust floor and a switch that takes an entry out of service. On the bench gateway since 21 November 2026, with the runs that show each part."
 weight = 50
