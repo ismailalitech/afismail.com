@@ -97,7 +97,12 @@ A zero value with a description is deliberate: no verifier can mistake it for a 
 
 The gateway gets a new kind, `aegis-tee`, with two profiles: `aegis-zynqmp-optee-devhuk-v1` is labelled
 `trustzone-devkey`, and `aegis-zynqmp-optee-v1` (lab 63) `trustzone`. The entry pins the `-devhuk` profile and the
-new key, and allows `BOOTCHAIN` 0 for this phase only:
+new key, and allows `BOOTCHAIN` 0 for this phase only.
+
+Since Aegis 1.1 the `-devhuk` profile is labelled `development-shared-key`, which says more exactly what it is: one
+key on every chip. `trustzone-devkey` now means a TF-M endpoint signed with TF-M's development key, the bench's STM32s
+([trust labels](/projects/fpga-soc/microchip-polarfire-soc/aegis/trust-model/x05-trust-labels-endorsement-transcript/)).
+The journal below was recorded before 1.1 and shows the old label:
 
 ![The gateway journal for the Zynq UltraScale+ board in three stages: software trust with a tamper test quarantined on KERNEL, then trustzone-devkey trust with OP-TEE, then trustzone trust with the key from the PUF](/aegis/diagrams/console-zynqmp-gateway.svg)
 
