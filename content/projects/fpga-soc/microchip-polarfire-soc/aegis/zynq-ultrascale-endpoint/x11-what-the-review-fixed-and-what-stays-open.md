@@ -2,7 +2,7 @@
 title = "The Zynq UltraScale+ endpoint after review: what was fixed, what stays open"
 date = '2026-11-22T12:00:00+01:00'
 draft = false
-description = "A review of the Zynq UltraScale+ endpoint and of the network paths to it. The accelerator's DMA could write anywhere as a secure master, so the PL left the boot image. Linux on the board was narrowed. Slow connections could hold the gateway's services; the fixes are tested but not deployed. Two limits stay: partitions after the FSBL are measured, not authenticated, and OP-TEE is built as a development configuration."
+description = "A review of the Zynq UltraScale+ endpoint and of the network paths to it. The accelerator's DMA could write anywhere as a secure master, so the PL left the boot image. Slow connections could hold the gateway's services; the fixes are tested but not deployed. Two limits stay: partitions after the FSBL are measured, not authenticated, and OP-TEE is built as a development configuration."
 weight = 70
 
 [params]
@@ -10,7 +10,7 @@ weight = 70
 
 After [lab 66](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk/)
 the board was admitted with trustzone trust, an endorsed key and a bound session. A review followed: the board's
-boot chain, its Linux side, and every network path an unauthenticated host can reach. This page lists what came out
+boot chain and every network path an unauthenticated host can reach. This page lists what came out
 of it that concerns the project's own design. Each item says whether it is fixed, fixed but not deployed, or a known
 limit.
 
@@ -27,21 +27,6 @@ load one. With an empty PL there is no PL master left. The RTL now has a fixed D
 tagging; that version is simulated, not yet built into a bitstream. The quote now carries six measurements instead
 of seven, and the board was admitted again under a new endorsement.
 
-## Done: the Linux side of the board, narrowed
-
-On this endpoint Linux only carries the network; the key and the protocol live in OP-TEE. Three steps make a remote
-foothold on Linux worth less:
-
-- SSH without forwarding or tunnels, and no password login as root
-- the bridge between the network and OP-TEE runs as its own non-root user, sandboxed, with access to the TEE device
-  only
-- an inbound allowlist: only the bench's own hosts can connect
-
-Each step was applied with a backup and its own undo; the last two undo themselves if the gateway loses the board. Two limits: the allowlist
-filters by source address, so a host that takes an allowed address gets through; and it is not yet persistent, so it
-has to be applied again after a reboot. Root on the board is still kernel-level code; the boundary that protects
-the key is the secure world, not Linux.
-
 ## Fixed, not deployed: slow connections held the services
 
 A review of the network surface, with fuzzing of every parser an unauthenticated host can reach (the ZynqMP bridge,
@@ -56,7 +41,8 @@ receive, not to the whole request.
 | The verifier's reads from endpoints | one slow endpoint, or a host answering in its place, held the whole cycle until the other endpoints' admissions ran out | the timeout covers the whole reply |
 
 The verifier case fails closed: the endpoints go to quarantine, they are not admitted wrongly. Each fix has a test
-that fails without it. They are on a branch, not yet on the gateway or the board.
+that fails without it. They are tested on the PC and on a branch, not yet deployed on the gateway or the board.
+Separately, the board's network exposure was reduced; the details are not published.
 
 ## Known limit: measured, not authenticated
 

@@ -108,7 +108,10 @@ The same tar default had already caught the PolarFire gateway once; see
 
 The accelerator is the PolarFire's second one (`hw/rtl/aegis_pqc2`): the Keccak sponge with a DMA squeeze and the
 FIPS 203/204 NTT. On this chip it sits behind an AXI-to-APB bridge on `M_AXI_HPM0_LPD`, with its registers at
-`0x8000_0000`, and its DMA master on `S_AXI_HP0_FPD` reaches DDR only. `windows/build_hw_pqc.tcl` builds it:
+`0x8000_0000`, and its DMA master is on `S_AXI_HP0_FPD`. Correction (22 November 2026): that DMA master could write
+anywhere, as a secure master, not to DDR only; the bitstream has since left the boot image
+([the review](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/x11-what-the-review-fixed-and-what-stays-open/)).
+`windows/build_hw_pqc.tcl` builds it:
 
 | Item | Result |
 |---|---|
