@@ -73,9 +73,9 @@ unedited report is kept as the record, FAIL and all, next to the note that expla
 
 - Counter wraps and drift over several days and nights. The STM32's RTC wraps after 198 days; temperature changes the
   rate of its RC oscillator.
-- Trends. The runner does not judge memory, descriptor and disk growth under 4 hours; they were flat at 2.7 hours.
-- The 24-hour soak is designed and has not run yet. The credential lifetime was put back to 3600 s after this run.
-  It has run since:
+- Trends. The runner does not judge memory, descriptor and disk growth under 6 hours; they were flat at 2.7 hours.
+- The 24-hour soak was designed and had not run when this page was written. It has run since, and the credential
+  lifetime was put back to 3600 s afterwards:
   [a 24-hour soak that passed](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k17-a-24-hour-soak-that-passed/).
 
 ## Lesson

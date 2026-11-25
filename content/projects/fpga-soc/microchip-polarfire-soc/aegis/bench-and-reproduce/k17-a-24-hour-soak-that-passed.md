@@ -10,7 +10,7 @@ weight = 40
 
 The [3-hour soak](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k16-a-soak-that-failed-its-own-clock-estimate/)
 ended with one line left open: the 24-hour soak was designed and had not run. It ran from 23 November 2026, 01:18:25,
-to 24 November, 01:18:25, on the same three endpoints: STM32 board 2, the RW612 and the Zynq UltraScale+. STM32
+to 24 November (the final regression began at 01:18:28 and the last sample came at 01:28:29, so the 292 samples cover about 24 hours 10 minutes), on the same three endpoints: STM32 board 2, the RW612 and the Zynq UltraScale+. STM32
 board 1 was unplugged and the Arduino was quarantined by design, as before.
 
 The design is in [`docs/soak-and-watchdogs.md`](https://github.com/ismailalitech/aegis/blob/main/docs/soak-and-watchdogs.md).
@@ -112,7 +112,7 @@ compared with what the day produced:
 
 Two more things held that the 3-hour run could not show. The regressions stop and restart `aegis-fleet` seven times
 in the day; the runner logged every one of them as expected and none as a failure, and nothing outside those windows
-was excused. And the clock estimate that had produced 1.535 from one bad pair left out 2 pairs of 5,843 and gave
+was excused. And the clock estimate that had produced 1.535 from one bad pair left out 2 of 5,845 pairs and gave
 three plausible rates.
 
 A pass cannot show that the runner would catch a fault. That part rests on other evidence: the runner's self-test,
@@ -127,7 +127,7 @@ schedule ran as designed. It is not a claim about 14 days of elapsed time.
 
 After the run the lifetime was put back, on 24 November: the drop-in that added `--credential-lifetime 600` was
 removed and `aegis-fleet` restarted once. The three endpoints were admitted in every cycle after the restart. Their
-sessions were issued again within about four and a half minutes, and the three stored credentials then showed a
+sessions were issued again within about four and a half minutes (3 min 12 s for the STM32 and the Zynq, 4 min 21 s for the RW612), and the three stored credentials then showed a
 lifetime of 3600 s. A copy of the removed drop-in is kept on the gateway.
 
 ## What 24 hours still do not cover
