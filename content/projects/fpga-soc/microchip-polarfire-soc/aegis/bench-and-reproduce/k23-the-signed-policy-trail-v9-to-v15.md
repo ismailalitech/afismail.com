@@ -42,14 +42,14 @@ The board's key did not change in any of these steps.
 | 14 | C1 to C5: [the smaller U-Boot](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k19-a-smaller-u-boot-measured-and-endorsed/) | New U-Boot, PMU firmware and FSBL values. A new pin. |
 | 15 | C6: [U-Boot without the key window](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k20-u-boot-without-the-key-window/) | New U-Boot, PMU firmware and FSBL values. A new pin. |
 
-Versions 9 to 13 were signed on 21 and 22 November 2026, versions 14 and 15 on 26 November.
+Versions 9 to 13 were signed over 21 and 22 November 2026 (the early stages), versions 14 and 15 on 26 November.
 
 The PMU firmware and the FSBL are in every row. They are encrypted, and every encrypted build uses new
 initialisation vectors, so their measurements change even when their inputs do not.
 
 Stage 1 is the only step that took two versions. Version 9 put the new values in the allow-list before the image
 was written, with the old pin kept. The board then booted, was quarantined because its quote no longer matched the
-pinned record, and version 10 moved the pin. From stage 2 on, one version carried both the values and the pin, and
+pinned record, and version 10 moved the pin. For the latest steps (versions 14 and 15), one version carried both the values and the pin, and
 it was signed after the first boot on the new image.
 
 ## One pin per entry
