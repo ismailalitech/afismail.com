@@ -89,14 +89,16 @@ tidier than the night was.
 
 Put the kept image back as `BOOT.BIN`, put the old endorsement record back, and sign a policy that pins it. That
 policy has to be version 15: the gateway refuses a version lower than the one it holds, so the saved version 13
-cannot be put back as it is.
+cannot be put back as it is. (Version 15 has since been used by the next step, so the number is now higher.)
 
 ## What the pass shows, and what it does not
 
 - **It shows that the new boot chain is measured and endorsed, and that the fleet still works.** It does not show
   that U-Boot is free of bugs. Less code is less to get wrong; nobody tested what is left.
-- **The prompt is still there.** The sixth step, C6, removes the key window before the boot command. It was
-  skipped on purpose: the bench still uses the prompt, so anyone at the serial console can stop the boot.
+- **The prompt was still there.** The sixth step, C6, removes the key window before the boot command. It was
+  skipped on purpose in this image: the bench still used the prompt, so anyone at the serial console could stop
+  the boot. It was done later the same day, with its own image and endorsement, and is
+  [described here](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k20-u-boot-without-the-key-window/).
 - **The kernel, the device tree and `boot.scr` are still not signed and not measured.** Someone who can write the
   card can change them. Closing that needs verified boot in U-Boot, which is not built.
 - **A changed U-Boot still runs.** The gateway detects it and quarantines the board; nothing on the board refuses
