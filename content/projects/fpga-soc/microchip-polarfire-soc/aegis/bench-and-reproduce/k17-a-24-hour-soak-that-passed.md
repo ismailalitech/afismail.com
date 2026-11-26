@@ -142,8 +142,9 @@ lifetime of 3600 s. A copy of the removed drop-in is kept on the gateway.
 - STM32 board 1 and the Arduino, which were not in the run.
 - The cause of the 18 November hang.
 
-The report, event log and samples of this run are kept with the project's evidence. They are not in the public
-repository yet; the figures here are taken from them unchanged.
+The report, event log, samples and the seven regression logs of this run are in the public repository, in
+[`evidence/soak-20261123/`](https://github.com/ismailalitech/aegis/tree/main/evidence/soak-20261123). The gateway's
+address is masked there. The figures here are taken from them unchanged.
 
 ## Lesson
 
