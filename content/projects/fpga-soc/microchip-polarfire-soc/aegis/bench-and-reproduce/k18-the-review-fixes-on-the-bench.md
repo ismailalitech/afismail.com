@@ -136,4 +136,6 @@ is which, so that "deployed" is not read as "shown on the board".
 
 ## Next
 
-The next planned step is hardening U-Boot on the Zynq UltraScale+ board. It has not started.
+The next planned step was hardening U-Boot on the Zynq UltraScale+ board. It had not started when this page was
+written; it is now
+[done and described here](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k19-a-smaller-u-boot-measured-and-endorsed/).
