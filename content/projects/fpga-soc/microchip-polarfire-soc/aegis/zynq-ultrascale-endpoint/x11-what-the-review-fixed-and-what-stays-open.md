@@ -2,7 +2,7 @@
 title = "The Zynq UltraScale+ endpoint after review: what was fixed, what stays open"
 date = '2026-11-22T12:00:00+01:00'
 draft = false
-description = "A review of the Zynq UltraScale+ endpoint and of the network paths to it. The accelerator's DMA could write anywhere as a secure master, so the PL left the boot image. Slow connections could hold the gateway's services; the fixes are tested but not deployed. Two limits stay: partitions after the FSBL are measured, not authenticated, and OP-TEE is built as a development configuration."
+description = "A review of the Zynq UltraScale+ endpoint and of the network paths to it. The accelerator's DMA could write anywhere as a secure master, so the PL left the boot image. Slow connections could hold the gateway's services; the fixes are tested and now deployed on the bench (see [the review's fixes on the bench](/projects/fpga-soc/microchip-polarfire-soc/aegis/bench-and-reproduce/k18-the-review-fixes-on-the-bench/)). Two limits stay: partitions after the FSBL are measured, not authenticated, and OP-TEE is built as a development configuration."
 weight = 70
 
 [params]
@@ -11,7 +11,7 @@ weight = 70
 After [lab 66](/projects/fpga-soc/microchip-polarfire-soc/aegis/zynq-ultrascale-endpoint/a19-the-trusted-application-on-the-sdk/)
 the board was admitted with trustzone trust, an endorsed key and a bound session. A review followed: the board's
 boot chain and every network path an unauthenticated host can reach. This page lists what came out
-of it that concerns the project's own design. Each item says whether it is fixed, fixed but not deployed, or a known
+of it that concerns the project's own design. Each item says whether it is fixed, fixed and deployed, or a known
 limit.
 
 ## Fixed: the accelerator could write anywhere, as a secure master
@@ -27,7 +27,7 @@ load one. With an empty PL there is no PL master left. The RTL now has a fixed D
 tagging; that version is simulated, not yet built into a bitstream. The quote now carries six measurements instead
 of seven, and the board was admitted again under a new endorsement.
 
-## Fixed, not deployed: slow connections held the services
+## Fixed and deployed: slow connections held the services
 
 A review of the network surface, with fuzzing of every parser an unauthenticated host can reach (the ZynqMP bridge,
 the trusted application's entry point, the Prover SDK core, the verifier's reply parsers), found no memory-safety
