@@ -108,12 +108,15 @@ attestation.
 ## What these checks show, and what they do not
 
 - **The silent client does not prove the fix.** The old bridge also had a 5-second timeout on a receive, so a
-  client that sends nothing was dropped after about 5 seconds before the swap too. The check shows that the new
-  binary runs, serves and times out. The case the fix is for, a client that keeps sending one byte at a time, was
-  tested on the PC, where the old code held the connection for 18 seconds and the new code drops it at its deadline. It was not
-  repeated against the board.
-- **The regression ran before the bridge swap.** It covers the new gateway code with the old bridge. After the
-  swap the evidence is the three checks above, not a second regression.
+  client that sends nothing was dropped after about 5 seconds before the swap too. That check shows that the new
+  binary runs, serves and times out.
+- **The case the fix is for was run on the board after the swap.** A client that keeps sending one byte every few
+  seconds was ended by the bridge at about 7 seconds with an error reply, when the deadline is 5 seconds for the
+  whole request (the 7 seconds include the client's own pacing). On the PC the old code held the same kind of
+  connection for 18 seconds. The old bridge was not run against this exact test on the board, so the board result
+  shows the new behaviour, not a before-and-after.
+- **The regression ran twice.** The first run, before the bridge swap, covers the new gateway code with the old
+  bridge. A second run after the swap, with the new bridge on the Zynq, also passed 14 of 14 stages.
 - **The bridge's other two fixes were not exercised on the board.** The over-long reply cannot be produced with
   this trusted application, and a blocked send cannot be produced with replies this small. Both rest on the tests
   on the PC.
